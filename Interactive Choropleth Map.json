@@ -1,0 +1,135 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Educational Equity in Australia — ICSEA (choropleth) + Schools (size by enrolments, color by student–teacher ratio)",
+  "width": 950,
+  "height": 620,
+  "projection": {"type": "equalEarth"},
+
+  "params": [
+    {
+      "name": "showChoropleth",
+      "value": true,
+      "bind": {"input": "checkbox", "label": "Show ICSEA choropleth"}
+    },
+    {
+      "name": "showPoints",
+      "value": true,
+      "bind": {"input": "checkbox", "label": "Show schools (proportional symbols)"}
+    },
+    {
+      "name": "sectorParam",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All","Government","Catholic","Independent"],
+        "labels": ["All sectors","Government","Catholic","Independent"]
+      }
+    }
+  ],
+
+  "layer": [
+    {
+      "name": "base",
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/STE_2021_AUST_SHP_GDA2020.json",
+        "format": {"type": "topojson", "feature": "STE_2021_AUST_GDA2020"}
+      },
+      "mark": {"type": "geoshape", "fill": "#f5f5f5", "stroke": "white"}
+    },
+
+    {
+      "name": "choropleth",
+      "transform": [{"filter": "showChoropleth"}],
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/STE_2021_AUST_SHP_GDA2020.json",
+        "format": {"type": "topojson", "feature": "STE_2021_AUST_GDA2020"}
+      },
+      "transform": [
+        {
+          "calculate": "(datum.properties.STE_NAME21=='New South Wales' ? 'NSW' : datum.properties.STE_NAME21=='Victoria' ? 'VIC' : datum.properties.STE_NAME21=='Queensland' ? 'QLD' : datum.properties.STE_NAME21=='South Australia' ? 'SA' : datum.properties.STE_NAME21=='Western Australia' ? 'WA' : datum.properties.STE_NAME21=='Tasmania' ? 'TAS' : datum.properties.STE_NAME21=='Northern Territory' ? 'NT' : datum.properties.STE_NAME21=='Australian Capital Territory' ? 'ACT' : null)",
+          "as": "STATE_ABBR"
+        },
+        {
+          "lookup": "STATE_ABBR",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv",
+              "format": {"type": "csv"}
+            },
+            "transform": [
+              {"calculate": "toNumber(datum.ICSEA)", "as": "ICSEA_num"},
+              {"filter": "isFinite(datum.ICSEA_num)"},
+              {
+                "aggregate": [{"op": "mean", "field": "ICSEA_num", "as": "ICSEA_mean"}],
+                "groupby": ["State"]
+              }
+            ],
+            "key": "State",
+            "fields": ["ICSEA_mean"]
+          }
+        }
+      ],
+      "mark": {"type": "geoshape"},
+      "encoding": {
+        "color": {
+          "field": "ICSEA_mean",
+          "type": "quantitative",
+          "title": "ICSEA (state mean)",
+          "scale": {"scheme": "blues", "clamp": true}
+        },
+        "tooltip": [
+          {"field": "properties.STE_NAME21", "type": "nominal", "title": "State/Territory"},
+          {"field": "ICSEA_mean", "type": "quantitative", "format": ".0f", "title": "ICSEA (mean)"}
+        ]
+      }
+    },
+
+    {
+      "name": "schools",
+      "transform": [{"filter": "showPoints"}],
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv",
+        "format": {"type": "csv"}
+      },
+      "transform": [
+        {"filter": "sectorParam=='All' || datum['School Sector']==sectorParam"},
+        {"filter": "isValid(datum.Latitude) && isValid(datum.Longitude)"},
+        {"calculate": "toNumber(datum['Full Time Equivalent Enrolments'])", "as": "FTE_Enrol"},
+        {"calculate": "toNumber(datum['Full Time Equivalent Teaching Staff'])", "as": "FTE_Teach"},
+        {"filter": "isFinite(datum.FTE_Enrol) && isFinite(datum.FTE_Teach) && datum.FTE_Teach>0"},
+        {"calculate": "datum.FTE_Enrol / datum.FTE_Teach", "as": "StudentTeacherRatio"}
+      ],
+      "mark": {"type": "circle", "stroke": "white", "strokeWidth": 0.3, "opacity": 0.85},
+      "encoding": {
+        "longitude": {"field": "Longitude", "type": "quantitative"},
+        "latitude": {"field": "Latitude", "type": "quantitative"},
+        "size": {
+          "field": "FTE_Enrol",
+          "type": "quantitative",
+          "title": "Enrolments (FTE)",
+          "scale": {"range": [10, 700]}
+        },
+        "color": {
+          "field": "StudentTeacherRatio",
+          "type": "quantitative",
+          "title": "Student–Teacher Ratio",
+          "scale": {"scheme": "reds", "clamp": true}
+        },
+        "tooltip": [
+          {"field": "School Name", "title": "School"},
+          {"field": "School Sector", "title": "Sector"},
+          {"field": "State"},
+          {"field": "ICSEA", "title": "ICSEA"},
+          {"field": "StudentTeacherRatio", "title": "Student–Teacher Ratio", "format": ".1f"},
+          {"field": "FTE_Enrol", "title": "Enrolments (FTE)"},
+          {"field": "FTE_Teach", "title": "Teaching Staff (FTE)"}
+        ]
+      }
+    }
+  ],
+
+  "config": {
+    "legend": {"orient": "bottom"},
+    "view": {"stroke": null}
+  }
+}
