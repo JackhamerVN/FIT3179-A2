@@ -1,0 +1,95 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Average ICSEA Score by SA2 Region in Australia (2024)",
+    "fontSize": 18,
+    "anchor": "middle"
+  },
+  "width": 1000,
+  "height": 700,
+  "projection": {
+    "type": "mercator",
+    "center": [133, -28],
+    "scale": 800
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+        "format": {
+          "type": "topojson",
+          "feature": "SA2"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e8e8e8",
+        "stroke": "white",
+        "strokeWidth": 0.5
+      }
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+        "format": {
+          "type": "topojson",
+          "feature": "SA2"
+        }
+      },
+      "transform": [
+        {
+          "lookup": "properties.sa2_code_2021",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+            },
+            "key": "Statistical Area 2",
+            "fields": ["ACARA SML ID"]
+          }
+        },
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": ["ICSEA"]
+          }
+        },
+        {
+          "aggregate": [
+            {"op": "mean", "field": "ICSEA", "as": "avg_ICSEA"},
+            {"op": "count", "as": "school_count"}
+          ],
+          "groupby": ["properties.sa2_code_2021", "properties.sa2_name_2021", "properties.state_name_2021"]
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "white",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "color": {
+          "field": "avg_ICSEA",
+          "type": "quantitative",
+          "scale": {
+            "scheme": "redyellowgreen",
+            "domain": [900, 1100]
+          },
+          "legend": {
+            "title": "Average ICSEA Score",
+            "orient": "right"
+          }
+        },
+        "tooltip": [
+          {"field": "properties.sa2_name_2021", "type": "nominal", "title": "SA2 Region"},
+          {"field": "properties.state_name_2021", "type": "nominal", "title": "State"},
+          {"field": "school_count", "type": "quantitative", "title": "Number of Schools"},
+          {"field": "avg_ICSEA", "type": "quantitative", "title": "Average ICSEA", "format": ".1f"}
+        ]
+      }
+    }
+  ]
+}

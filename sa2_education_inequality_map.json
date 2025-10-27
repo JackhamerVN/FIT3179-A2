@@ -1,0 +1,196 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Educational Inequality by SA2 Region in Australia",
+    "fontSize": 18,
+    "font": "Arial",
+    "anchor": "middle"
+  },
+  "width": 1000,
+  "height": 700,
+  "params": [
+    {
+      "name": "metric_select",
+      "value": "ICSEA",
+      "bind": {
+        "input": "select",
+        "options": ["ICSEA", "Student_Teacher_Ratio"],
+        "labels": ["ICSEA (Index of Community Socio-Educational Advantage)", "Student-Teacher Ratio"],
+        "name": "Metric: "
+      }
+    },
+    {
+      "name": "sector_select",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "Government", "Catholic", "Independent"],
+        "name": "School Sector: "
+      }
+    },
+    {
+      "name": "state_select",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
+        "name": "State/Territory: "
+      }
+    }
+  ],
+  "projection": {
+    "type": "mercator",
+    "center": [133, -28],
+    "scale": 800
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+        "format": {
+          "type": "topojson",
+          "feature": "SA2"
+        }
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#f0f0f0",
+        "stroke": "#cccccc",
+        "strokeWidth": 0.3
+      }
+    },
+    {
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+        "format": {
+          "type": "topojson",
+          "feature": "SA2"
+        }
+      },
+      "transform": [
+        {
+          "lookup": "properties.sa2_code_2021",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+            },
+            "key": "Statistical Area 2",
+            "fields": ["ACARA SML ID", "State"]
+          },
+          "default": null
+        },
+        {
+          "filter": "datum['ACARA SML ID'] != null"
+        },
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": ["ICSEA", "School Sector", "Total Enrolments", "Full Time Equivalent Teaching Staff"]
+          },
+          "default": null
+        },
+        {
+          "filter": "datum.ICSEA != null"
+        },
+        {
+          "filter": "datum['Total Enrolments'] != null && datum['Full Time Equivalent Teaching Staff'] != null && datum['Full Time Equivalent Teaching Staff'] > 0"
+        },
+        {
+          "calculate": "datum['Total Enrolments'] / datum['Full Time Equivalent Teaching Staff']",
+          "as": "Student_Teacher_Ratio"
+        },
+        {
+          "filter": "sector_select === 'All' || datum['School Sector'] === sector_select"
+        },
+        {
+          "filter": "state_select === 'All' || datum.State === state_select"
+        },
+        {
+          "aggregate": [
+            {
+              "op": "mean",
+              "field": "ICSEA",
+              "as": "avg_ICSEA"
+            },
+            {
+              "op": "mean",
+              "field": "Student_Teacher_Ratio",
+              "as": "avg_STR"
+            },
+            {
+              "op": "count",
+              "as": "school_count"
+            }
+          ],
+          "groupby": ["properties.sa2_code_2021", "properties.sa2_name_2021", "properties.state_name_2021"]
+        },
+        {
+          "calculate": "metric_select === 'ICSEA' ? datum.avg_ICSEA : datum.avg_STR",
+          "as": "selected_metric"
+        },
+        {
+          "filter": "datum.selected_metric != null"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "white",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "color": {
+          "field": "selected_metric",
+          "type": "quantitative",
+          "scale": {
+            "scheme": "redyellowgreen",
+            "domain": {"expr": "metric_select === 'ICSEA' ? [800, 1200] : [10, 25]"},
+            "reverse": {"expr": "metric_select === 'Student_Teacher_Ratio'"}
+          },
+          "legend": {
+            "title": "Metric Value",
+            "orient": "right",
+            "gradientLength": 300
+          }
+        },
+        "tooltip": [
+          {
+            "field": "properties.sa2_name_2021",
+            "type": "nominal",
+            "title": "SA2 Region"
+          },
+          {
+            "field": "properties.state_name_2021",
+            "type": "nominal",
+            "title": "State"
+          },
+          {
+            "field": "school_count",
+            "type": "quantitative",
+            "title": "Number of Schools"
+          },
+          {
+            "field": "avg_ICSEA",
+            "type": "quantitative",
+            "title": "Average ICSEA",
+            "format": ".1f"
+          },
+          {
+            "field": "avg_STR",
+            "type": "quantitative",
+            "title": "Avg Student-Teacher Ratio",
+            "format": ".1f"
+          }
+        ]
+      }
+    }
+  ],
+  "config": {
+    "view": {
+      "stroke": null
+    }
+  }
+}

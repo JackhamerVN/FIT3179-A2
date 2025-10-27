@@ -1,118 +1,128 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "title": "Australian schools — size = enrolments, color = ICSEA or Student–Teacher Ratio",
-  "width": 950,
-  "height": 620,
-  "projection": {"type": "equalEarth"},
-
-  "params": [
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Educational Advantage Across Australia",
+    "subtitle": "Average ICSEA Score by Statistical Area (SA2)",
+    "fontSize": 20,
+    "subtitleFontSize": 14,
+    "font": "Arial",
+    "anchor": "start",
+    "color": "#1a1a1a",
+    "subtitleColor": "#666666",
+    "offset": 10
+  },
+  "width": 1000,
+  "height": 650,
+  "projection": {
+    "type": "mercator",
+    "center": [133, -28],
+    "scale": 900
+  },
+  "layer": [
     {
-      "name": "colorMetric",
-      "value": "ICSEA",
-      "bind": {
-        "input": "select",
-        "name": "Color by",
-        "options": ["ICSEA", "Student–Teacher Ratio"]
+      "name": "background",
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+        "format": {"type": "topojson", "feature": "SA2"}
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#e8e8e8",
+        "stroke": "#ffffff",
+        "strokeWidth": 0.5
       }
     },
     {
-      "name": "sectorParam",
-      "value": "All",
-      "bind": {
-        "input": "select",
-        "name": "Sector",
-        "options": ["All", "Government", "Catholic", "Independent"]
+      "name": "choropleth",
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+      },
+      "transform": [
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": ["ICSEA"]
+          }
+        },
+        {"filter": "datum.ICSEA != null"},
+        {"calculate": "toNumber(datum.ICSEA)", "as": "ICSEA_num"},
+        {"filter": "isValid(datum.ICSEA_num) && datum.ICSEA_num > 0"},
+        {"calculate": "toString(datum['Statistical Area 2'])", "as": "SA2_str"},
+        {
+          "aggregate": [
+            {"op": "mean", "field": "ICSEA_num", "as": "avg_ICSEA"},
+            {"op": "count", "as": "school_count"}
+          ],
+          "groupby": ["SA2_str"]
+        },
+        {
+          "lookup": "SA2_str",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/SA2.json",
+              "format": {"type": "topojson", "feature": "SA2"}
+            },
+            "key": "properties.sa2_code_2021",
+            "fields": ["type", "properties", "geometry"]
+          },
+          "as": ["geo_type", "geo_properties", "geo_geometry"]
+        },
+        {"filter": "datum.geo_geometry != null"},
+        {
+          "calculate": "{'type': datum.geo_type, 'properties': datum.geo_properties, 'geometry': datum.geo_geometry}",
+          "as": "geo"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "#ffffff",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "shape": {"field": "geo", "type": "geojson"},
+        "color": {
+          "field": "avg_ICSEA",
+          "type": "quantitative",
+          "scale": {
+            "scheme": "blues",
+            "domain": [800, 1200]
+          },
+          "legend": {
+            "title": "Average ICSEA Score",
+            "orient": "bottom-right",
+            "direction": "horizontal",
+            "gradientLength": 300,
+            "titleFontSize": 12,
+            "labelFontSize": 11
+          }
+        },
+        "tooltip": [
+          {"field": "geo_properties.sa2_name_2021", "type": "nominal", "title": "Region"},
+          {"field": "avg_ICSEA", "type": "quantitative", "title": "Average ICSEA", "format": ".1f"},
+          {"field": "school_count", "type": "quantitative", "title": "Number of Schools"}
+        ]
       }
-    }
-  ],
-
-  "layer": [
+    },
     {
-      "name": "base",
+      "name": "state_borders",
       "data": {
         "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/STE_2021_AUST_SHP_GDA2020.json",
         "format": {"type": "topojson", "feature": "STE_2021_AUST_GDA2020"}
       },
-      "mark": {"type": "geoshape", "fill": "#f5f5f5", "stroke": "white"}
-    },
-
-    {
-      "name": "state-labels",
-      "data": {
-        "values": [
-          {"abbr": "WA",  "lon": 122.0, "lat": -25.5},
-          {"abbr": "NT",  "lon": 133.0, "lat": -19.0},
-          {"abbr": "SA",  "lon": 136.0, "lat": -30.0},
-          {"abbr": "QLD", "lon": 145.0, "lat": -20.5},
-          {"abbr": "NSW", "lon": 147.0, "lat": -32.5},
-          {"abbr": "VIC", "lon": 145.0, "lat": -37.0},
-          {"abbr": "TAS", "lon": 147.0, "lat": -42.0},
-          {"abbr": "ACT", "lon": 149.1, "lat": -35.5}
-        ]
-      },
       "mark": {
-        "type": "text",
-        "font": "Inter, system-ui, sans-serif",
-        "fontSize": 12,
-        "fontWeight": "bold",
-        "fill": "#6b7280",
-        "opacity": 0.9
-      },
-      "encoding": {
-        "longitude": {"field": "lon", "type": "quantitative"},
-        "latitude": {"field": "lat", "type": "quantitative"},
-        "text": {"field": "abbr", "type": "nominal"}
-      }
-    },
-
-    {
-      "name": "schools",
-      "data": {
-        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv",
-        "format": {"type": "csv"}
-      },
-      "transform": [
-        {"filter": "sectorParam=='All' || datum['School Sector']==sectorParam"},
-        {"filter": "isValid(datum.Latitude) && isValid(datum.Longitude)"},
-        {"calculate": "toNumber(datum['Full Time Equivalent Enrolments'])", "as": "FTE_Enrol"},
-        {"calculate": "toNumber(datum['Full Time Equivalent Teaching Staff'])", "as": "FTE_Teach"},
-        {"filter": "isFinite(datum.FTE_Enrol) && isFinite(datum.FTE_Teach) && datum.FTE_Teach>0"},
-        {"calculate": "datum.FTE_Enrol / datum.FTE_Teach", "as": "StudentTeacherRatio"},
-        {"calculate": "toNumber(datum.ICSEA)", "as": "ICSEA_num"},
-        {"filter": "isFinite(datum.ICSEA_num)"},
-        {"calculate": "colorMetric=='ICSEA' ? datum.ICSEA_num : datum.StudentTeacherRatio", "as": "ColorMetric"}
-      ],
-      "mark": {"type": "circle", "stroke": "white", "strokeWidth": 0.3, "opacity": 0.85},
-      "encoding": {
-        "longitude": {"field": "Longitude", "type": "quantitative"},
-        "latitude": {"field": "Latitude", "type": "quantitative"},
-        "size": {
-          "field": "FTE_Enrol",
-          "type": "quantitative",
-          "title": "Enrolments (FTE)",
-          "scale": {"range": [10, 700]}
-        },
-        "color": {
-          "field": "ColorMetric",
-          "type": "quantitative",
-          "title": {"expr": "colorMetric"},
-          "scale": {"scheme": "blues", "clamp": true}
-        },
-        "tooltip": [
-          {"field": "School Name", "title": "School"},
-          {"field": "School Sector", "title": "Sector"},
-          {"field": "State"},
-          {"field": "ICSEA_num", "title": "ICSEA", "format": ".0f"},
-          {"field": "StudentTeacherRatio", "title": "Student–Teacher Ratio", "format": ".1f"},
-          {"field": "FTE_Enrol", "title": "Enrolments (FTE)"},
-          {"field": "FTE_Teach", "title": "Teaching Staff (FTE)"}
-        ]
+        "type": "geoshape",
+        "fill": null,
+        "stroke": "#333333",
+        "strokeWidth": 1.5
       }
     }
   ],
-
   "config": {
-    "legend": {"orient": "bottom"},
-    "view": {"stroke": null}
+    "view": {"stroke": null},
+    "background": "#fafafa"
   }
 }

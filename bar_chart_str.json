@@ -1,0 +1,121 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Average Student-Teacher Ratio by School Type",
+    "fontSize": 18,
+    "anchor": "middle"
+  },
+  "width": 600,
+  "height": 400,
+  "params": [
+    {
+      "name": "state_filter",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": [
+          "All",
+          "NSW",
+          "VIC",
+          "QLD",
+          "SA",
+          "WA",
+          "TAS",
+          "NT",
+          "ACT"
+        ],
+        "labels": [
+          "All States",
+          "New South Wales",
+          "Victoria",
+          "Queensland",
+          "South Australia",
+          "Western Australia",
+          "Tasmania",
+          "Northern Territory",
+          "Australian Capital Territory"
+        ],
+        "name": "Select State: "
+      }
+    },
+    {
+      "name": "sa2_filter",
+      "value": "All",
+      "bind": {
+        "input": "text",
+        "placeholder": "Enter SA2 code (e.g. 601021004) or 'All'",
+        "name": "Filter by SA2 Code: "
+      }
+    }
+  ],
+  "data": {
+    "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+  },
+  "transform": [
+    {
+      "filter": "state_filter == 'All' || datum.State == state_filter"
+    },
+    {
+      "filter": "sa2_filter == 'All' || toString(datum['Statistical Area 2']) == sa2_filter"
+    },
+    {
+      "lookup": "ACARA SML ID",
+      "from": {
+        "data": {
+          "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+        },
+        "key": "ACARA SML ID",
+        "fields": [
+          "School Sector",
+          "Full Time Equivalent Enrolments",
+          "Full Time Equivalent Teaching Staff"
+        ]
+      }
+    },
+    {
+      "filter": "datum['Full Time Equivalent Teaching Staff'] != null && datum['Full Time Equivalent Teaching Staff'] > 0"
+    },
+    {
+      "calculate": "datum['Full Time Equivalent Enrolments'] / datum['Full Time Equivalent Teaching Staff']",
+      "as": "StudentTeacherRatio"
+    },
+    {
+      "aggregate": [
+        {"op": "mean", "field": "StudentTeacherRatio", "as": "avg_STR"}
+      ],
+      "groupby": ["School Sector"]
+    }
+  ],
+  "mark": {
+    "type": "bar",
+    "cornerRadiusEnd": 4,
+    "color": "#4e79a7"
+  },
+  "encoding": {
+    "x": {
+      "field": "School Sector",
+      "type": "nominal",
+      "title": "School Type",
+      "axis": {"labelAngle": 0}
+    },
+    "y": {
+      "field": "avg_STR",
+      "type": "quantitative",
+      "title": "Average Student-Teacher Ratio",
+      "scale": {"domain": [0, 20]}
+    },
+    "color": {
+      "field": "School Sector",
+      "type": "nominal",
+      "scale": {
+        "domain": ["Government", "Catholic", "Independent"],
+        "range": ["#4e79a7", "#f28e2c", "#e15759"]
+      },
+      "legend": {"title": "School Type"}
+    },
+    "tooltip": [
+      {"field": "School Sector", "type": "nominal", "title": "School Type"},
+      {"field": "avg_STR", "type": "quantitative", "title": "Avg Student-Teacher Ratio", "format": ".2f"}
+    ]
+  }
+}

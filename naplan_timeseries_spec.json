@@ -1,0 +1,148 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "NAPLAN Score Trends Over Time",
+    "subtitle": "Average scores across different test domains",
+    "fontSize": 18,
+    "fontWeight": 600,
+    "anchor": "middle",
+    "color": "#343a40",
+    "offset": 20,
+    "subtitleFontSize": 12,
+    "subtitleColor": "#6c757d"
+  },
+  "width": 800,
+  "height": 450,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "grid": true,
+      "gridOpacity": 0.3,
+      "gridColor": "#e0e0e0",
+      "domainWidth": 1.5,
+      "domainColor": "#666",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 13,
+      "titleFontWeight": 600,
+      "labelFontSize": 11,
+      "labelColor": "#495057",
+      "titlePadding": 15
+    },
+    "legend": {
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 12,
+      "labelFontSize": 11,
+      "titleFontWeight": 600,
+      "symbolSize": 100,
+      "padding": 10,
+      "cornerRadius": 4,
+      "orient": "right"
+    },
+    "line": {
+      "strokeWidth": 3,
+      "point": {
+        "filled": true,
+        "size": 80
+      }
+    }
+  },
+  "params": [
+    {
+      "name": "state_filter",
+      "value": "Australia",
+      "bind": {
+        "input": "select",
+        "options": [
+          "Australia",
+          "New South Wales",
+          "Victoria",
+          "Queensland",
+          "South Australia",
+          "Western Australia",
+          "Tasmania",
+          "Northern Territory",
+          "Australian Capital Territory"
+        ],
+        "name": "Select State/Territory: "
+      }
+    },
+    {
+      "name": "year_level_filter",
+      "value": "3",
+      "bind": {
+        "input": "select",
+        "options": ["3", "5", "7", "9"],
+        "labels": ["Year 3", "Year 5", "Year 7", "Year 9"],
+        "name": "Select Year Level: "
+      }
+    }
+  ],
+  "data": {
+    "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/NAPLAN%20national%20results%20dataset.csv",
+    "format": {"type": "csv"}
+  },
+  "transform": [
+    {
+      "filter": "datum['Student attribute'] == 'All'"
+    },
+    {
+      "filter": "datum.Subgroup == 'All'"
+    },
+    {
+      "filter": "datum['State/territory'] == state_filter"
+    },
+    {
+      "filter": "toString(datum['Year level']) == year_level_filter"
+    },
+    {
+      "calculate": "toNumber(datum['Average NAPLAN score'])",
+      "as": "Score"
+    },
+    {
+      "filter": "isValid(datum.Score)"
+    }
+  ],
+  "mark": {
+    "type": "line",
+    "point": true,
+    "strokeWidth": 3
+  },
+  "encoding": {
+    "x": {
+      "field": "Calendar year",
+      "type": "ordinal",
+      "title": "Year",
+      "axis": {
+        "labelAngle": 0
+      }
+    },
+    "y": {
+      "field": "Score",
+      "type": "quantitative",
+      "title": "Average NAPLAN Score",
+      "scale": {
+        "zero": false
+      }
+    },
+    "color": {
+      "field": "Domain",
+      "type": "nominal",
+      "title": "Test Domain",
+      "scale": {
+        "domain": ["Reading", "Writing", "Numeracy", "Spelling", "Grammar and punctuation"],
+        "range": ["#e74c3c", "#3498db", "#2ecc71", "#f39c12", "#9b59b6"]
+      }
+    },
+    "tooltip": [
+      {"field": "Calendar year", "type": "ordinal", "title": "Year"},
+      {"field": "Domain", "type": "nominal", "title": "Test Domain"},
+      {"field": "Score", "type": "quantitative", "title": "Average Score", "format": ".1f"},
+      {"field": "State/territory", "type": "nominal", "title": "State/Territory"},
+      {"field": "Year level", "type": "nominal", "title": "Year Level"}
+    ]
+  }
+}

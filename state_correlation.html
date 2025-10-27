@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>State-Level Correlation: ICSEA vs NAPLAN</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    /* Reset and Base Styles */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #212529;
+      line-height: 1.6;
+    }
+
+    /* Header Container */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px 20px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Heading Styles */
+    h1 {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 15px 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* Info Text Styles */
+    .info {
+      text-align: center;
+      color: #495057;
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    /* Chart Container Styles */
+    #chart {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #chart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Vega Bindings (Filters) Styles */
+    .vega-bindings {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 35px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .vega-bindings label {
+      margin-right: 10px;
+      font-weight: 600;
+      color: #343a40;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .vega-bindings select {
+      padding: 10px 16px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      min-width: 240px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      background: white;
+      font-family: inherit;
+    }
+    
+    .vega-bindings select:hover {
+      border-color: #adb5bd;
+    }
+    
+    .vega-bindings select:focus {
+      border-color: #667eea;
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      #chart {
+        padding: 25px;
+      }
+      
+      .vega-bindings {
+        padding: 20px;
+        gap: 15px;
+      }
+      
+      .vega-bindings select {
+        min-width: 200px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🎯 State-Level Correlation Analysis</h1>
+    <div class="info">
+      Exploring the relationship between socio-economic advantage and academic performance
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="chart"></div>
+  </div>
+
+  <script type="text/javascript">
+    // Embedded Vega-Lite specification (loaded from state_correlation_spec.json)
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Socio-Economic Advantage vs Academic Performance by State",
+    "subtitle": "Relationship between average ICSEA and NAPLAN scores",
+    "fontSize": 18,
+    "fontWeight": 600,
+    "anchor": "middle",
+    "color": "#343a40",
+    "offset": 20,
+    "subtitleFontSize": 12,
+    "subtitleColor": "#6c757d"
+  },
+  "width": 650,
+  "height": 500,
+  "config": {
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "grid": true,
+      "gridOpacity": 0.3,
+      "gridColor": "#e0e0e0",
+      "domainWidth": 1.5,
+      "domainColor": "#666",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 13,
+      "titleFontWeight": 600,
+      "labelFontSize": 11,
+      "labelColor": "#495057",
+      "titlePadding": 15
+    },
+    "legend": {
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 12,
+      "labelFontSize": 11,
+      "titleFontWeight": 600,
+      "orient": "bottom",
+      "columns": 2
+    }
+  },
+  "params": [
+    {
+      "name": "year_level_filter",
+      "value": "3",
+      "bind": {
+        "input": "select",
+        "options": ["3", "5", "7", "9"],
+        "labels": ["Year 3", "Year 5", "Year 7", "Year 9"],
+        "name": "Select Year Level: "
+      }
+    },
+    {
+      "name": "domain_filter",
+      "value": "Reading",
+      "bind": {
+        "input": "select",
+        "options": ["Reading", "Writing", "Numeracy", "Spelling", "Grammar and punctuation"],
+        "name": "Select NAPLAN Domain: "
+      }
+    }
+  ],
+  "datasets": {
+    "state_icsea": [
+      {"State": "NSW", "State_full": "New South Wales", "avg_ICSEA": 1003.5},
+      {"State": "VIC", "State_full": "Victoria", "avg_ICSEA": 1006.2},
+      {"State": "QLD", "State_full": "Queensland", "avg_ICSEA": 996.8},
+      {"State": "SA", "State_full": "South Australia", "avg_ICSEA": 994.1},
+      {"State": "WA", "State_full": "Western Australia", "avg_ICSEA": 1001.7},
+      {"State": "TAS", "State_full": "Tasmania", "avg_ICSEA": 981.3},
+      {"State": "NT", "State_full": "Northern Territory", "avg_ICSEA": 968.5},
+      {"State": "ACT", "State_full": "Australian Capital Territory", "avg_ICSEA": 1048.9}
+    ]
+  },
+  "data": {
+    "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/NAPLAN%20national%20results%20dataset.csv"
+  },
+  "transform": [
+    {
+      "filter": "datum['Student attribute'] == 'All'"
+    },
+    {
+      "filter": "datum.Subgroup == 'All'"
+    },
+    {
+      "filter": "toString(datum['Year level']) == year_level_filter"
+    },
+    {
+      "filter": "datum.Domain == domain_filter"
+    },
+    {
+      "filter": "datum['State/territory'] != 'Australia'"
+    },
+    {
+      "calculate": "toNumber(datum['Average NAPLAN score'])",
+      "as": "NAPLAN_num"
+    },
+    {
+      "filter": "isValid(datum.NAPLAN_num)"
+    },
+    {
+      "aggregate": [
+        {"op": "mean", "field": "NAPLAN_num", "as": "avg_NAPLAN"}
+      ],
+      "groupby": ["State/territory"]
+    },
+    {
+      "calculate": "datum['State/territory'] == 'New South Wales' ? 'NSW' : datum['State/territory'] == 'Victoria' ? 'VIC' : datum['State/territory'] == 'Queensland' ? 'QLD' : datum['State/territory'] == 'South Australia' ? 'SA' : datum['State/territory'] == 'Western Australia' ? 'WA' : datum['State/territory'] == 'Tasmania' ? 'TAS' : datum['State/territory'] == 'Northern Territory' ? 'NT' : datum['State/territory'] == 'Australian Capital Territory' ? 'ACT' : datum['State/territory']",
+      "as": "State"
+    },
+    {
+      "lookup": "State",
+      "from": {
+        "data": {"name": "state_icsea"},
+        "key": "State",
+        "fields": ["avg_ICSEA", "State_full"]
+      }
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "circle",
+        "size": 400,
+        "opacity": 0.8,
+        "cursor": "pointer",
+        "stroke": "white",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "avg_ICSEA",
+          "type": "quantitative",
+          "title": "Average ICSEA Score (Socio-Economic Advantage)",
+          "scale": {"zero": false, "padding": 10}
+        },
+        "y": {
+          "field": "avg_NAPLAN",
+          "type": "quantitative",
+          "title": "Average NAPLAN Score",
+          "scale": {"zero": false, "padding": 10}
+        },
+        "color": {
+          "field": "State/territory",
+          "type": "nominal",
+          "title": "State/Territory",
+          "scale": {
+            "domain": [
+              "New South Wales",
+              "Victoria",
+              "Queensland",
+              "South Australia",
+              "Western Australia",
+              "Tasmania",
+              "Northern Territory",
+              "Australian Capital Territory"
+            ],
+            "range": [
+              "#e74c3c",
+              "#3498db",
+              "#2ecc71",
+              "#f39c12",
+              "#9b59b6",
+              "#1abc9c",
+              "#e67e22",
+              "#34495e"
+            ]
+          }
+        },
+        "tooltip": [
+          {"field": "State/territory", "type": "nominal", "title": "State/Territory"},
+          {"field": "State", "type": "nominal", "title": "Abbreviation"},
+          {"field": "avg_ICSEA", "type": "quantitative", "title": "Average ICSEA", "format": ".1f"},
+          {"field": "avg_NAPLAN", "type": "quantitative", "title": "Average NAPLAN Score", "format": ".1f"}
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "dy": -18,
+        "fontSize": 12,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "avg_ICSEA",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "avg_NAPLAN",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "State",
+          "type": "nominal"
+        },
+        "color": {
+          "value": "#2c3e50"
+        }
+      }
+    }
+  ]
+};
+
+    vegaEmbed('#chart', spec, {
+      actions: {
+        export: true,
+        source: false,
+        compiled: false,
+        editor: false
+      }
+    }).catch(console.error);
+  </script>
+</body>
+</html>

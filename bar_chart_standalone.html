@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Student-Teacher Ratio Bar Chart</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    #vis {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .info {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Student-Teacher Ratio by School Type</h1>
+  <div class="info">
+    Interactive bar chart showing average Student-Teacher Ratio across Australian schools
+  </div>
+  <div id="vis"></div>
+
+  <script type="text/javascript">
+    // Embedded Vega-Lite specification
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": {
+        "text": "Average Student-Teacher Ratio by School Type",
+        "fontSize": 18,
+        "anchor": "middle"
+      },
+      "width": 600,
+      "height": 400,
+      "params": [
+        {
+          "name": "state_filter",
+          "value": "All",
+          "bind": {
+            "input": "select",
+            "options": [
+              "All",
+              "NSW",
+              "VIC",
+              "QLD",
+              "SA",
+              "WA",
+              "TAS",
+              "NT",
+              "ACT"
+            ],
+            "labels": [
+              "All States",
+              "New South Wales",
+              "Victoria",
+              "Queensland",
+              "South Australia",
+              "Western Australia",
+              "Tasmania",
+              "Northern Territory",
+              "Australian Capital Territory"
+            ],
+            "name": "Select State: "
+          }
+        },
+        {
+          "name": "sa2_name_filter",
+          "value": "All",
+          "bind": {
+            "input": "text",
+            "placeholder": "Enter suburb/region name (e.g. Clayton, Sandy Bay) or 'All'",
+            "name": "Filter by Suburb/Region: "
+          }
+        }
+      ],
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+      },
+      "transform": [
+        {
+          "filter": "state_filter == 'All' || datum.State == state_filter"
+        },
+        {
+          "filter": "sa2_name_filter == 'All' || indexof(lower(datum['Statistical Area 2 Name']), lower(sa2_name_filter)) >= 0"
+        },
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": [
+              "School Sector",
+              "Full Time Equivalent Enrolments",
+              "Full Time Equivalent Teaching Staff"
+            ]
+          }
+        },
+        {
+          "filter": "datum['Full Time Equivalent Teaching Staff'] != null && datum['Full Time Equivalent Teaching Staff'] > 0"
+        },
+        {
+          "calculate": "datum['Full Time Equivalent Enrolments'] / datum['Full Time Equivalent Teaching Staff']",
+          "as": "StudentTeacherRatio"
+        },
+        {
+          "aggregate": [
+            {"op": "mean", "field": "StudentTeacherRatio", "as": "avg_STR"}
+          ],
+          "groupby": ["School Sector"]
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 4,
+        "color": "#4e79a7"
+      },
+      "encoding": {
+        "x": {
+          "field": "School Sector",
+          "type": "nominal",
+          "title": "School Type",
+          "axis": {"labelAngle": 0}
+        },
+        "y": {
+          "field": "avg_STR",
+          "type": "quantitative",
+          "title": "Average Student-Teacher Ratio",
+          "scale": {"domain": [0, 20]}
+        },
+        "color": {
+          "field": "School Sector",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Government", "Catholic", "Independent"],
+            "range": ["#4e79a7", "#f28e2c", "#e15759"]
+          },
+          "legend": {"title": "School Type"}
+        },
+        "tooltip": [
+          {"field": "School Sector", "type": "nominal", "title": "School Type"},
+          {"field": "avg_STR", "type": "quantitative", "title": "Avg Student-Teacher Ratio", "format": ".2f"}
+        ]
+      }
+    };
+
+    // Render the visualization
+    vegaEmbed('#vis', spec, {
+      actions: {
+        export: true,
+        source: false,
+        compiled: false,
+        editor: false
+      }
+    }).catch(console.error);
+  </script>
+</body>
+</html>

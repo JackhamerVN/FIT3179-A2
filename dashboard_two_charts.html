@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Educational Inequality Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <style>
+    /* Reset and Base Styles */
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #212529;
+      line-height: 1.6;
+    }
+
+    /* Header Container */
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px 20px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Heading Styles */
+    h1 {
+      text-align: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0 0 15px 0;
+      font-weight: 700;
+      font-size: 2.5rem;
+      letter-spacing: -0.5px;
+    }
+
+    /* Info Text Styles */
+    .info {
+      text-align: center;
+      color: #495057;
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    /* Dashboard Container Styles */
+    #dashboard {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #dashboard:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Vega Bindings (Filters) Styles */
+    .vega-bindings {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 25px;
+      border-radius: 12px;
+      margin-bottom: 35px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 25px;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .vega-bindings label {
+      margin-right: 10px;
+      font-weight: 600;
+      color: #343a40;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .vega-bindings select,
+    .vega-bindings input[type="text"] {
+      padding: 10px 16px;
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      min-width: 240px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      background: white;
+      font-family: inherit;
+    }
+    
+    .vega-bindings select:hover,
+    .vega-bindings input[type="text"]:hover {
+      border-color: #adb5bd;
+    }
+    
+    .vega-bindings select:focus,
+    .vega-bindings input[type="text"]:focus {
+      border-color: #667eea;
+      outline: 0;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+      transform: translateY(-1px);
+    }
+
+    /* Chart Container Enhancement */
+    .vega-embed {
+      padding: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+      
+      #dashboard {
+        padding: 25px;
+      }
+      
+      .vega-bindings {
+        padding: 20px;
+        gap: 15px;
+      }
+      
+      .vega-bindings select,
+      .vega-bindings input[type="text"] {
+        min-width: 200px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Educational Inequality Dashboard</h1>
+    <div class="info">
+      Interactive analysis of Student-Teacher Ratios and Demographics across Australian schools
+    </div>
+  </div>
+  
+  <div class="container">
+    <div id="dashboard"></div>
+  </div>
+
+  <script type="text/javascript">
+    // Embedded Vega-Lite specification (loaded from dashboard_spec.json)
+    const spec = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "config": {
+    "view": {
+      "stroke": null,
+      "continuousWidth": 500,
+      "continuousHeight": 420
+    },
+    "axis": {
+      "grid": true,
+      "gridOpacity": 0.3,
+      "gridColor": "#e0e0e0",
+      "domainWidth": 1.5,
+      "domainColor": "#666",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 13,
+      "titleFontWeight": 600,
+      "labelFontSize": 11,
+      "labelColor": "#495057",
+      "titlePadding": 15
+    },
+    "title": {
+      "font": "'Inter', system-ui, sans-serif",
+      "fontSize": 18,
+      "fontWeight": 600,
+      "anchor": "middle",
+      "color": "#343a40",
+      "offset": 20,
+      "subtitleFont": "'Inter', system-ui, sans-serif",
+      "subtitleFontSize": 12,
+      "subtitleColor": "#6c757d"
+    },
+    "legend": {
+      "titleFont": "'Inter', system-ui, sans-serif",
+      "labelFont": "'Inter', system-ui, sans-serif",
+      "titleFontSize": 12,
+      "labelFontSize": 11,
+      "titleFontWeight": 600,
+      "symbolSize": 100,
+      "padding": 10,
+      "cornerRadius": 4
+    }
+  },
+  "params": [
+    {
+      "name": "state_filter",
+      "value": "All",
+      "bind": {
+        "input": "select",
+        "options": ["All", "NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"],
+        "labels": [
+          "All States",
+          "New South Wales",
+          "Victoria",
+          "Queensland",
+          "South Australia",
+          "Western Australia",
+          "Tasmania",
+          "Northern Territory",
+          "Australian Capital Territory"
+        ],
+        "name": "Select State: "
+      }
+    },
+    {
+      "name": "sa2_name_filter",
+      "value": "All",
+      "bind": {
+        "input": "text",
+        "placeholder": "Enter suburb/region name (e.g. Clayton, Sandy Bay) or 'All'",
+        "name": "Filter by Suburb/Region: "
+      }
+    }
+  ],
+  "spacing": 30,
+  "hconcat": [
+    {
+      "width": 500,
+      "height": 420,
+      "title": {
+        "text": "Resources by School Type",
+        "subtitle": "Average Student-Teacher Ratio across Australia"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+      },
+      "transform": [
+        {
+          "filter": "state_filter == 'All' || datum.State == state_filter"
+        },
+        {
+          "filter": "sa2_name_filter == 'All' || indexof(lower(datum['Statistical Area 2 Name']), lower(sa2_name_filter)) >= 0"
+        },
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": [
+              "School Sector",
+              "Full Time Equivalent Enrolments",
+              "Full Time Equivalent Teaching Staff"
+            ]
+          }
+        },
+        {
+          "filter": "datum['Full Time Equivalent Teaching Staff'] != null && datum['Full Time Equivalent Teaching Staff'] > 0"
+        },
+        {
+          "calculate": "datum['Full Time Equivalent Enrolments'] / datum['Full Time Equivalent Teaching Staff']",
+          "as": "StudentTeacherRatio"
+        },
+        {
+          "aggregate": [
+            {"op": "mean", "field": "StudentTeacherRatio", "as": "avg_STR"}
+          ],
+          "groupby": ["School Sector"]
+        }
+      ],
+      "mark": {
+        "type": "bar",
+        "cornerRadiusEnd": 6,
+        "opacity": 0.9,
+        "cursor": "pointer"
+      },
+      "encoding": {
+        "x": {
+          "field": "School Sector",
+          "type": "nominal",
+          "title": "School Type",
+          "axis": {"labelAngle": 0}
+        },
+        "y": {
+          "field": "avg_STR",
+          "type": "quantitative",
+          "title": "Average Student-Teacher Ratio",
+          "scale": {"domain": [0, 20]}
+        },
+        "color": {
+          "field": "School Sector",
+          "type": "nominal",
+          "scale": {
+            "domain": ["Government", "Catholic", "Independent"],
+            "range": ["#4e79a7", "#f28e2c", "#e15759"]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          {"field": "School Sector", "type": "nominal", "title": "School Type"},
+          {"field": "avg_STR", "type": "quantitative", "title": "Avg Student-Teacher Ratio", "format": ".2f"}
+        ]
+      }
+    },
+    {
+      "width": 500,
+      "height": 420,
+      "title": {
+        "text": "School Density: Advantage vs. Demographics",
+        "subtitle": "Distribution of schools by ICSEA and Indigenous enrollment"
+      },
+      "data": {
+        "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Location%202024.csv"
+      },
+      "transform": [
+        {
+          "filter": "state_filter == 'All' || datum.State == state_filter"
+        },
+        {
+          "filter": "sa2_name_filter == 'All' || indexof(lower(datum['Statistical Area 2 Name']), lower(sa2_name_filter)) >= 0"
+        },
+        {
+          "lookup": "ACARA SML ID",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/JackhamerVN/FIT3179-A2/main/School%20Merged%20Full%202024.csv"
+            },
+            "key": "ACARA SML ID",
+            "fields": [
+              "ICSEA",
+              "Indigenous Enrolments (%)",
+              "School Sector"
+            ]
+          }
+        },
+        {
+          "filter": "datum.ICSEA != null && datum['Indigenous Enrolments (%)'] != null"
+        }
+      ],
+      "mark": {
+        "type": "rect",
+        "stroke": "white",
+        "strokeWidth": 0.5,
+        "cursor": "pointer"
+      },
+      "encoding": {
+        "x": {
+          "bin": {"maxbins": 20},
+          "field": "ICSEA",
+          "type": "quantitative",
+          "title": "ICSEA Score (Socio-Economic Advantage)"
+        },
+        "y": {
+          "bin": {"maxbins": 20},
+          "field": "Indigenous Enrolments (%)",
+          "type": "quantitative",
+          "title": "Indigenous Enrolment (%)"
+        },
+        "color": {
+          "aggregate": "count",
+          "type": "quantitative",
+          "scale": {
+            "scheme": "viridis"
+          },
+          "legend": {
+            "title": "Number of Schools",
+            "orient": "bottom",
+            "gradientLength": 200
+          }
+        },
+        "tooltip": [
+          {
+            "bin": {"maxbins": 20},
+            "field": "ICSEA",
+            "type": "quantitative",
+            "title": "ICSEA Range"
+          },
+          {
+            "bin": {"maxbins": 20},
+            "field": "Indigenous Enrolments (%)",
+            "type": "quantitative",
+            "title": "Indigenous % Range"
+          },
+          {
+            "aggregate": "count",
+            "type": "quantitative",
+            "title": "Number of Schools"
+          }
+        ]
+      }
+    }
+  ]
+};
+
+    vegaEmbed('#dashboard', spec, {
+      actions: {
+        export: true,
+        source: false,
+        compiled: false,
+        editor: false
+      }
+    }).catch(console.error);
+  </script>
+</body>
+</html>
