@@ -333,7 +333,7 @@
     <p class="subtitle">
       An Interactive Data Story Exploring the Gap Between Advantage and Opportunity
     </p>
-    <p class="author">FIT3179 Data Visualisation Assignment 2 | 2024</p>
+    <p class="author">FIT3179 Data Visualisation Assignment 2 | 2025</p>
   </div>
 
   <div class="container">
@@ -347,6 +347,38 @@
         </p>
         <p>
           This interactive dashboard explores <strong>educational inequality</strong> using data from over 10,000 Australian schools. We examine three critical questions: How do resources vary between school types? How has academic performance changed over time? And does socio-economic advantage actually predict better learning outcomes?
+        </p>
+      </div>
+
+      <!-- Why Section -->
+      <div class="intro-box" style="border-left-color: #e74c3c;">
+        <h2>❓ Why This Analysis Matters</h2>
+        <h3 style="color: #495057; font-size: 1.3rem; margin-bottom: 15px; font-weight: 600;">Addressing Educational Inequality Through Data-Driven Insights</h3>
+        <p>
+          The motivation for this visualization stems from significant disparities evident across Australian education:
+        </p>
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+          <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+              <span style="position: absolute; left: 0; color: #e74c3c; font-weight: bold;">📊</span>
+              <strong>Resource Inequality:</strong> Student-teacher ratios vary substantially across school sectors, with independent schools enjoying better ratios (11.7:1) compared to government schools (13.1:1). This 12% gap translates to significantly different classroom experiences.
+            </li>
+            <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+              <span style="position: absolute; left: 0; color: #e74c3c; font-weight: bold;">🗺️</span>
+              <strong>Geographic Disadvantage:</strong> Remote and regional schools face unique challenges in resource allocation and academic outcomes, with some areas showing ICSEA scores 80+ points below the national average.
+            </li>
+            <li style="margin-bottom: 15px; padding-left: 25px; position: relative;">
+              <span style="position: absolute; left: 0; color: #e74c3c; font-weight: bold;">💰</span>
+              <strong>Socio-Economic Impact:</strong> ICSEA scores reveal how community advantage directly correlates with educational opportunities, creating a cycle where disadvantage perpetuates across generations.
+            </li>
+            <li style="padding-left: 25px; position: relative;">
+              <span style="position: absolute; left: 0; color: #e74c3c; font-weight: bold;">🏛️</span>
+              <strong>Policy Relevance:</strong> Understanding these patterns is crucial for informed educational policy decisions, targeted funding, and effective resource allocation to close the equity gap.
+            </li>
+          </ul>
+        </div>
+        <p style="margin-top: 20px; font-weight: 500; background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+          <strong>Target Audience:</strong> This visualization serves <strong>parents</strong> seeking the best opportunities for their children, <strong>educators</strong> working to improve outcomes, <strong>policymakers</strong> allocating resources, and <strong>researchers</strong> studying educational equity. Together, we can identify where inequities exist and what factors contribute to student success across different Australian communities.
         </p>
       </div>
 
@@ -385,12 +417,26 @@
             Australian schools are categorized into three main sectors: <strong>Government</strong> (public schools funded by the state), <strong>Catholic</strong> (religious schools), and <strong>Independent</strong> (private schools). Each sector has different funding models and fee structures.
           </p>
         </div>
+
+        <div class="term-card">
+          <h3>SA2 Region</h3>
+          <span class="term-abbr">Statistical Area Level 2 - Geographic Classification</span>
+          <p>
+            A geographic area used by the Australian Bureau of Statistics (ABS) for data collection and analysis. SA2 regions generally represent <strong>suburbs or towns</strong> and are designed to reflect communities that interact together socially and economically. Each SA2 has a unique code and typically contains 3,000 to 25,000 people.
+          </p>
+        </div>
       </div>
     </div>
 
     <!-- Story Section 0: Geographic Overview -->
     <div class="section story-section">
       <h2>🗺️ Geographic Overview: Educational Advantage Across Australia</h2>
+      
+      <div style="background: #e8f5e9; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+        <p style="margin: 0; color: #2e7d32; font-size: 0.95rem;">
+          <strong>📁 Data Source:</strong> School Location 2024.csv (10,995 schools) + School Merged Full 2024.csv (ICSEA scores) + SA2.json (Geographic boundaries)
+        </p>
+      </div>
       
       <div class="story-text">
         <h3>Where does educational advantage cluster?</h3>
@@ -405,6 +451,9 @@
         </p>
         <p>
           This geographic inequality sets the stage for everything that follows. A student's postcode can be a powerful predictor of the resources, teaching quality, and educational outcomes they'll experience.
+        </p>
+        <p style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ff9800;">
+          <strong>🔍 What to Look For:</strong> Hover over different regions to see their average ICSEA score. Compare inner-city areas (typically 1050-1150) with remote regions (often 850-950). Notice the stark contrast between coastal capitals and inland areas. The darkest purple regions represent the highest educational advantage—often correlating with wealthy suburbs.
         </p>
       </div>
 
@@ -426,6 +475,12 @@
     <div class="section story-section">
       <h2>📖 Chapter 1: The Resource Gap</h2>
       
+      <div style="background: #e8f5e9; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+        <p style="margin: 0; color: #2e7d32; font-size: 0.95rem;">
+          <strong>📁 Data Source:</strong> School Location 2024.csv + School Merged Full 2024.csv (Student-Teacher Ratios, ICSEA, Indigenous Enrolments for 10,995 schools)
+        </p>
+      </div>
+      
       <div class="story-text">
         <h3>Do all schools have equal resources?</h3>
         <p>
@@ -437,10 +492,31 @@
         <p>
           But there's another dimension to this story: the relationship between <strong>socio-economic advantage (ICSEA) and Indigenous enrolment</strong>. The heatmap shows where schools cluster in this two-dimensional space, revealing patterns of demographic segregation in Australian education.
         </p>
+        <p style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ff9800;">
+          <strong>🔍 What to Look For:</strong> In the bar chart (left), compare the height of bars—each represents average student-teacher ratio. Lower bars = better ratios = more teacher attention. In the heatmap (right), look for bright yellow/green areas showing school concentrations. Notice how most schools with high Indigenous enrolment (top of chart) appear on the left side (lower ICSEA), revealing systemic inequality.
+        </p>
+        <p style="background: #e8f4f8; padding: 15px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #667eea;">
+          <strong>💡 Interactive Tip:</strong> Use the filters below the charts to explore your local area! Select a state (e.g., <em>Victoria</em>) and type a suburb name in the region filter (e.g., <em>Clayton</em>, <em>Sandy Bay</em>, or <em>Bondi</em>) to see how schools in your community compare. You can also select <em>All States</em> to see national patterns.
+        </p>
       </div>
 
       <div class="chart-container">
         <div id="dashboard"></div>
+      </div>
+
+      <div style="background: #f0f8ff; padding: 20px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #3498db;">
+        <h4 style="color: #2c3e50; font-size: 1.15rem; margin-bottom: 12px; font-weight: 600;">📊 How to Read the Heatmap</h4>
+        <p style="color: #495057; font-size: 1rem; line-height: 1.7; margin-bottom: 10px;">
+          The <strong>heatmap on the right</strong> uses color intensity to show where schools concentrate in a two-dimensional space:
+        </p>
+        <ul style="margin-left: 25px; color: #495057; line-height: 1.8;">
+          <li><strong>X-axis (horizontal):</strong> ICSEA score ranges from low (left) to high (right) socio-economic advantage</li>
+          <li><strong>Y-axis (vertical):</strong> Indigenous enrolment percentage from low (bottom) to high (top)</li>
+          <li><strong>Color intensity:</strong> Brighter yellow/green = more schools in that category; Dark purple = fewer schools</li>
+        </ul>
+        <p style="color: #495057; font-size: 1rem; line-height: 1.7; margin-top: 12px;">
+          <strong>What does this reveal?</strong> Most schools cluster in the bottom-left corner (low Indigenous enrolment + moderate-to-high ICSEA), while schools with high Indigenous enrolment tend to appear on the left side (lower ICSEA scores), showing a correlation between Indigenous student populations and socio-economic disadvantage.
+        </p>
       </div>
 
       <div class="insight-box">
@@ -457,13 +533,22 @@
     <div class="section story-section">
       <h2>📈 Chapter 2: Academic Performance Trends</h2>
       
+      <div style="background: #e8f5e9; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+        <p style="margin: 0; color: #2e7d32; font-size: 0.95rem;">
+          <strong>📁 Data Source:</strong> NAPLAN National Results Dataset.csv (18,362 rows covering multiple years, states, year levels, and test domains)
+        </p>
+      </div>
+      
       <div class="story-text">
         <h3>Are students getting better or worse over time?</h3>
         <p>
-          Beyond resources, we need to understand <strong>learning outcomes</strong>. NAPLAN tests have been tracking Australian student performance since 2008, giving us over a decade of data to analyze.
+          Beyond resources, we need to understand <strong>learning outcomes</strong>. NAPLAN (National Assessment Program – Literacy and Numeracy) provides standardized testing data that allows us to track student performance trends in recent years.
         </p>
         <p>
           The time series below shows how <span class="highlight-stat">average NAPLAN scores</span> have changed across different test domains (Reading, Writing, Numeracy, Spelling, and Grammar). You can filter by state and year level to explore specific patterns.
+        </p>
+        <p style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ff9800;">
+          <strong>🔍 What to Look For:</strong> Track each colored line representing a test domain. Upward slopes = improving scores, downward = declining, flat = stable. Notice which domains show the most variation. Compare different states—does NSW perform consistently better than NT? Switch between Year 3 (early learners) and Year 9 (teenagers) to see how performance gaps widen or narrow over schooling years.
         </p>
         <p>
           <strong>What should you look for?</strong>
@@ -494,6 +579,12 @@
     <div class="section story-section">
       <h2>🎯 Chapter 3: Does Advantage Predict Achievement?</h2>
       
+      <div style="background: #e8f5e9; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #4caf50;">
+        <p style="margin: 0; color: #2e7d32; font-size: 0.95rem;">
+          <strong>📁 Data Source:</strong> NAPLAN National Results Dataset.csv (aggregated by state) + Calculated State Average ICSEA scores from School Merged Full 2024.csv
+        </p>
+      </div>
+      
       <div class="story-text">
         <h3>The relationship between wealth and learning outcomes</h3>
         <p>
@@ -504,6 +595,9 @@
         </p>
         <p>
           <strong>What the data reveals:</strong> There is indeed a positive correlation. States like the ACT, with the highest average ICSEA score of <span class="highlight-stat">1048.9</span>, consistently perform better on NAPLAN tests. Meanwhile, the Northern Territory, with an average ICSEA of <span class="highlight-stat">968.5</span>, faces greater academic challenges.
+        </p>
+        <p style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ff9800;">
+          <strong>🔍 What to Look For:</strong> Imagine a diagonal line from bottom-left to top-right—dots close to this imaginary line show strong correlation. The ACT (dark grey, top-right) represents highest advantage AND highest performance. NT (orange, bottom-left) shows the opposite. Notice the gap: an 80-point ICSEA difference correlates with 20-40 point NAPLAN differences. Try different Year Levels and Domains to see if this relationship holds across all measurements.
         </p>
       </div>
 
@@ -537,16 +631,133 @@
       </div>
     </div>
 
+    <div class="divider"></div>
+
+    <!-- Metadata & Methodology Section -->
+    <div class="section">
+      <div class="intro-box" style="border-left-color: #667eea;">
+        <h2>📋 About This Project: Metadata & Methodology</h2>
+        
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">Who Created This?</h3>
+        <p>
+          This visualization was created as part of <strong>FIT3179 Data Visualisation Assignment 2, 2025</strong> at Monash University. The project combines interactive data visualization techniques with educational research to make complex inequality patterns accessible to diverse audiences.
+        </p>
+
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">What Data Was Used?</h3>
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+          <p style="margin-bottom: 12px;"><strong>Primary Datasets:</strong></p>
+          <ul style="margin-left: 25px; line-height: 1.9;">
+            <li><strong>School Location 2024.csv</strong> – 10,995 Australian schools with geographic information (SA2 regions, states, coordinates)</li>
+            <li><strong>School Merged Full 2024.csv</strong> – Comprehensive school profiles including ICSEA scores, student-teacher ratios, Indigenous enrolment percentages, and sector classifications</li>
+            <li><strong>NAPLAN National Results Dataset.csv</strong> – 18,362 records of standardized test scores across multiple years, states, year levels, and domains (Reading, Writing, Numeracy, Spelling, Grammar)</li>
+            <li><strong>SA2.json</strong> – Statistical Area Level 2 geographic boundaries for choropleth mapping</li>
+            <li><strong>STE_2021_AUST_SHP_GDA2020.json</strong> – State and territory boundaries for map overlays</li>
+          </ul>
+          <p style="margin-top: 15px; font-size: 0.95rem; color: #6c757d;">
+            <em>All data sourced from the Australian Curriculum, Assessment and Reporting Authority (ACARA) and Australian Bureau of Statistics (ABS), representing the most comprehensive publicly available education data in Australia.</em>
+          </p>
+        </div>
+
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">Why This Matters?</h3>
+        <p>
+          Educational inequality is one of Australia's most pressing social challenges. This visualization addresses critical disparities:
+        </p>
+        <ul style="margin-left: 25px; line-height: 1.9; margin-top: 10px;">
+          <li><strong>Resource gaps</strong> where independent schools have 12% better student-teacher ratios than government schools</li>
+          <li><strong>Geographic disadvantage</strong> affecting remote and regional communities with ICSEA scores 80+ points below urban averages</li>
+          <li><strong>Socio-economic determinism</strong> showing strong correlation between family wealth and academic outcomes</li>
+          <li><strong>Indigenous education gaps</strong> revealing systemic barriers faced by Indigenous students</li>
+        </ul>
+        <p style="margin-top: 15px;">
+          Understanding these patterns empowers <strong>informed policy decisions</strong>, guides <strong>resource allocation</strong>, and supports <strong>evidence-based advocacy</strong> for educational equity.
+        </p>
+
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">How Was This Built?</h3>
+        <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
+          <p style="margin-bottom: 12px;"><strong>Technical Stack:</strong></p>
+          <ul style="margin-left: 25px; line-height: 1.9;">
+            <li><strong>Vega-Lite v5</strong> – Declarative visualization grammar for creating interactive charts</li>
+            <li><strong>HTML5 & CSS3</strong> – Responsive layout with custom styling and gradient backgrounds</li>
+            <li><strong>JavaScript</strong> – Dynamic embedding and error handling for visualizations</li>
+            <li><strong>GitHub Pages</strong> – Hosting and version control for the complete project</li>
+          </ul>
+          
+          <p style="margin-top: 20px; margin-bottom: 12px;"><strong>Visualization Types Employed:</strong></p>
+          <ul style="margin-left: 25px; line-height: 1.9;">
+            <li><strong>Choropleth Map</strong> – Geographic distribution of ICSEA scores across 2,000+ SA2 regions using blue-purple color scheme</li>
+            <li><strong>Bar Chart</strong> – Comparative student-teacher ratios across three school sectors with color-coded bars</li>
+            <li><strong>Heatmap</strong> – Two-dimensional density visualization showing school clustering by ICSEA vs Indigenous enrolment using viridis color scale</li>
+            <li><strong>Time Series Line Chart</strong> – Multi-line trends tracking NAPLAN performance across years and domains</li>
+            <li><strong>Scatter Plot</strong> – State-level correlation analysis with labeled points and color-coded by state</li>
+          </ul>
+
+          <p style="margin-top: 20px; margin-bottom: 12px;"><strong>Interactivity Features:</strong></p>
+          <ul style="margin-left: 25px; line-height: 1.9;">
+            <li>State and region filters for localized analysis</li>
+            <li>Year level and test domain selectors</li>
+            <li>Hover tooltips revealing detailed statistics</li>
+            <li>Responsive design adapting to different screen sizes</li>
+            <li>Synchronized filtering across related visualizations</li>
+          </ul>
+
+          <p style="margin-top: 20px; margin-bottom: 12px;"><strong>Data Processing:</strong></p>
+          <ul style="margin-left: 25px; line-height: 1.9;">
+            <li>Aggregation of 10,995 schools to calculate average metrics by sector, state, and region</li>
+            <li>Lookup transformations joining location data with performance metrics</li>
+            <li>Filtering null values and data validation ensuring accuracy</li>
+            <li>Binning continuous variables (ICSEA, Indigenous %) for heatmap visualization</li>
+            <li>Geographic joins matching SA2 codes with spatial geometries</li>
+          </ul>
+        </div>
+
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">Intended Audience</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px;">
+          <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <strong style="color: #1565c0;">👨‍👩‍👧 Parents & Families</strong>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: #424242;">Make informed school choices based on resource levels and local performance data</p>
+          </div>
+          <div style="background: #f3e5f5; padding: 15px; border-radius: 8px; border-left: 4px solid #9c27b0;">
+            <strong style="color: #6a1b9a;">👨‍🏫 Educators</strong>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: #424242;">Understand systemic challenges and advocate for resource improvements</p>
+          </div>
+          <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
+            <strong style="color: #e65100;">🏛️ Policymakers</strong>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: #424242;">Identify areas needing intervention and allocate funding effectively</p>
+          </div>
+          <div style="background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid #4caf50;">
+            <strong style="color: #2e7d32;">🔬 Researchers</strong>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: #424242;">Analyze patterns of educational inequality for academic study</p>
+          </div>
+        </div>
+
+        <h3 style="color: #495057; font-size: 1.4rem; margin-top: 25px; margin-bottom: 15px; font-weight: 600;">Key Findings Summary</h3>
+        <div style="background: #fff8e1; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107;">
+          <ol style="margin-left: 25px; line-height: 2; font-weight: 500;">
+            <li><strong>Resource Inequality:</strong> Independent schools average 11.7:1 student-teacher ratio vs 13.1:1 in government schools (12% advantage)</li>
+            <li><strong>Geographic Clustering:</strong> Inner-city metropolitan areas show ICSEA scores 100-200 points higher than remote regions</li>
+            <li><strong>Indigenous Disadvantage:</strong> Schools with high Indigenous enrolment (>20%) cluster at lower ICSEA scores (900-1000 range)</li>
+            <li><strong>State Variations:</strong> ACT leads with average ICSEA 1048.9, while NT trails at 968.5 (80-point gap)</li>
+            <li><strong>Performance Correlation:</strong> Strong positive relationship between socio-economic advantage and NAPLAN scores across all domains</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Footer -->
   <footer>
     <h3>About This Visualization</h3>
-    <p><strong>Data Sources:</strong> Australian Curriculum, Assessment and Reporting Authority (ACARA) 2024</p>
-    <p><strong>Visualization:</strong> Created with Vega-Lite v5</p>
-    <p><strong>Course:</strong> FIT3179 Data Visualisation Assignment 2</p>
+    <p style="margin-top: 10px; font-size: 0.95rem;">
+      <strong>Data Sources:</strong><br>
+      • <a href="https://www.acara.edu.au/reporting/national-report-on-schooling-in-australia/student-teacher-ratios" target="_blank" style="color: #667eea; text-decoration: none;">ACARA Student-Teacher Ratios Report</a><br>
+      • <a href="https://www.acara.edu.au/contact-us/acara-data-access" target="_blank" style="color: #667eea; text-decoration: none;">ACARA Data Access Portal</a><br>
+      • <a href="https://catalogue.data.infrastructure.gov.au/dataset/rdh-naplanresults" target="_blank" style="color: #667eea; text-decoration: none;">National NAPLAN Results Dataset</a>
+    </p>
+    <p style="margin-top: 15px;"><strong>Visualization:</strong> Created with Vega-Lite v5</p>
+    <p><strong>Course:</strong> FIT3179 Data Visualisation Assignment 2 | 2025</p>
     <p style="margin-top: 20px; color: #495057;">
-      This interactive dashboard combines data from over 10,000 schools and 15+ years of NAPLAN testing to explore patterns of educational inequality across Australia.
+      This interactive dashboard combines data from over 10,000 schools across Australia to explore patterns of educational inequality, examining resource distribution, academic performance, and socio-economic factors.
     </p>
   </footer>
 
@@ -1025,7 +1236,7 @@
           "filter": "toString(datum['Year level']) == year_level_filter"
         },
         {
-          "filter": "datum.Domain == domain_filter"
+          "filter": "datum.Domain == domain_filter || (domain_filter == 'Grammar and punctuation' && (datum.Domain == 'Grammar and Punctuation' || datum.Domain == 'Grammar & punctuation' || datum.Domain == 'Grammar'))"
         },
         {
           "filter": "datum['State/territory'] != 'Australia'"
@@ -1054,6 +1265,9 @@
             "key": "State",
             "fields": ["avg_ICSEA", "State_full"]
           }
+        },
+        {
+          "filter": "isValid(datum.avg_ICSEA) && isValid(datum.avg_NAPLAN)"
         }
       ],
       "layer": [
