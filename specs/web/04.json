@@ -1,0 +1,283 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "width": 850,
+  "height": 470,
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+  },
+  "background": "transparent",
+  "config": {
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
+    },
+    "legend": {
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
+    }
+  },
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 4,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  },
+  "signals": [
+    {
+      "name": "selectedAirport",
+      "value": ""
+    }
+  ],
+  "projections": [
+    {
+      "name": "au",
+      "type": "conicEqualArea",
+      "rotate": [
+        -134,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        -27
+      ],
+      "parallels": [
+        -18,
+        -36
+      ],
+      "fit": {
+        "signal": "{'type':'FeatureCollection','features':data('geometry')}"
+      },
+      "extent": {
+        "signal": "[[42,12],[width-65,height-58]]"
+      }
+    }
+  ],
+  "data": [
+    {
+      "name": "geometry",
+      "url": "data/states-geometry.json"
+    },
+    {
+      "name": "airports",
+      "url": "data/airports-activity.json",
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "au",
+          "fields": [
+            "longitude",
+            "latitude"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "routes",
+      "url": "data/routes-fy2026.json",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.disclosure_status==='reported'"
+        },
+        {
+          "type": "filter",
+          "expr": "datum.rank<=15 || (selectedAirport!=='' && (datum.a===selectedAirport || datum.b===selectedAirport))"
+        },
+        {
+          "type": "lookup",
+          "from": "airports",
+          "key": "airport_id",
+          "fields": [
+            "a",
+            "b"
+          ],
+          "as": [
+            "source",
+            "target"
+          ]
+        },
+        {
+          "type": "linkpath",
+          "shape": "curve",
+          "sourceX": "source.x",
+          "sourceY": "source.y",
+          "targetX": "target.x",
+          "targetY": "target.y"
+        },
+        {
+          "type": "collect",
+          "sort": {
+            "field": "passenger_trips",
+            "order": "ascending"
+          }
+        }
+      ]
+    },
+    {
+      "name": "labels",
+      "source": "airports",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "selectedAirport==='' ? indexof(['PER','MEL','SYD','BNE','DRW'],datum.airport_id)>=0 : datum.airport_id===selectedAirport"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "routeWidth",
+      "type": "linear",
+      "domain": [
+        0,
+        8080486
+      ],
+      "range": [
+        0,
+        7
+      ],
+      "zero": true
+    }
+  ],
+  "marks": [
+    {
+      "type": "shape",
+      "from": {
+        "data": "geometry"
+      },
+      "encode": {
+        "enter": {
+          "fill": {
+            "value": "#EFF3F4"
+          },
+          "stroke": {
+            "value": "#BCC8CD"
+          },
+          "strokeWidth": {
+            "value": 0.7
+          }
+        }
+      },
+      "transform": [
+        {
+          "type": "geoshape",
+          "projection": "au"
+        }
+      ]
+    },
+    {
+      "name": "links",
+      "type": "path",
+      "from": {
+        "data": "routes"
+      },
+      "encode": {
+        "update": {
+          "path": {
+            "field": "path"
+          },
+          "stroke": {
+            "value": "#177A88"
+          },
+          "strokeWidth": {
+            "scale": "routeWidth",
+            "field": "passenger_trips"
+          },
+          "strokeOpacity": {
+            "signal": "selectedAirport==='' || datum.a===selectedAirport || datum.b===selectedAirport ? .8 : .12"
+          },
+          "tooltip": {
+            "signal": "{'Route':datum.route_name,'Passenger trips':format(datum.passenger_trips,',d'),'Period':'FY2025-26'}"
+          }
+        }
+      }
+    },
+    {
+      "name": "airportNodes",
+      "type": "symbol",
+      "from": {
+        "data": "airports"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x"
+          },
+          "y": {
+            "field": "y"
+          },
+          "size": {
+            "signal": "datum.airport_id===selectedAirport ? 140 : 38"
+          },
+          "fill": {
+            "value": "#242B30"
+          },
+          "stroke": {
+            "value": "white"
+          },
+          "strokeWidth": {
+            "value": 1
+          },
+          "tooltip": {
+            "signal": "{'Airport':datum.name,'City':datum.city,'Disclosed endpoint movements':format(datum.endpoint_movements,',d')}"
+          }
+        }
+      }
+    },
+    {
+      "name": "airportLabels",
+      "type": "text",
+      "from": {
+        "data": "labels"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x"
+          },
+          "y": {
+            "field": "y"
+          },
+          "text": {
+            "signal": "datum.airport_id==='SYD' ? 'Sydney' : datum.city"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "align": {
+            "signal": "(selectedAirport!=='' ? datum.x>width/2 : indexof(['PER','MEL'],datum.airport_id)>=0) ? 'right' : 'left'"
+          },
+          "dx": {
+            "signal": "(selectedAirport!=='' ? datum.x>width/2 : indexof(['PER','MEL'],datum.airport_id)>=0) ? -9 : 9"
+          },
+          "dy": {
+            "signal": "datum.airport_id==='MEL' ? 32 : -8"
+          }
+        }
+      }
+    }
+  ],
+  "legends": [
+    {
+      "strokeWidth": "routeWidth",
+      "title": "Passenger trips",
+      "orient": "bottom-left",
+      "values": [
+        2000000,
+        4000000,
+        8000000
+      ],
+      "format": ".2s",
+      "symbolType": "stroke",
+      "symbolStrokeColor": "#177A88"
+    }
+  ],
+  "description": "Top 15 domestic links, plus disclosed links at the selected airport. Both directions combined."
+}

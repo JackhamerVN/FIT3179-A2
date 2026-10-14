@@ -1,0 +1,406 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Seat occupancy on 57 comparable routes in FY2018-19 and FY2025-26. Each line is one route.",
+  "width": 500,
+  "height": 440,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "data": {
+    "url": "data/route-occupancy.json"
+  },
+  "params": [
+    {
+      "name": "selectedRoute",
+      "value": ""
+    },
+    {
+      "name": "compactLabels",
+      "value": false
+    }
+  ],
+  "transform": [
+    {
+      "calculate": "replace(compactLabels ? datum.route_id : datum.route_name, compactLabels ? '-' : ' - ','\u2013')+'  '+format(datum.occupancy_2026_pct,'.1f')+'%'",
+      "as": "label"
+    },
+    {
+      "calculate": "1+8/(width-(compactLabels ? 136 : 226))",
+      "as": "leader_start"
+    },
+    {
+      "calculate": "1+24/(width-(compactLabels ? 136 : 226))",
+      "as": "leader_end"
+    },
+    {
+      "calculate": "1+29/(width-(compactLabels ? 136 : 226))",
+      "as": "label_start"
+    },
+    {
+      "calculate": "1+12/(width-(compactLabels ? 136 : 226))",
+      "as": "picked_start"
+    }
+  ],
+  "layer": [
+    {
+      "transform": [
+        {
+          "fold": [
+            "occupancy_2019_pct",
+            "occupancy_2026_pct"
+          ],
+          "as": [
+            "measure",
+            "occupancy_pct"
+          ]
+        },
+        {
+          "calculate": "datum.measure==='occupancy_2019_pct' ? 0 : 1",
+          "as": "position"
+        }
+      ],
+      "mark": {
+        "type": "line"
+      },
+      "encoding": {
+        "x": {
+          "field": "position",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              1
+            ],
+            "nice": false,
+            "range": [
+              {
+                "expr": "16"
+              },
+              {
+                "expr": "width-(compactLabels ? 120 : 210)"
+              }
+            ]
+          },
+          "axis": {
+            "title": null,
+            "values": [
+              0,
+              1
+            ],
+            "grid": false,
+            "ticks": false,
+            "labelFontSize": 12,
+            "labelExpr": "datum.value===0 ? '2018\u201319' : '2025\u201326'"
+          }
+        },
+        "y": {
+          "field": "occupancy_pct",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              50,
+              95
+            ]
+          },
+          "axis": {
+            "title": "Seats filled (%)",
+            "tickCount": 5
+          }
+        },
+        "detail": {
+          "field": "route_id",
+          "type": "nominal"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.change_points>=0",
+            "value": "#316EAC"
+          },
+          "value": "#B55732"
+        },
+        "opacity": {
+          "condition": [
+            {
+              "test": "selectedRoute!=='' && datum.route_id===selectedRoute",
+              "value": 1
+            },
+            {
+              "test": "selectedRoute!==''",
+              "value": 0.08
+            },
+            {
+              "test": "datum.labelled",
+              "value": 0.95
+            }
+          ],
+          "value": 0.3
+        },
+        "strokeWidth": {
+          "condition": [
+            {
+              "test": "selectedRoute!=='' && datum.route_id===selectedRoute",
+              "value": 3
+            },
+            {
+              "test": "datum.labelled",
+              "value": 2
+            }
+          ],
+          "value": 1.1
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "fold": [
+            "occupancy_2019_pct",
+            "occupancy_2026_pct"
+          ],
+          "as": [
+            "measure",
+            "occupancy_pct"
+          ]
+        },
+        {
+          "calculate": "datum.measure==='occupancy_2019_pct' ? 0 : 1",
+          "as": "position"
+        }
+      ],
+      "mark": {
+        "type": "circle",
+        "size": 34
+      },
+      "encoding": {
+        "x": {
+          "field": "position",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              1
+            ],
+            "nice": false,
+            "range": [
+              {
+                "expr": "16"
+              },
+              {
+                "expr": "width-(compactLabels ? 120 : 210)"
+              }
+            ]
+          },
+          "axis": {
+            "title": null,
+            "values": [
+              0,
+              1
+            ],
+            "grid": false,
+            "ticks": false,
+            "labelFontSize": 12,
+            "labelExpr": "datum.value===0 ? '2018\u201319' : '2025\u201326'"
+          }
+        },
+        "y": {
+          "field": "occupancy_pct",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              50,
+              95
+            ]
+          },
+          "axis": {
+            "title": "Seats filled (%)",
+            "tickCount": 5
+          }
+        },
+        "detail": {
+          "field": "route_id",
+          "type": "nominal"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.change_points>=0",
+            "value": "#316EAC"
+          },
+          "value": "#B55732"
+        },
+        "opacity": {
+          "condition": [
+            {
+              "test": "selectedRoute!=='' && datum.route_id===selectedRoute",
+              "value": 1
+            },
+            {
+              "test": "selectedRoute!==''",
+              "value": 0.08
+            },
+            {
+              "test": "datum.labelled",
+              "value": 0.95
+            }
+          ],
+          "value": 0.3
+        },
+        "tooltip": [
+          {
+            "field": "route_name",
+            "type": "nominal",
+            "title": "Route"
+          },
+          {
+            "field": "occupancy_2019_pct",
+            "type": "quantitative",
+            "title": "FY2018-19 seats filled (%)",
+            "format": ".1f"
+          },
+          {
+            "field": "occupancy_2026_pct",
+            "type": "quantitative",
+            "title": "FY2025-26 seats filled (%)",
+            "format": ".1f"
+          },
+          {
+            "field": "change_points",
+            "type": "quantitative",
+            "title": "Change (percentage points)",
+            "format": "+.1f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.labelled"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#809492",
+        "strokeWidth": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "leader_start",
+          "type": "quantitative"
+        },
+        "x2": {
+          "field": "leader_end"
+        },
+        "y": {
+          "field": "occupancy_2026_pct",
+          "type": "quantitative"
+        },
+        "y2": {
+          "field": "label_position_pct"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedRoute===''",
+            "value": 1
+          },
+          "value": 0.15
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.labelled"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "fontSize": 11,
+        "color": "#243637"
+      },
+      "encoding": {
+        "x": {
+          "field": "label_start",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "label_position_pct",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedRoute===''",
+            "value": 1
+          },
+          "value": 0.15
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "selectedRoute!=='' && datum.route_id===selectedRoute"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "baseline": "middle",
+        "fontSize": 12,
+        "fontWeight": "bold",
+        "color": "#243637"
+      },
+      "encoding": {
+        "x": {
+          "field": "picked_start",
+          "type": "quantitative"
+        },
+        "y": {
+          "field": "occupancy_2026_pct",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 13,
+    "source": "Supplied BITRE workbook; FY2018-19 and FY2025-26"
+  }
+}

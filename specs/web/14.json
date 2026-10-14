@@ -1,0 +1,285 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Domestic passenger trips per Australian resident by financial year, 2014-15 to 2025-26.",
+  "width": 500,
+  "height": 320,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "data": {
+    "url": "data/trips-per-resident.json"
+  },
+  "layer": [
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "strokeDash": [
+          4,
+          3
+        ],
+        "color": "#809492"
+      },
+      "encoding": {
+        "y": {
+          "datum": 2.4251
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#177A88"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              3
+            ]
+          },
+          "axis": {
+            "title": "Trips per resident",
+            "tickCount": 4,
+            "format": ".1f"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "fy",
+            "type": "nominal",
+            "title": "Financial year"
+          },
+          {
+            "field": "trips_per_resident",
+            "type": "quantitative",
+            "title": "Trips per resident",
+            "format": ".2f"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          },
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Residents at 31 December",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 46,
+        "color": "#177A88",
+        "stroke": "white",
+        "strokeWidth": 1.5
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              3
+            ]
+          },
+          "axis": {
+            "title": "Trips per resident",
+            "tickCount": 4,
+            "format": ".1f"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "fy",
+            "type": "nominal",
+            "title": "Financial year"
+          },
+          {
+            "field": "trips_per_resident",
+            "type": "quantitative",
+            "title": "Trips per resident",
+            "format": ".2f"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          },
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Residents at 31 December",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year_ending===2019"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "dy": -14,
+        "fontSize": 13,
+        "fontWeight": "bold",
+        "color": "#243637"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              3
+            ]
+          },
+          "axis": {
+            "title": "Trips per resident",
+            "tickCount": 4,
+            "format": ".1f"
+          }
+        },
+        "text": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "format": ".2f"
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year_ending===2021 || datum.year_ending===2026"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "dy": 18,
+        "fontSize": 13,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              3
+            ]
+          },
+          "axis": {
+            "title": "Trips per resident",
+            "tickCount": 4,
+            "format": ".1f"
+          }
+        },
+        "text": {
+          "field": "trips_per_resident",
+          "type": "quantitative",
+          "format": ".2f"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.year_ending===2021",
+            "value": "#B55732"
+          },
+          "value": "#243637"
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 14,
+    "source": "BITRE workbook and ABS National, state and territory population, March 2026"
+  }
+}

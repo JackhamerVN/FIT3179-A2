@@ -1,0 +1,413 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "width": 850,
+  "height": 400,
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+  },
+  "background": "transparent",
+  "config": {
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
+    },
+    "legend": {
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
+    }
+  },
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 10,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  },
+  "signals": [
+    {
+      "name": "selectedGroup",
+      "value": ""
+    },
+    {
+      "name": "gap",
+      "value": 20
+    },
+    {
+      "name": "sourceX",
+      "update": "width<500 ? 94 : 156"
+    },
+    {
+      "name": "targetX",
+      "update": "width-122"
+    }
+  ],
+  "scales": [
+    {
+      "name": "flow",
+      "type": "linear",
+      "domain": [
+        0,
+        53982647
+      ],
+      "range": [
+        0,
+        {
+          "signal": "height-2*gap"
+        }
+      ],
+      "zero": true
+    },
+    {
+      "name": "colour",
+      "type": "ordinal",
+      "domain": [
+        "Between states",
+        "Within a state"
+      ],
+      "range": [
+        "#86949B",
+        "#177A88"
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "flows",
+      "url": "data/route-groups.json",
+      "transform": [
+        {
+          "type": "stack",
+          "field": "passenger_trips",
+          "sort": {
+            "field": [
+              "left_order",
+              "right_order"
+            ],
+            "order": [
+              "ascending",
+              "ascending"
+            ]
+          },
+          "as": [
+            "s0",
+            "s1"
+          ]
+        },
+        {
+          "type": "stack",
+          "field": "passenger_trips",
+          "sort": {
+            "field": [
+              "right_order",
+              "left_order"
+            ],
+            "order": [
+              "ascending",
+              "ascending"
+            ]
+          },
+          "as": [
+            "t0",
+            "t1"
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "sy0",
+          "expr": "scale('flow',datum.s0)+datum.left_order*gap+gap/2"
+        },
+        {
+          "type": "formula",
+          "as": "sy1",
+          "expr": "scale('flow',datum.s1)+datum.left_order*gap+gap/2"
+        },
+        {
+          "type": "formula",
+          "as": "ty0",
+          "expr": "scale('flow',datum.t0)+datum.right_order*gap"
+        },
+        {
+          "type": "formula",
+          "as": "ty1",
+          "expr": "scale('flow',datum.t1)+datum.right_order*gap"
+        },
+        {
+          "type": "formula",
+          "as": "ribbon",
+          "expr": "'M'+(sourceX+7)+','+datum.sy0+' C'+(sourceX+(targetX-sourceX)*.45)+','+datum.sy0+' '+(sourceX+(targetX-sourceX)*.55)+','+datum.ty0+' '+targetX+','+datum.ty0+' L'+targetX+','+datum.ty1+' C'+(sourceX+(targetX-sourceX)*.55)+','+datum.ty1+' '+(sourceX+(targetX-sourceX)*.45)+','+datum.sy1+' '+(sourceX+7)+','+datum.sy1+' Z'"
+        }
+      ]
+    },
+    {
+      "name": "leftNodes",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "relation"
+          ],
+          "fields": [
+            "sy0",
+            "sy1",
+            "passenger_trips"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "sum"
+          ],
+          "as": [
+            "y0",
+            "y1",
+            "passenger_trips"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rightNodes",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "distance_band"
+          ],
+          "fields": [
+            "ty0",
+            "ty1",
+            "passenger_trips"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "sum"
+          ],
+          "as": [
+            "y0",
+            "y1",
+            "passenger_trips"
+          ]
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "ribbons",
+      "type": "path",
+      "from": {
+        "data": "flows"
+      },
+      "encode": {
+        "update": {
+          "path": {
+            "field": "ribbon"
+          },
+          "fill": {
+            "scale": "colour",
+            "field": "relation"
+          },
+          "fillOpacity": {
+            "signal": "selectedGroup==='' || datum.group_id===selectedGroup ? .72 : .12"
+          },
+          "tooltip": {
+            "signal": "{'Group':datum.relation,'Distance':datum.distance_band,'Passenger trips':format(datum.passenger_trips,',d'),'Routes':length(datum.route_ids)}"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "leftNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "width": {
+            "value": 7
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "#242B30"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leftNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'leftNodes'==='leftNodes' ? -9 : -3"
+          },
+          "text": {
+            "signal": "width<500 ? (datum.relation==='Between states' ? ['Between','states'] : ['Within','a state']) : datum.relation"
+          },
+          "lineHeight": {
+            "value": 14
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "align": {
+            "value": "right"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leftNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'leftNodes'==='leftNodes' ? 24 : 13"
+          },
+          "text": {
+            "signal": "format(datum.passenger_trips/1e6,'.2f')+'m trips'"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#64727A"
+          },
+          "align": {
+            "value": "right"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "width": {
+            "value": 7
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "#242B30"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'rightNodes'==='leftNodes' ? -9 : -3"
+          },
+          "text": {
+            "field": "distance_band"
+          },
+          "lineHeight": {
+            "value": 14
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "align": {
+            "value": "left"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'rightNodes'==='leftNodes' ? 24 : 13"
+          },
+          "text": {
+            "signal": "format(datum.passenger_trips/1e6,'.2f')+'m trips'"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#64727A"
+          },
+          "align": {
+            "value": "left"
+          }
+        }
+      }
+    }
+  ],
+  "description": "Alluvial diagram: passenger trips flowing from state relation (left) to distance band (right)."
+}

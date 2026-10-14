@@ -1,0 +1,240 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Disclosed route endpoint movements by airport; circle area is proportional to volume.",
+  "width": 500,
+  "height": 350,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "params": [
+    {
+      "name": "selectedAirport",
+      "value": ""
+    }
+  ],
+  "projection": {
+    "type": "conicEqualArea",
+    "rotate": [
+      -134,
+      0,
+      0
+    ],
+    "center": [
+      0,
+      -27
+    ],
+    "parallels": [
+      -18,
+      -36
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/states-geometry.json"
+      },
+      "mark": {
+        "type": "geoshape",
+        "fill": "#E6ECEA",
+        "stroke": "white",
+        "strokeWidth": 1
+      }
+    },
+    {
+      "data": {
+        "url": "data/airports-activity.json"
+      },
+      "mark": {
+        "type": "circle",
+        "stroke": "#177A88",
+        "strokeWidth": 0.7
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "size": {
+          "field": "endpoint_movements",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              25000000
+            ],
+            "range": [
+              0,
+              1400
+            ]
+          },
+          "legend": {
+            "title": "Endpoint movements",
+            "values": [
+              5000000,
+              20000000
+            ],
+            "format": "~s"
+          }
+        },
+        "color": {
+          "value": "#177A88"
+        },
+        "order": {
+          "field": "endpoint_movements",
+          "type": "quantitative",
+          "sort": "descending"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedAirport==='' || datum.airport_id===selectedAirport",
+            "value": 0.65
+          },
+          "value": 0.12
+        },
+        "tooltip": [
+          {
+            "field": "name",
+            "type": "nominal",
+            "title": "Airport"
+          },
+          {
+            "field": "endpoint_movements",
+            "type": "quantitative",
+            "title": "Endpoint movements",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/airports-activity.json"
+      },
+      "transform": [
+        {
+          "filter": {
+            "field": "airport_id",
+            "oneOf": [
+              "SYD",
+              "BNE",
+              "CNS",
+              "HBA",
+              "DRW"
+            ]
+          }
+        },
+        {
+          "calculate": "width<420 ? datum.airport_id : split(datum.city,' (')[0]+'  '+format(datum.endpoint_movements/1e6,'.1f')+'m'",
+          "as": "label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "align": "left",
+        "baseline": "middle",
+        "dx": {
+          "expr": "(sqrt(datum.endpoint_movements/25000000*1400/PI)+5)"
+        }
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/airports-activity.json"
+      },
+      "transform": [
+        {
+          "filter": {
+            "field": "airport_id",
+            "oneOf": [
+              "PER",
+              "ADL",
+              "MEL"
+            ]
+          }
+        },
+        {
+          "calculate": "width<420 ? datum.airport_id : split(datum.city,' (')[0]+'  '+format(datum.endpoint_movements/1e6,'.1f')+'m'",
+          "as": "label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "align": "right",
+        "baseline": "middle",
+        "dx": {
+          "expr": "-(sqrt(datum.endpoint_movements/25000000*1400/PI)+5)"
+        }
+      },
+      "encoding": {
+        "longitude": {
+          "field": "longitude",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "latitude",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 5,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  }
+}

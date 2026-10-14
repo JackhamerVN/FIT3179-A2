@@ -1,0 +1,290 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Change in state endpoint movements on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
+  "width": 500,
+  "height": 350,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "params": [
+    {
+      "name": "selectedState",
+      "value": ""
+    }
+  ],
+  "projection": {
+    "type": "conicEqualArea",
+    "rotate": [
+      -134,
+      0,
+      0
+    ],
+    "center": [
+      0,
+      -27
+    ],
+    "parallels": [
+      -18,
+      -36
+    ]
+  },
+  "layer": [
+    {
+      "data": {
+        "url": "data/states-geometry.json"
+      },
+      "transform": [
+        {
+          "lookup": "properties.state_id",
+          "from": {
+            "data": {
+              "url": "data/states-summary.json"
+            },
+            "key": "state_id",
+            "fields": [
+              "state_id",
+              "name",
+              "change_pct",
+              "represented_routes"
+            ]
+          }
+        }
+      ],
+      "mark": {
+        "type": "geoshape"
+      },
+      "encoding": {
+        "color": {
+          "field": "change_pct",
+          "type": "quantitative",
+          "scale": {
+            "type": "threshold",
+            "domain": [
+              -10,
+              0,
+              10
+            ],
+            "range": [
+              "#B55732",
+              "#E6BFAE",
+              "#B9CFE6",
+              "#316EAC"
+            ]
+          },
+          "legend": {
+            "title": "Change (%)"
+          }
+        },
+        "stroke": {
+          "condition": {
+            "test": "datum.state_id===selectedState",
+            "value": "#243637"
+          },
+          "value": "white"
+        },
+        "strokeWidth": {
+          "condition": {
+            "test": "datum.state_id===selectedState",
+            "value": 2.5
+          },
+          "value": 0.8
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedState==='' || datum.state_id===selectedState",
+            "value": 1
+          },
+          "value": 0.35
+        },
+        "tooltip": [
+          {
+            "field": "name",
+            "type": "nominal",
+            "title": "State / territory"
+          },
+          {
+            "field": "change_pct",
+            "type": "quantitative",
+            "title": "Change (%)",
+            "format": "+.1f"
+          },
+          {
+            "field": "represented_routes",
+            "type": "quantitative",
+            "title": "Comparable routes",
+            "format": ".0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "url": "data/states-summary.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.state_id==='ACT'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#243637",
+        "strokeWidth": 0.8
+      },
+      "encoding": {
+        "longitude": {
+          "field": "anchor_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "anchor_lat",
+          "type": "quantitative"
+        },
+        "longitude2": {
+          "datum": 150.4
+        },
+        "latitude2": {
+          "datum": -38.5
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/states-summary.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.state_id!=='TAS' && datum.state_id!=='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "color": {
+          "condition": {
+            "test": "abs(datum.change_pct)>=10 && datum.state_id!=='ACT'",
+            "value": "white"
+          },
+          "value": "#243637"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/states-summary.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.state_id==='TAS' || datum.state_id==='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "right"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 7,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  }
+}

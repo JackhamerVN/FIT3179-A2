@@ -1,0 +1,362 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Monthly Australian domestic passenger trips, July 2014 to June 2026.",
+  "width": 500,
+  "height": 300,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "data": {
+    "url": "data/national-monthly.json"
+  },
+  "params": [
+    {
+      "name": "selectedMonth",
+      "value": "2026-06-01"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "line",
+        "strokeWidth": 2.5,
+        "color": "#177A88"
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        },
+        "y": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "axis": {
+            "title": "Passenger trips",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "title": "Month",
+            "format": "%b %Y"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate(selectedMonth))"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#7C9395",
+        "strokeDash": [
+          3,
+          4
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate(selectedMonth))"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 80,
+        "color": "#243637",
+        "stroke": "white",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        },
+        "y": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "axis": {
+            "title": "Passenger trips",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "title": "Month",
+            "format": "%b %Y"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate('2020-04-01'))"
+        }
+      ],
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 52,
+        "color": "#B55732"
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        },
+        "y": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "axis": {
+            "title": "Passenger trips",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "title": "Month",
+            "format": "%b %Y"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate('2020-03-01'))"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#809492",
+        "strokeDash": [
+          2,
+          3
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate('2020-03-01'))"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "lineHeight": 15,
+        "color": "#506365",
+        "align": "right",
+        "baseline": "top",
+        "dx": -7,
+        "text": [
+          "March 2020:",
+          "travel bans begin"
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        },
+        "y": {
+          "datum": 6450000
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "toNumber(toDate(datum.month))===toNumber(toDate('2020-04-01'))"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "lineHeight": 15,
+        "color": "#B55732",
+        "align": "right",
+        "baseline": "bottom",
+        "dx": -10,
+        "dy": -1,
+        "fontWeight": "bold",
+        "text": [
+          "April 2020:",
+          "145,895 trips"
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": 7
+          }
+        },
+        "y": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "axis": {
+            "title": "Passenger trips",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 1,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  }
+}

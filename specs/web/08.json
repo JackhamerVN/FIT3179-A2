@@ -1,0 +1,223 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "width": 850,
+  "height": 470,
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+  },
+  "background": "transparent",
+  "config": {
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
+    },
+    "legend": {
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
+    }
+  },
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 8,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  },
+  "signals": [
+    {
+      "name": "selectedState",
+      "value": ""
+    }
+  ],
+  "projections": [
+    {
+      "name": "au",
+      "type": "conicEqualArea",
+      "rotate": [
+        -134,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        -27
+      ],
+      "parallels": [
+        -18,
+        -36
+      ],
+      "fit": {
+        "signal": "{'type':'FeatureCollection','features':data('geometry')}"
+      },
+      "extent": {
+        "signal": "[[42,12],[width-65,height-85]]"
+      }
+    }
+  ],
+  "data": [
+    {
+      "name": "geometry",
+      "url": "data/states-geometry.json"
+    },
+    {
+      "name": "states",
+      "url": "data/states-summary.json",
+      "transform": [
+        {
+          "type": "geopoint",
+          "projection": "au",
+          "fields": [
+            "anchor_lon",
+            "anchor_lat"
+          ],
+          "as": [
+            "anchor_x",
+            "anchor_y"
+          ]
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "size",
+      "type": "linear",
+      "domain": [
+        0,
+        30972240
+      ],
+      "range": [
+        0,
+        {
+          "signal": "4*pow(min(width,height)*.145,2)"
+        }
+      ],
+      "zero": true
+    }
+  ],
+  "marks": [
+    {
+      "name": "circles",
+      "type": "symbol",
+      "from": {
+        "data": "states"
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "field": "anchor_x"
+          },
+          "y": {
+            "field": "anchor_y"
+          }
+        },
+        "update": {
+          "size": {
+            "scale": "size",
+            "field": "endpoint_movements"
+          },
+          "fill": {
+            "value": "#177A88"
+          },
+          "fillOpacity": {
+            "signal": "selectedState==='' || datum.state_id===selectedState ? 1 : .25"
+          },
+          "stroke": {
+            "value": "white"
+          },
+          "strokeWidth": {
+            "value": 2
+          },
+          "tooltip": {
+            "signal": "{'State':datum.name,'Disclosed endpoint movements':format(datum.endpoint_movements,',d'),'Period':'FY2025-26'}"
+          }
+        }
+      },
+      "transform": [
+        {
+          "type": "force",
+          "static": true,
+          "iterations": 600,
+          "forces": [
+            {
+              "force": "x",
+              "x": "datum.anchor_x",
+              "strength": 0.1
+            },
+            {
+              "force": "y",
+              "y": "datum.anchor_y",
+              "strength": 0.1
+            },
+            {
+              "force": "collide",
+              "radius": {
+                "expr": "sqrt(datum.size)/2+4"
+              },
+              "iterations": 6
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stateLabels",
+      "type": "text",
+      "from": {
+        "data": "circles"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x"
+          },
+          "y": {
+            "field": "y"
+          },
+          "text": {
+            "field": "datum.state_id"
+          },
+          "fill": {
+            "signal": "sqrt(datum.size)/2<16 || (selectedState!=='' && datum.datum.state_id!==selectedState) ? '#243637' : 'white'"
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "dx": {
+            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? -1 : 1)*(sqrt(datum.size)/2+5) : 0"
+          },
+          "align": {
+            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? 'right' : 'left') : 'center'"
+          },
+          "baseline": {
+            "value": "middle"
+          }
+        }
+      }
+    }
+  ],
+  "legends": [
+    {
+      "size": "size",
+      "title": "Endpoint movements",
+      "orient": "bottom-left",
+      "values": [
+        5000000,
+        20000000
+      ],
+      "format": ".2s",
+      "symbolFillColor": "#177A88",
+      "symbolStrokeColor": "white",
+      "symbolLimit": 2
+    }
+  ],
+  "description": "State endpoint movements on 62 disclosed routes; circle area represents volume."
+}

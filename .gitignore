@@ -1,0 +1,33 @@
+# Only the files needed to host the page are published.
+
+# Course material, tutoring notes and assignment documents.
+_local/
+study/
+study-archive/
+AGENTS.md
+*.pdf
+# The hand-drawn sketch is the one PDF the assignment asks to be on GitHub.
+!sketch/sketch.pdf
+
+# Build scripts, checks and the local preview server: used on this computer only.
+preparation/
+tests/
+serve.cjs
+
+# Sketch planning files; only sketch/sketch.pdf is published.
+sketch/*
+!sketch/sketch.pdf
+
+# Source downloads and an extract the page no longer loads.
+data/raw/
+data/processed/
+data/route-share.json
+
+# Generated and machine-specific files.
+output/
+tmp/
+__pycache__/
+*.pyc
+.claude/
+.DS_Store
+node_modules/

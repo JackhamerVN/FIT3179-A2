@@ -1,0 +1,12 @@
+Pinned local browser libraries
+
+Vega 6.4.0: https://github.com/vega/vega
+Vega-Lite 6.4.3: https://github.com/vega/vega-lite
+Vega-Embed 7.3.0: https://github.com/vega/vega-embed
+BSD-3-Clause licences are included in this directory.
+
+Lucide 0.468.0: https://lucide.dev
+ISC licence is included in this directory.
+
+Files retrieved from jsDelivr using exact package versions on 4 October 2026.
+No libraries were installed globally. System fonts require no font download.

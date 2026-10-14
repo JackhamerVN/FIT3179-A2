@@ -1,0 +1,260 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "width": 850,
+  "height": 350,
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
+  },
+  "background": "transparent",
+  "config": {
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
+    },
+    "legend": {
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
+    }
+  },
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 6,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  },
+  "description": "Treemap of all domestic trips. Routes are grouped: the ten busiest, the other disclosed routes, and trips not disclosed by route.",
+  "signals": [
+    {
+      "name": "selectedAirport",
+      "value": ""
+    }
+  ],
+  "data": [
+    {
+      "name": "tree",
+      "url": "data/route-share-tree.json",
+      "transform": [
+        {
+          "type": "stratify",
+          "key": "id",
+          "parentKey": "parent"
+        },
+        {
+          "type": "treemap",
+          "field": "passenger_trips",
+          "sort": {
+            "field": "value",
+            "order": "descending"
+          },
+          "method": "squarify",
+          "size": [
+            {
+              "signal": "width"
+            },
+            {
+              "signal": "height+20"
+            }
+          ],
+          "paddingInner": 3,
+          "paddingTop": 20,
+          "round": false
+        },
+        {
+          "type": "formula",
+          "as": "y0",
+          "expr": "datum.y0-20"
+        },
+        {
+          "type": "formula",
+          "as": "y1",
+          "expr": "datum.y1-20"
+        }
+      ]
+    },
+    {
+      "name": "groups",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth===1"
+        }
+      ]
+    },
+    {
+      "name": "leaves",
+      "source": "tree",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.depth===2"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "group",
+      "type": "ordinal",
+      "domain": [
+        "top",
+        "other",
+        "rest"
+      ],
+      "range": [
+        "#177A88",
+        "#8DBBC1",
+        "#DAE3E1"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "groupLabels",
+      "type": "text",
+      "from": {
+        "data": "groups"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "datum.x0+1"
+          },
+          "y": {
+            "signal": "datum.y0+20-7"
+          },
+          "text": {
+            "signal": "datum.name+'  '+format(datum.group_trips/60753164,'.1%')"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#243637"
+          },
+          "limit": {
+            "signal": "(datum.x1-datum.x0)-2"
+          },
+          "opacity": {
+            "signal": "(datum.x1-datum.x0)>150 ? 1 : 0"
+          }
+        }
+      }
+    },
+    {
+      "name": "tiles",
+      "type": "rect",
+      "from": {
+        "data": "leaves"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x0"
+          },
+          "x2": {
+            "field": "x1"
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "scale": "group",
+            "field": "group"
+          },
+          "fillOpacity": {
+            "signal": "(selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? .22 : 1"
+          },
+          "tooltip": {
+            "signal": "{'Route':datum.name,'Group':datum.group==='top' ? 'Ten busiest routes' : datum.group==='other' ? 'Other disclosed routes' : 'Not disclosed by route','Trips':format(datum.passenger_trips,',d'),'National share':format(datum.passenger_trips/60753164,'.1%')}"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leaves"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "(datum.x0+datum.x1)/2"
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2-((datum.x1-datum.x0)>105 && (datum.y1-datum.y0)>46 ? 8 : 0)"
+          },
+          "text": {
+            "signal": "datum.id==='Rest' ? ((datum.x1-datum.x0)>105 ? ['Not disclosed','by route'] : 'Not disclosed by route  '+format(datum.passenger_trips/60753164,'.1%')) : (datum.x1-datum.x0)>105 && (datum.y1-datum.y0)>46 ? split(datum.name,' - ') : datum.id"
+          },
+          "angle": {
+            "signal": "datum.id==='Rest' && (datum.x1-datum.x0)<=105 ? -90 : 0"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fill": {
+            "signal": "datum.group!=='top' || (selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? '#243637' : 'white'"
+          },
+          "fontSize": {
+            "signal": "(datum.x1-datum.x0)>105 && (datum.y1-datum.y0)>46 ? 11 : 9.5"
+          },
+          "align": {
+            "value": "center"
+          },
+          "lineHeight": {
+            "value": 14
+          },
+          "opacity": {
+            "signal": "((datum.x1-datum.x0)>50 && (datum.y1-datum.y0)>17) || (datum.id==='Rest' && (datum.y1-datum.y0)>170) ? 1 : 0"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leaves"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "(datum.x0+datum.x1)/2"
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2+27"
+          },
+          "text": {
+            "signal": "format(datum.passenger_trips/60753164,'.1%')"
+          },
+          "fill": {
+            "signal": "datum.group!=='top' || (selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? '#243637' : 'white'"
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "align": {
+            "value": "center"
+          },
+          "opacity": {
+            "signal": "(datum.x1-datum.x0)>65 && (datum.y1-datum.y0)>80 ? 1 : 0"
+          }
+        }
+      }
+    }
+  ]
+}

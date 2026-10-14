@@ -1,0 +1,207 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Monthly trips by calendar year and month. White cells fall outside the supplied period.",
+  "width": 500,
+  "height": 325,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "data": {
+    "url": "data/national-monthly.json"
+  },
+  "params": [
+    {
+      "name": "selectedMonth",
+      "value": "2026-06-01"
+    }
+  ],
+  "transform": [
+    {
+      "calculate": "utcyear(toDate(datum.month))",
+      "as": "year"
+    },
+    {
+      "calculate": "utcmonth(toDate(datum.month))+1",
+      "as": "month_number"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "passenger_trips",
+          "as": "busiest"
+        },
+        {
+          "op": "min",
+          "field": "passenger_trips",
+          "as": "quietest"
+        }
+      ]
+    },
+    {
+      "calculate": "format(datum.passenger_trips/1e6,'.2f')+'m'",
+      "as": "value_label"
+    }
+  ],
+  "encoding": {
+    "x": {
+      "field": "month_number",
+      "type": "ordinal",
+      "scale": {
+        "domain": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "paddingInner": 0.09
+      },
+      "axis": {
+        "title": null,
+        "labelAngle": 0,
+        "labelExpr": "['J','F','M','A','M','J','J','A','S','O','N','D'][datum.value-1]"
+      }
+    },
+    "y": {
+      "field": "year",
+      "type": "ordinal",
+      "sort": "ascending",
+      "axis": {
+        "title": null
+      },
+      "scale": {
+        "paddingInner": 0.08
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "rect",
+        "cornerRadius": 1
+      },
+      "encoding": {
+        "color": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ],
+            "range": [
+              "#E9F2EF",
+              "#086875"
+            ]
+          },
+          "legend": {
+            "title": "Trips",
+            "values": [
+              0,
+              3000000,
+              6000000
+            ],
+            "format": "~s",
+            "gradientLength": 170
+          }
+        },
+        "stroke": {
+          "condition": {
+            "test": "toNumber(toDate(datum.month))===toNumber(toDate(selectedMonth))",
+            "value": "#243637"
+          },
+          "value": "transparent"
+        },
+        "strokeWidth": {
+          "value": 2
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "title": "Month",
+            "format": "%b %Y"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.passenger_trips===datum.busiest || datum.passenger_trips===datum.quietest"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 10,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "text": {
+          "field": "value_label",
+          "type": "nominal"
+        },
+        "color": {
+          "condition": {
+            "test": "datum.passenger_trips===datum.busiest",
+            "value": "white"
+          },
+          "value": "#243637"
+        },
+        "opacity": {
+          "condition": {
+            "test": "width<400",
+            "value": 0
+          },
+          "value": 1
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 2,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  }
+}

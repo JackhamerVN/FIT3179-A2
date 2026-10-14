@@ -1,0 +1,290 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Route distance and percentage change in passenger trips for 57 comparable city pairs.",
+  "width": 500,
+  "height": 300,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
+  },
+  "padding": 8,
+  "background": "transparent",
+  "config": {
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
+    },
+    "legend": {
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
+    }
+  },
+  "data": {
+    "url": "data/routes-comparison.json"
+  },
+  "params": [
+    {
+      "name": "selectedRoute",
+      "value": ""
+    }
+  ],
+  "transform": [
+    {
+      "calculate": "replace(datum.route_name,' - ','\u2013')",
+      "as": "label"
+    }
+  ],
+  "layer": [
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "strokeDash": [
+          4,
+          3
+        ],
+        "color": "#809492"
+      },
+      "encoding": {
+        "y": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "circle",
+        "size": 65,
+        "stroke": "white",
+        "strokeWidth": 0.6
+      },
+      "encoding": {
+        "x": {
+          "field": "distance_km",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              4000
+            ]
+          },
+          "axis": {
+            "title": "Route distance (km)",
+            "tickCount": 4,
+            "format": ",.0f"
+          }
+        },
+        "y": {
+          "field": "change_pct",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -45,
+              75
+            ]
+          },
+          "axis": {
+            "title": "Change (%)",
+            "tickCount": 5
+          }
+        },
+        "color": {
+          "condition": {
+            "test": "datum.change_pct>=0",
+            "value": "#316EAC"
+          },
+          "value": "#B55732"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "value": 0.8
+          },
+          "value": 0.12
+        },
+        "tooltip": [
+          {
+            "field": "route_name",
+            "type": "nominal",
+            "title": "Route"
+          },
+          {
+            "field": "distance_km",
+            "type": "quantitative",
+            "title": "Distance (km)",
+            "format": ",.0f"
+          },
+          {
+            "field": "change_pct",
+            "type": "quantitative",
+            "title": "Change (%)",
+            "format": "+.1f"
+          },
+          {
+            "field": "baseline_trips",
+            "type": "quantitative",
+            "title": "FY2018-19 trips",
+            "format": ",.0f"
+          },
+          {
+            "field": "latest_trips",
+            "type": "quantitative",
+            "title": "FY2025-26 trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": {
+            "field": "route_id",
+            "oneOf": [
+              "KTA-PER",
+              "CFS-SYD",
+              "ADL-ASP"
+            ]
+          }
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "baseline": "middle",
+        "align": "left",
+        "dx": 8
+      },
+      "encoding": {
+        "x": {
+          "field": "distance_km",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              4000
+            ]
+          },
+          "axis": {
+            "title": "Route distance (km)",
+            "tickCount": 4,
+            "format": ",.0f"
+          }
+        },
+        "y": {
+          "field": "change_pct",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -45,
+              75
+            ]
+          },
+          "axis": {
+            "title": "Change (%)",
+            "tickCount": 5
+          }
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "value": 1
+          },
+          "value": 0.15
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": {
+            "field": "route_id",
+            "oneOf": [
+              "BNE-PER"
+            ]
+          }
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "baseline": "middle",
+        "align": "right",
+        "dx": -8
+      },
+      "encoding": {
+        "x": {
+          "field": "distance_km",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              4000
+            ]
+          },
+          "axis": {
+            "title": "Route distance (km)",
+            "tickCount": 4,
+            "format": ",.0f"
+          }
+        },
+        "y": {
+          "field": "change_pct",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -45,
+              75
+            ]
+          },
+          "axis": {
+            "title": "Change (%)",
+            "tickCount": 5
+          }
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "value": 1
+          },
+          "value": 0.15
+        }
+      }
+    }
+  ],
+  "usermeta": {
+    "chart_id": 12,
+    "source": "Supplied BITRE workbook; FY2025-26"
+  }
+}
