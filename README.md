@@ -5,6 +5,8 @@ Built for FIT3179 Data Visualisation (Monash University), Data Visualisation 2, 
 
 **Live page:** https://jackhamervn.github.io/FIT3179-A2/
 
+**Design sketch:** [sketch/sketch.pdf](sketch/sketch.pdf) (hand-drawn, A4)
+
 **Author:** Quy Duong Vu. **Prepared:** 4 October 2026. **Updated:** 14 October 2026.
 
 ## The charts
@@ -47,6 +49,7 @@ The page loads small prepared extracts from `data/` (about 200 KB in total). `da
 | `assets/` | Stylesheet and the script that embeds the charts, tables and CSV downloads |
 | `specs/web/` | The fifteen chart specifications |
 | `data/` | Prepared JSON extracts |
+| `sketch/sketch.pdf` | Hand-drawn A4 design sketch |
 | `vendor/` | Pinned Vega 6.4.0, Vega-Lite 6.4.3, Vega-Embed 7.3.0 and Lucide 0.468.0, with their licences |
 
 Typefaces (B612, B612 Mono and Source Serif 4) load from Google Fonts. The page fetches JSON, so it needs a web server; opening `index.html` as a file will not load the charts.
