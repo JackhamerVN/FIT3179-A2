@@ -242,6 +242,16 @@
           ]
         }
       ]
+    },
+    {
+      "name": "largest",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "datum.relation==='Between states' && datum.distance_band==='500-1,499 km'"
+        }
+      ]
     }
   ],
   "marks": [
@@ -454,6 +464,47 @@
           },
           "align": {
             "value": "left"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "largest"
+      },
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX+(targetX-sourceX)*.25"
+          },
+          "y": {
+            "signal": ".4*(datum.sy0+datum.sy1)+.1*(datum.ty0+datum.ty1)"
+          },
+          "text": {
+            "signal": "[format(datum.passenger_trips/53982647,'.0%')+' of trips', 'Interstate, 500\u20131,499 km']"
+          },
+          "align": {
+            "value": "center"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "lineHeight": {
+            "value": 16
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "white"
+          },
+          "opacity": {
+            "signal": "selectedGroup==='' || selectedGroup===datum.group_id ? 1 : 0"
           }
         }
       }
