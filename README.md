@@ -9,18 +9,17 @@ FIT3179 Data Visualisation 2, Volume 11, Topic 5: Domestic Air Travel.
 
 ## Charts
 
-All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`](specs/web/) (`01.json` to `15.json`, in page order); data is in [`data/`](data/).
+All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`](specs/web/) (`01.json` to `14.json`, in page order); data is in [`data/`](data/).
 
 | # | Idiom | # | Idiom |
 |---|---|---|---|
-| 1 | Line chart | 9 | Waterfall chart |
-| 2 | Heatmap | 10 | Scatterplot |
-| 3 | Indexed line chart | 11 | Choropleth map |
-| 4 | Flow map | 12 | Dorling cartogram |
-| 5 | Proportional symbol map | 13 | Bump chart |
-| 6 | Treemap | 14 | Histogram |
-| 7 | Alluvial diagram | 15 | Connected dot plot |
-| 8 | Bar chart |  |  |
+| 1 | Line chart | 8 | Bar chart |
+| 2 | Heatmap | 9 | Scatterplot |
+| 3 | Indexed line chart | 10 | Choropleth map |
+| 4 | Flow map | 11 | Dorling cartogram |
+| 5 | Proportional symbol map | 12 | Bump chart |
+| 6 | Treemap | 13 | Histogram |
+| 7 | Alluvial diagram | 14 | Connected dot plot |
 
 ## Data sources
 

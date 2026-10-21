@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Route distance and percentage change in passenger trips for 57 comparable city pairs.",
+  "description": "Change in airport passengers by state on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
   "width": "container",
-  "height": 300,
+  "height": 350,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -34,322 +34,112 @@
       "orient": "bottom"
     }
   },
-  "data": {
-    "url": "data/routes-comparison.json"
+  "projection": {
+    "type": "conicEqualArea",
+    "rotate": [
+      -134,
+      0,
+      0
+    ],
+    "center": [
+      0,
+      -27
+    ],
+    "parallels": [
+      -18,
+      -36
+    ]
   },
-  "transform": [
-    {
-      "calculate": "replace(datum.route_name,' - ','\u2013')",
-      "as": "label"
-    }
-  ],
   "layer": [
     {
       "data": {
-        "values": [
-          {
-            "from": 0,
-            "to": 500
-          }
-        ]
+        "url": "data/states-geometry.json"
       },
-      "mark": {
-        "type": "rect",
-        "color": "#F3E4DC",
-        "opacity": 0.8
-      },
-      "encoding": {
-        "x": {
-          "field": "from",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              4000
+      "transform": [
+        {
+          "lookup": "properties.state_id",
+          "from": {
+            "data": {
+              "url": "data/states-summary.json"
+            },
+            "key": "state_id",
+            "fields": [
+              "state_id",
+              "name",
+              "change_pct",
+              "represented_routes"
             ]
-          },
-          "axis": {
-            "title": "Route distance (km)",
-            "tickCount": 4,
-            "format": ",.0f"
-          }
-        },
-        "x2": {
-          "field": "to"
-        }
-      }
-    },
-    {
-      "data": {
-        "values": [
-          {
-            "from": 0,
-            "to": 500
-          }
-        ]
-      },
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#B55732",
-        "align": "left",
-        "baseline": "top",
-        "dx": 4,
-        "fontWeight": "bold",
-        "y": 4,
-        "text": [
-          "Under 500 km:",
-          "12 of 13 fell"
-        ]
-      },
-      "encoding": {
-        "x": {
-          "field": "from",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              4000
-            ]
-          },
-          "axis": {
-            "title": "Route distance (km)",
-            "tickCount": 4,
-            "format": ",.0f"
           }
         }
-      }
-    },
-    {
-      "data": {
-        "values": [
-          {}
-        ]
-      },
-      "mark": {
-        "type": "rule",
-        "strokeDash": [
-          4,
-          3
-        ],
-        "color": "#809492"
-      },
-      "encoding": {
-        "y": {
-          "datum": 0
-        }
-      }
-    },
-    {
+      ],
       "params": [
         {
-          "name": "pickedRoute",
+          "name": "pickedState",
           "select": {
             "type": "point",
             "fields": [
-              "route_id"
+              "state_id"
             ],
             "on": "click",
             "clear": "dblclick"
-          },
-          "bind": {
-            "input": "select",
-            "options": [
-              null,
-              "ADL-ASP",
-              "ADL-BNE",
-              "ADL-CBR",
-              "ADL-OOL",
-              "ADL-MEL",
-              "ADL-PER",
-              "ADL-PLO",
-              "ADL-SYD",
-              "ABX-SYD",
-              "BNK-SYD",
-              "BDB-BNE",
-              "BNE-CNS",
-              "BNE-CBR",
-              "BNE-DRW",
-              "BNE-EMD",
-              "BNE-GLT",
-              "BNE-HTI",
-              "BNE-HBA",
-              "BNE-MKY",
-              "BNE-MEL",
-              "BNE-ISA",
-              "BNE-NTL",
-              "BNE-PER",
-              "BNE-PPP",
-              "BNE-ROK",
-              "BNE-SYD",
-              "BNE-TSV",
-              "BME-PER",
-              "CNS-MEL",
-              "CNS-SYD",
-              "CBR-MEL",
-              "CBR-SYD",
-              "CFS-SYD",
-              "DRW-MEL",
-              "DRW-PER",
-              "DBO-SYD",
-              "GET-PER",
-              "MEL-OOL",
-              "OOL-SYD",
-              "HTI-SYD",
-              "HBA-MEL",
-              "HBA-SYD",
-              "KGI-PER",
-              "KTA-PER",
-              "LST-MEL",
-              "LST-SYD",
-              "MEL-MQL",
-              "MEL-NTL",
-              "MEL-PER",
-              "MCY-MEL",
-              "MEL-SYD",
-              "PER-ZNE",
-              "PER-PHE",
-              "PER-SYD",
-              "PQQ-SYD",
-              "MCY-SYD",
-              "SYD-WGA"
-            ],
-            "labels": [
-              "All 57 routes",
-              "Adelaide \u2013 Alice Springs",
-              "Adelaide \u2013 Brisbane",
-              "Adelaide \u2013 Canberra",
-              "Adelaide \u2013 Gold Coast",
-              "Adelaide \u2013 Melbourne",
-              "Adelaide \u2013 Perth",
-              "Adelaide \u2013 Port Lincoln",
-              "Adelaide \u2013 Sydney",
-              "Albury \u2013 Sydney",
-              "Ballina \u2013 Sydney",
-              "Brisbane \u2013 Bundaberg",
-              "Brisbane \u2013 Cairns",
-              "Brisbane \u2013 Canberra",
-              "Brisbane \u2013 Darwin",
-              "Brisbane \u2013 Emerald",
-              "Brisbane \u2013 Gladstone",
-              "Brisbane \u2013 Hamilton Island",
-              "Brisbane \u2013 Hobart",
-              "Brisbane \u2013 Mackay",
-              "Brisbane \u2013 Melbourne",
-              "Brisbane \u2013 Mount Isa",
-              "Brisbane \u2013 Newcastle",
-              "Brisbane \u2013 Perth",
-              "Brisbane \u2013 Proserpine",
-              "Brisbane \u2013 Rockhampton",
-              "Brisbane \u2013 Sydney",
-              "Brisbane \u2013 Townsville",
-              "Broome \u2013 Perth",
-              "Cairns \u2013 Melbourne",
-              "Cairns \u2013 Sydney",
-              "Canberra \u2013 Melbourne",
-              "Canberra \u2013 Sydney",
-              "Coffs Harbour \u2013 Sydney",
-              "Darwin \u2013 Melbourne",
-              "Darwin \u2013 Perth",
-              "Dubbo \u2013 Sydney",
-              "Geraldton \u2013 Perth",
-              "Gold Coast \u2013 Melbourne",
-              "Gold Coast \u2013 Sydney",
-              "Hamilton Island \u2013 Sydney",
-              "Hobart \u2013 Melbourne",
-              "Hobart \u2013 Sydney",
-              "Kalgoorlie \u2013 Perth",
-              "Karratha \u2013 Perth",
-              "Launceston \u2013 Melbourne",
-              "Launceston \u2013 Sydney",
-              "Melbourne \u2013 Mildura",
-              "Melbourne \u2013 Newcastle",
-              "Melbourne \u2013 Perth",
-              "Melbourne \u2013 Sunshine Coast",
-              "Melbourne \u2013 Sydney",
-              "Newman \u2013 Perth",
-              "Perth \u2013 Port Hedland",
-              "Perth \u2013 Sydney",
-              "Port Macquarie \u2013 Sydney",
-              "Sunshine Coast \u2013 Sydney",
-              "Sydney \u2013 Wagga Wagga"
-            ],
-            "name": "Find a route "
           }
         }
       ],
       "mark": {
-        "type": "circle",
-        "size": 65,
-        "stroke": "white",
-        "strokeWidth": 0.6,
+        "type": "geoshape",
         "cursor": "pointer"
       },
       "encoding": {
-        "x": {
-          "field": "distance_km",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              4000
-            ]
-          },
-          "axis": {
-            "title": "Route distance (km)",
-            "tickCount": 4,
-            "format": ",.0f"
-          }
-        },
-        "y": {
+        "color": {
           "field": "change_pct",
           "type": "quantitative",
           "scale": {
+            "type": "threshold",
             "domain": [
-              -45,
-              75
+              -10,
+              0,
+              10
+            ],
+            "range": [
+              "#B55732",
+              "#E6BFAE",
+              "#B9CFE6",
+              "#316EAC"
             ]
           },
-          "axis": {
-            "title": "Change (%)",
-            "tickCount": 5
+          "legend": {
+            "title": "Change (%)"
           }
         },
-        "color": {
+        "stroke": {
           "condition": {
-            "test": "datum.change_pct>=0",
-            "value": "#316EAC"
-          },
-          "value": "#B55732"
-        },
-        "size": {
-          "condition": {
-            "param": "pickedRoute",
+            "param": "pickedState",
             "empty": false,
-            "value": 160
+            "value": "#243637"
           },
-          "value": 65
+          "value": "white"
+        },
+        "strokeWidth": {
+          "condition": {
+            "param": "pickedState",
+            "empty": false,
+            "value": 2.5
+          },
+          "value": 0.8
         },
         "opacity": {
           "condition": {
-            "param": "pickedRoute",
+            "param": "pickedState",
             "empty": true,
-            "value": 0.8
+            "value": 1
           },
-          "value": 0.12
+          "value": 0.35
         },
         "tooltip": [
           {
-            "field": "route_name",
+            "field": "name",
             "type": "nominal",
-            "title": "Route"
-          },
-          {
-            "field": "distance_km",
-            "type": "quantitative",
-            "title": "Distance (km)",
-            "format": ",.0f"
+            "title": "State / territory"
           },
           {
             "field": "change_pct",
@@ -358,95 +148,76 @@
             "format": "+.1f"
           },
           {
-            "field": "baseline_trips",
+            "field": "represented_routes",
             "type": "quantitative",
-            "title": "FY2018-19 trips",
-            "format": ",.0f"
-          },
-          {
-            "field": "latest_trips",
-            "type": "quantitative",
-            "title": "FY2025-26 trips",
-            "format": ",.0f"
+            "title": "Comparable routes",
+            "format": ".0f"
           }
         ]
       }
     },
     {
+      "data": {
+        "url": "data/states-summary.json"
+      },
       "transform": [
         {
-          "filter": {
-            "field": "route_id",
-            "oneOf": [
-              "KTA-PER",
-              "CFS-SYD",
-              "ADL-ASP"
-            ]
-          }
+          "filter": "datum.state_id==='ACT'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
         }
       ],
       "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
+        "type": "rule",
         "color": "#243637",
-        "baseline": "middle",
-        "align": "left",
-        "dx": 8
+        "strokeWidth": 0.8
       },
       "encoding": {
-        "x": {
-          "field": "distance_km",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              4000
-            ]
-          },
-          "axis": {
-            "title": "Route distance (km)",
-            "tickCount": 4,
-            "format": ",.0f"
-          }
+        "longitude": {
+          "field": "anchor_lon",
+          "type": "quantitative"
         },
-        "y": {
-          "field": "change_pct",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              -45,
-              75
-            ]
-          },
-          "axis": {
-            "title": "Change (%)",
-            "tickCount": 5
-          }
+        "latitude": {
+          "field": "anchor_lat",
+          "type": "quantitative"
         },
-        "text": {
-          "field": "label",
-          "type": "nominal"
+        "longitude2": {
+          "datum": 150.4
         },
-        "opacity": {
-          "condition": {
-            "param": "pickedRoute",
-            "empty": true,
-            "value": 1
-          },
-          "value": 0.15
+        "latitude2": {
+          "datum": -38.5
         }
       }
     },
     {
+      "data": {
+        "url": "data/states-summary.json"
+      },
       "transform": [
         {
-          "filter": {
-            "field": "route_id",
-            "oneOf": [
-              "BNE-PER"
-            ]
-          }
+          "filter": "datum.state_id!=='TAS' && datum.state_id!=='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
         }
       ],
       "mark": {
@@ -454,51 +225,71 @@
         "fontSize": 11,
         "lineHeight": 15,
         "color": "#243637",
-        "baseline": "middle",
-        "align": "right",
-        "dx": -8
+        "fontWeight": "bold"
       },
       "encoding": {
-        "x": {
-          "field": "distance_km",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              4000
-            ]
-          },
-          "axis": {
-            "title": "Route distance (km)",
-            "tickCount": 4,
-            "format": ",.0f"
-          }
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
         },
-        "y": {
-          "field": "change_pct",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              -45,
-              75
-            ]
-          },
-          "axis": {
-            "title": "Change (%)",
-            "tickCount": 5
-          }
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
         },
         "text": {
           "field": "label",
           "type": "nominal"
         },
-        "opacity": {
+        "color": {
           "condition": {
-            "param": "pickedRoute",
-            "empty": true,
-            "value": 1
+            "test": "abs(datum.change_pct)>=10 && datum.state_id!=='ACT'",
+            "value": "white"
           },
-          "value": 0.15
+          "value": "#243637"
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/states-summary.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.state_id==='TAS' || datum.state_id==='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "right"
+      },
+      "encoding": {
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
         }
       }
     }

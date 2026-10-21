@@ -40,16 +40,16 @@
   "params": [
     {
       "name": "changeMode",
-      "value": "percent",
+      "value": "trips",
       "bind": {
         "input": "radio",
         "options": [
-          "percent",
-          "trips"
+          "trips",
+          "percent"
         ],
         "labels": [
-          "% change",
-          "Change in trips"
+          "Change in trips",
+          "% change"
         ],
         "name": "Rank by "
       }

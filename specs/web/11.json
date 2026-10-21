@@ -1,301 +1,267 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Change in airport passengers by state on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
-  "width": "container",
-  "height": 350,
-  "autosize": {
-    "type": "fit",
-    "contains": "padding"
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
   },
-  "padding": 8,
   "background": "transparent",
   "config": {
-    "font": "B612, Arial, Helvetica, sans-serif",
-    "view": {
-      "stroke": null
-    },
-    "axis": {
-      "labelFontSize": 12,
-      "titleFontSize": 12,
-      "titleFontWeight": "normal",
-      "labelColor": "#506365",
-      "titleColor": "#506365",
-      "gridColor": "#DFE6E5",
-      "gridOpacity": 0.7,
-      "domain": false,
-      "tickColor": "#BCCAC8",
-      "labelPadding": 7,
-      "titlePadding": 12
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
     },
     "legend": {
-      "labelFontSize": 11,
-      "titleFontSize": 11,
-      "titleFontWeight": "normal",
-      "orient": "bottom"
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
     }
   },
-  "projection": {
-    "type": "conicEqualArea",
-    "rotate": [
-      -134,
-      0,
-      0
-    ],
-    "center": [
-      0,
-      -27
-    ],
-    "parallels": [
-      -18,
-      -36
-    ]
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 11,
+    "source": "Supplied BITRE workbook; FY2025-26"
   },
-  "layer": [
+  "signals": [
     {
-      "data": {
-        "url": "data/states-geometry.json"
-      },
-      "transform": [
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
         {
-          "lookup": "properties.state_id",
-          "from": {
-            "data": {
-              "url": "data/states-summary.json"
-            },
-            "key": "state_id",
-            "fields": [
-              "state_id",
-              "name",
-              "change_pct",
-              "represented_routes"
-            ]
-          }
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
         }
-      ],
-      "params": [
-        {
-          "name": "pickedState",
-          "select": {
-            "type": "point",
-            "fields": [
-              "state_id"
-            ],
-            "on": "click",
-            "clear": "dblclick"
-          }
-        }
-      ],
-      "mark": {
-        "type": "geoshape",
-        "cursor": "pointer"
-      },
-      "encoding": {
-        "color": {
-          "field": "change_pct",
-          "type": "quantitative",
-          "scale": {
-            "type": "threshold",
-            "domain": [
-              -10,
-              0,
-              10
-            ],
-            "range": [
-              "#B55732",
-              "#E6BFAE",
-              "#B9CFE6",
-              "#316EAC"
-            ]
-          },
-          "legend": {
-            "title": "Change (%)"
-          }
-        },
-        "stroke": {
-          "condition": {
-            "param": "pickedState",
-            "empty": false,
-            "value": "#243637"
-          },
-          "value": "white"
-        },
-        "strokeWidth": {
-          "condition": {
-            "param": "pickedState",
-            "empty": false,
-            "value": 2.5
-          },
-          "value": 0.8
-        },
-        "opacity": {
-          "condition": {
-            "param": "pickedState",
-            "empty": true,
-            "value": 1
-          },
-          "value": 0.35
-        },
-        "tooltip": [
-          {
-            "field": "name",
-            "type": "nominal",
-            "title": "State / territory"
-          },
-          {
-            "field": "change_pct",
-            "type": "quantitative",
-            "title": "Change (%)",
-            "format": "+.1f"
-          },
-          {
-            "field": "represented_routes",
-            "type": "quantitative",
-            "title": "Comparable routes",
-            "format": ".0f"
-          }
-        ]
-      }
+      ]
     },
     {
-      "data": {
-        "url": "data/states-summary.json"
-      },
-      "transform": [
-        {
-          "filter": "datum.state_id==='ACT'"
-        },
-        {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
-        }
-      ],
-      "mark": {
-        "type": "rule",
-        "color": "#243637",
-        "strokeWidth": 0.8
-      },
-      "encoding": {
-        "longitude": {
-          "field": "anchor_lon",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "anchor_lat",
-          "type": "quantitative"
-        },
-        "longitude2": {
-          "datum": 150.4
-        },
-        "latitude2": {
-          "datum": -38.5
-        }
-      }
+      "name": "height",
+      "value": 350
     },
     {
-      "data": {
-        "url": "data/states-summary.json"
+      "name": "selectedState",
+      "value": "",
+      "on": [
+        {
+          "events": "click",
+          "update": "datum && datum.state_id && datum.state_id!==selectedState ? datum.state_id : ''"
+        }
+      ]
+    }
+  ],
+  "projections": [
+    {
+      "name": "au",
+      "type": "conicEqualArea",
+      "rotate": [
+        -134,
+        0,
+        0
+      ],
+      "center": [
+        0,
+        -27
+      ],
+      "parallels": [
+        -18,
+        -36
+      ],
+      "fit": {
+        "signal": "{'type':'FeatureCollection','features':data('geometry')}"
       },
+      "extent": {
+        "signal": "[[42,12],[width-65,height-85]]"
+      }
+    }
+  ],
+  "data": [
+    {
+      "name": "geometry",
+      "url": "data/states-geometry.json"
+    },
+    {
+      "name": "states",
+      "url": "data/states-summary.json",
       "transform": [
         {
-          "filter": "datum.state_id!=='TAS' && datum.state_id!=='VIC'"
-        },
+          "type": "geopoint",
+          "projection": "au",
+          "fields": [
+            "anchor_lon",
+            "anchor_lat"
+          ],
+          "as": [
+            "anchor_x",
+            "anchor_y"
+          ]
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "size",
+      "type": "linear",
+      "domain": [
+        0,
+        30632770
+      ],
+      "range": [
+        0,
         {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
+          "signal": "4*pow(min(width,height)*.145,2)"
         }
       ],
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "fontWeight": "bold"
+      "zero": true
+    },
+    {
+      "name": "change",
+      "type": "threshold",
+      "domain": [
+        -10,
+        0,
+        10
+      ],
+      "range": [
+        "#B55732",
+        "#E6BFAE",
+        "#B9CFE6",
+        "#316EAC"
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "circles",
+      "type": "symbol",
+      "from": {
+        "data": "states"
       },
-      "encoding": {
-        "longitude": {
-          "field": "label_lon",
-          "type": "quantitative"
+      "encode": {
+        "enter": {
+          "x": {
+            "field": "anchor_x"
+          },
+          "y": {
+            "field": "anchor_y"
+          }
         },
-        "latitude": {
-          "field": "label_lat",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "label",
-          "type": "nominal"
-        },
-        "color": {
-          "condition": {
-            "test": "abs(datum.change_pct)>=10 && datum.state_id!=='ACT'",
+        "update": {
+          "size": {
+            "scale": "size",
+            "field": "latest_comparable"
+          },
+          "fill": {
+            "scale": "change",
+            "field": "change_pct"
+          },
+          "fillOpacity": {
+            "signal": "selectedState==='' || datum.state_id===selectedState ? 1 : .25"
+          },
+          "stroke": {
             "value": "white"
           },
-          "value": "#243637"
+          "strokeWidth": {
+            "value": 2
+          },
+          "tooltip": {
+            "signal": "{'State':datum.name,'Airport passengers, 2025-26':format(datum.latest_comparable,',d'),'Change since 2018-19':format(datum.change_pct,'+.1f')+'%','Routes':'57 comparable routes'}"
+          },
+          "cursor": {
+            "value": "pointer"
+          }
         }
-      }
-    },
-    {
-      "data": {
-        "url": "data/states-summary.json"
       },
       "transform": [
         {
-          "filter": "datum.state_id==='TAS' || datum.state_id==='VIC'"
-        },
-        {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
+          "type": "force",
+          "static": true,
+          "iterations": 600,
+          "forces": [
+            {
+              "force": "x",
+              "x": "datum.anchor_x",
+              "strength": 0.1
+            },
+            {
+              "force": "y",
+              "y": "datum.anchor_y",
+              "strength": 0.1
+            },
+            {
+              "force": "collide",
+              "radius": {
+                "expr": "sqrt(datum.size)/2+4"
+              },
+              "iterations": 6
+            }
+          ]
         }
-      ],
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "fontWeight": "bold",
-        "align": "right"
+      ]
+    },
+    {
+      "name": "stateLabels",
+      "type": "text",
+      "from": {
+        "data": "circles"
       },
-      "encoding": {
-        "longitude": {
-          "field": "label_lon",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "label_lat",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "label",
-          "type": "nominal"
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "field": "x"
+          },
+          "y": {
+            "field": "y"
+          },
+          "text": {
+            "field": "datum.state_id"
+          },
+          "fill": {
+            "signal": "sqrt(datum.size)/2<16 || abs(datum.datum.change_pct)<10 ? '#243637' : 'white'"
+          },
+          "fontSize": {
+            "value": 13
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "dx": {
+            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? -1 : 1)*(sqrt(datum.size)/2+5) : 0"
+          },
+          "align": {
+            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? 'right' : 'left') : 'center'"
+          },
+          "baseline": {
+            "value": "middle"
+          },
+          "fillOpacity": {
+            "signal": "selectedState==='' || datum.datum.state_id===selectedState ? 1 : .35"
+          }
         }
       }
     }
   ],
-  "usermeta": {
-    "chart_id": 11,
-    "source": "Supplied BITRE workbook; FY2025-26"
-  }
+  "legends": [
+    {
+      "size": "size",
+      "title": "Airport passengers",
+      "orient": "bottom-left",
+      "values": [
+        5000000,
+        20000000
+      ],
+      "format": ".2s",
+      "symbolFillColor": "#C9D3D2",
+      "symbolStrokeColor": "white",
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif"
+    }
+  ],
+  "description": "Airport passengers by state on the 57 comparable routes in FY2025-26 (circle area) and their change since FY2018-19 (colour)."
 }
