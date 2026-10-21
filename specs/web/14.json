@@ -46,28 +46,12 @@
       "as": "label"
     },
     {
-      "calculate": "abs(datum.change_points)<0.05 ? '0.0' : (datum.change_points>0 ? '+' : '\u2212')+format(abs(datum.change_points),'.1f')",
-      "as": "change_label"
-    },
-    {
-      "calculate": "format(datum.occupancy_2026_pct,'.1f')+'%  ('+datum.change_label+' pts)'",
-      "as": "value_label"
-    },
-    {
-      "calculate": "format(datum.occupancy_2019_pct,'.1f')+'% of seats filled'",
+      "calculate": "format(datum.occupancy_2019_pct,'.1f')+'%'",
       "as": "tip_2019"
     },
     {
-      "calculate": "format(datum.occupancy_2026_pct,'.1f')+'% of seats filled'",
+      "calculate": "format(datum.occupancy_2026_pct,'.1f')+'%'",
       "as": "tip_2026"
-    },
-    {
-      "calculate": "datum.change_label+' percentage points'",
-      "as": "tip_change"
-    },
-    {
-      "calculate": "max(datum.occupancy_2019_pct, datum.occupancy_2026_pct)",
-      "as": "right_end"
     }
   ],
   "layer": [
@@ -101,12 +85,12 @@
           "scale": {
             "domain": [
               65,
-              106
+              95
             ],
             "nice": false
           },
           "axis": {
-            "title": "Share of seats filled over the year (%)",
+            "title": "Seats filled",
             "values": [
               65,
               70,
@@ -116,23 +100,18 @@
               90,
               95
             ],
-            "grid": true
+            "grid": true,
+            "labelExpr": "datum.label+'%'"
           }
         },
         "x2": {
           "field": "occupancy_2026_pct"
         },
         "color": {
-          "condition": [
-            {
-              "test": "abs(datum.change_points)<0.05",
-              "value": "#506365"
-            },
-            {
-              "test": "datum.change_points>0",
-              "value": "#316EAC"
-            }
-          ],
+          "condition": {
+            "test": "datum.occupancy_2026_pct>=datum.occupancy_2019_pct",
+            "value": "#316EAC"
+          },
           "value": "#B55732"
         },
         "opacity": {
@@ -189,12 +168,12 @@
           "scale": {
             "domain": [
               65,
-              106
+              95
             ],
             "nice": false
           },
           "axis": {
-            "title": "Share of seats filled over the year (%)",
+            "title": "Seats filled",
             "values": [
               65,
               70,
@@ -204,7 +183,8 @@
               90,
               95
             ],
-            "grid": true
+            "grid": true,
+            "labelExpr": "datum.label+'%'"
           }
         },
         "tooltip": [
@@ -216,23 +196,12 @@
           {
             "field": "tip_2019",
             "type": "nominal",
-            "title": "2018\u201319"
+            "title": "Seats filled, 2018\u201319"
           },
           {
             "field": "tip_2026",
             "type": "nominal",
-            "title": "2025\u201326"
-          },
-          {
-            "field": "tip_change",
-            "type": "nominal",
-            "title": "Change"
-          },
-          {
-            "field": "latest_trips",
-            "type": "quantitative",
-            "title": "Passenger trips, 2025\u201326",
-            "format": ",.0f"
+            "title": "Seats filled, 2025\u201326"
           }
         ],
         "color": {
@@ -257,11 +226,20 @@
       }
     },
     {
+      "transform": [
+        {
+          "filter": "datum.route_id==='CBR-MEL'"
+        },
+        {
+          "calculate": "format(datum.occupancy_2019_pct,'.0f')+'% \u2192 '+format(datum.occupancy_2026_pct,'.0f')+'%'",
+          "as": "note"
+        }
+      ],
       "mark": {
         "type": "text",
         "fontSize": 11,
         "lineHeight": 15,
-        "color": "#243637",
+        "color": "#316EAC",
         "align": "left",
         "baseline": "middle",
         "dx": 10,
@@ -287,25 +265,12 @@
           }
         },
         "x": {
-          "field": "right_end",
+          "field": "occupancy_2026_pct",
           "type": "quantitative"
         },
         "text": {
-          "field": "value_label",
+          "field": "note",
           "type": "nominal"
-        },
-        "color": {
-          "condition": [
-            {
-              "test": "abs(datum.change_points)<0.05",
-              "value": "#506365"
-            },
-            {
-              "test": "datum.change_points>0",
-              "value": "#316EAC"
-            }
-          ],
-          "value": "#B55732"
         }
       }
     }
