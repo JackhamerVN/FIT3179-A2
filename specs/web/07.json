@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Change in state endpoint movements on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
-  "width": 500,
+  "width": "container",
   "height": 350,
   "autosize": {
     "type": "fit",
@@ -34,12 +34,6 @@
       "orient": "bottom"
     }
   },
-  "params": [
-    {
-      "name": "selectedState",
-      "value": ""
-    }
-  ],
   "projection": {
     "type": "conicEqualArea",
     "rotate": [
@@ -78,8 +72,22 @@
           }
         }
       ],
+      "params": [
+        {
+          "name": "pickedState",
+          "select": {
+            "type": "point",
+            "fields": [
+              "state_id"
+            ],
+            "on": "click",
+            "clear": "dblclick"
+          }
+        }
+      ],
       "mark": {
-        "type": "geoshape"
+        "type": "geoshape",
+        "cursor": "pointer"
       },
       "encoding": {
         "color": {
@@ -105,21 +113,24 @@
         },
         "stroke": {
           "condition": {
-            "test": "datum.state_id===selectedState",
+            "param": "pickedState",
+            "empty": false,
             "value": "#243637"
           },
           "value": "white"
         },
         "strokeWidth": {
           "condition": {
-            "test": "datum.state_id===selectedState",
+            "param": "pickedState",
+            "empty": false,
             "value": 2.5
           },
           "value": 0.8
         },
         "opacity": {
           "condition": {
-            "test": "selectedState==='' || datum.state_id===selectedState",
+            "param": "pickedState",
+            "empty": true,
             "value": 1
           },
           "value": 0.35

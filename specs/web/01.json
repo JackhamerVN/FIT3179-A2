@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Monthly Australian domestic passenger trips, July 2014 to June 2026.",
-  "width": 500,
+  "width": "container",
   "height": 300,
   "autosize": {
     "type": "fit",
@@ -37,12 +37,6 @@
   "data": {
     "url": "data/national-monthly.json"
   },
-  "params": [
-    {
-      "name": "selectedMonth",
-      "value": "2026-06-01"
-    }
-  ],
   "layer": [
     {
       "mark": {
@@ -60,7 +54,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         },
         "y": {
@@ -95,11 +91,72 @@
       }
     },
     {
-      "transform": [
+      "params": [
         {
-          "filter": "toNumber(toDate(datum.month))===toNumber(toDate(selectedMonth))"
+          "name": "hoverMonth",
+          "select": {
+            "type": "point",
+            "fields": [
+              "month"
+            ],
+            "nearest": true,
+            "on": "pointerover",
+            "clear": "pointerout"
+          }
         }
       ],
+      "mark": {
+        "type": "point",
+        "opacity": 0,
+        "size": 300
+      },
+      "encoding": {
+        "x": {
+          "field": "month",
+          "type": "temporal",
+          "scale": {
+            "type": "utc"
+          },
+          "axis": {
+            "title": null,
+            "format": "%Y",
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
+          }
+        },
+        "y": {
+          "field": "passenger_trips",
+          "type": "quantitative",
+          "axis": {
+            "title": "Passenger trips",
+            "format": "~s",
+            "tickCount": 5
+          },
+          "scale": {
+            "domain": [
+              0,
+              6500000
+            ]
+          }
+        },
+        "tooltip": [
+          {
+            "field": "month",
+            "type": "temporal",
+            "title": "Month",
+            "format": "%b %Y"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
       "mark": {
         "type": "rule",
         "color": "#7C9395",
@@ -118,17 +175,22 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
+        },
+        "opacity": {
+          "condition": {
+            "param": "hoverMonth",
+            "empty": false,
+            "value": 1
+          },
+          "value": 0
         }
       }
     },
     {
-      "transform": [
-        {
-          "filter": "toNumber(toDate(datum.month))===toNumber(toDate(selectedMonth))"
-        }
-      ],
       "mark": {
         "type": "point",
         "filled": true,
@@ -147,7 +209,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         },
         "y": {
@@ -178,7 +242,15 @@
             "title": "Passenger trips",
             "format": ",.0f"
           }
-        ]
+        ],
+        "opacity": {
+          "condition": {
+            "param": "hoverMonth",
+            "empty": false,
+            "value": 1
+          },
+          "value": 0
+        }
       }
     },
     {
@@ -203,7 +275,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         },
         "y": {
@@ -261,7 +335,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         }
       }
@@ -295,7 +371,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         },
         "y": {
@@ -334,7 +412,9 @@
           "axis": {
             "title": null,
             "format": "%Y",
-            "tickCount": 7
+            "tickCount": {
+              "expr": "width<550 ? 4 : 7"
+            }
           }
         },
         "y": {

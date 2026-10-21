@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Route distance and percentage change in passenger trips for 57 comparable city pairs.",
-  "width": 500,
+  "width": "container",
   "height": 300,
   "autosize": {
     "type": "fit",
@@ -37,12 +37,6 @@
   "data": {
     "url": "data/routes-comparison.json"
   },
-  "params": [
-    {
-      "name": "selectedRoute",
-      "value": ""
-    }
-  ],
   "transform": [
     {
       "calculate": "replace(datum.route_name,' - ','\u2013')",
@@ -71,11 +65,149 @@
       }
     },
     {
+      "params": [
+        {
+          "name": "pickedRoute",
+          "select": {
+            "type": "point",
+            "fields": [
+              "route_id"
+            ],
+            "on": "click",
+            "clear": "dblclick"
+          },
+          "bind": {
+            "input": "select",
+            "options": [
+              null,
+              "ADL-ASP",
+              "ADL-BNE",
+              "ADL-CBR",
+              "ADL-OOL",
+              "ADL-MEL",
+              "ADL-PER",
+              "ADL-PLO",
+              "ADL-SYD",
+              "ABX-SYD",
+              "BNK-SYD",
+              "BDB-BNE",
+              "BNE-CNS",
+              "BNE-CBR",
+              "BNE-DRW",
+              "BNE-EMD",
+              "BNE-GLT",
+              "BNE-HTI",
+              "BNE-HBA",
+              "BNE-MKY",
+              "BNE-MEL",
+              "BNE-ISA",
+              "BNE-NTL",
+              "BNE-PER",
+              "BNE-PPP",
+              "BNE-ROK",
+              "BNE-SYD",
+              "BNE-TSV",
+              "BME-PER",
+              "CNS-MEL",
+              "CNS-SYD",
+              "CBR-MEL",
+              "CBR-SYD",
+              "CFS-SYD",
+              "DRW-MEL",
+              "DRW-PER",
+              "DBO-SYD",
+              "GET-PER",
+              "MEL-OOL",
+              "OOL-SYD",
+              "HTI-SYD",
+              "HBA-MEL",
+              "HBA-SYD",
+              "KGI-PER",
+              "KTA-PER",
+              "LST-MEL",
+              "LST-SYD",
+              "MEL-MQL",
+              "MEL-NTL",
+              "MEL-PER",
+              "MCY-MEL",
+              "MEL-SYD",
+              "PER-ZNE",
+              "PER-PHE",
+              "PER-SYD",
+              "PQQ-SYD",
+              "MCY-SYD",
+              "SYD-WGA"
+            ],
+            "labels": [
+              "All 57 routes",
+              "Adelaide \u2013 Alice Springs",
+              "Adelaide \u2013 Brisbane",
+              "Adelaide \u2013 Canberra",
+              "Adelaide \u2013 Gold Coast",
+              "Adelaide \u2013 Melbourne",
+              "Adelaide \u2013 Perth",
+              "Adelaide \u2013 Port Lincoln",
+              "Adelaide \u2013 Sydney",
+              "Albury \u2013 Sydney",
+              "Ballina \u2013 Sydney",
+              "Brisbane \u2013 Bundaberg",
+              "Brisbane \u2013 Cairns",
+              "Brisbane \u2013 Canberra",
+              "Brisbane \u2013 Darwin",
+              "Brisbane \u2013 Emerald",
+              "Brisbane \u2013 Gladstone",
+              "Brisbane \u2013 Hamilton Island",
+              "Brisbane \u2013 Hobart",
+              "Brisbane \u2013 Mackay",
+              "Brisbane \u2013 Melbourne",
+              "Brisbane \u2013 Mount Isa",
+              "Brisbane \u2013 Newcastle",
+              "Brisbane \u2013 Perth",
+              "Brisbane \u2013 Proserpine",
+              "Brisbane \u2013 Rockhampton",
+              "Brisbane \u2013 Sydney",
+              "Brisbane \u2013 Townsville",
+              "Broome \u2013 Perth",
+              "Cairns \u2013 Melbourne",
+              "Cairns \u2013 Sydney",
+              "Canberra \u2013 Melbourne",
+              "Canberra \u2013 Sydney",
+              "Coffs Harbour \u2013 Sydney",
+              "Darwin \u2013 Melbourne",
+              "Darwin \u2013 Perth",
+              "Dubbo \u2013 Sydney",
+              "Geraldton \u2013 Perth",
+              "Gold Coast \u2013 Melbourne",
+              "Gold Coast \u2013 Sydney",
+              "Hamilton Island \u2013 Sydney",
+              "Hobart \u2013 Melbourne",
+              "Hobart \u2013 Sydney",
+              "Kalgoorlie \u2013 Perth",
+              "Karratha \u2013 Perth",
+              "Launceston \u2013 Melbourne",
+              "Launceston \u2013 Sydney",
+              "Melbourne \u2013 Mildura",
+              "Melbourne \u2013 Newcastle",
+              "Melbourne \u2013 Perth",
+              "Melbourne \u2013 Sunshine Coast",
+              "Melbourne \u2013 Sydney",
+              "Newman \u2013 Perth",
+              "Perth \u2013 Port Hedland",
+              "Perth \u2013 Sydney",
+              "Port Macquarie \u2013 Sydney",
+              "Sunshine Coast \u2013 Sydney",
+              "Sydney \u2013 Wagga Wagga"
+            ],
+            "name": "Find a route "
+          }
+        }
+      ],
       "mark": {
         "type": "circle",
         "size": 65,
         "stroke": "white",
-        "strokeWidth": 0.6
+        "strokeWidth": 0.6,
+        "cursor": "pointer"
       },
       "encoding": {
         "x": {
@@ -114,9 +246,18 @@
           },
           "value": "#B55732"
         },
+        "size": {
+          "condition": {
+            "param": "pickedRoute",
+            "empty": false,
+            "value": 160
+          },
+          "value": 65
+        },
         "opacity": {
           "condition": {
-            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "param": "pickedRoute",
+            "empty": true,
             "value": 0.8
           },
           "value": 0.12
@@ -212,7 +353,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "param": "pickedRoute",
+            "empty": true,
             "value": 1
           },
           "value": 0.15
@@ -275,7 +417,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedRoute==='' || datum.route_id===selectedRoute",
+            "param": "pickedRoute",
+            "empty": true,
             "value": 1
           },
           "value": 0.15

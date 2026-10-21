@@ -1,6 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "width": 850,
   "height": 350,
   "padding": {
     "top": 8,
@@ -30,8 +29,17 @@
   "description": "Treemap of all domestic trips. Routes are grouped: the ten busiest, the other disclosed routes, and trips not disclosed by route.",
   "signals": [
     {
-      "name": "selectedAirport",
-      "value": ""
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
+        {
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
+        }
+      ]
     }
   ],
   "data": [
@@ -174,9 +182,6 @@
             "scale": "group",
             "field": "group"
           },
-          "fillOpacity": {
-            "signal": "(selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? .22 : 1"
-          },
           "tooltip": {
             "signal": "{'Route':datum.name,'Group':datum.group==='top' ? 'Ten busiest routes' : datum.group==='other' ? 'Other disclosed routes' : 'Not disclosed by route','Trips':format(datum.passenger_trips,',d'),'National share':format(datum.passenger_trips/60753164,'.1%')}"
           }
@@ -207,7 +212,7 @@
             "value": "middle"
           },
           "fill": {
-            "signal": "datum.group!=='top' || (selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? '#243637' : 'white'"
+            "signal": "datum.group!=='top' ? '#243637' : 'white'"
           },
           "fontSize": {
             "signal": "(datum.x1-datum.x0)>105 && (datum.y1-datum.y0)>46 ? 11 : 9.5"
@@ -242,7 +247,7 @@
             "signal": "format(datum.passenger_trips/60753164,'.1%')"
           },
           "fill": {
-            "signal": "datum.group!=='top' || (selectedAirport!=='' && datum.id!=='Rest' && indexof(split(datum.id,'-'),selectedAirport)<0) ? '#243637' : 'white'"
+            "signal": "datum.group!=='top' ? '#243637' : 'white'"
           },
           "fontSize": {
             "value": 12

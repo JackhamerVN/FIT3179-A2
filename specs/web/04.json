@@ -1,7 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "width": 850,
-  "height": 470,
   "padding": {
     "top": 8,
     "right": 8,
@@ -29,8 +27,121 @@
   },
   "signals": [
     {
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
+        {
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
+        }
+      ]
+    },
+    {
+      "name": "height",
+      "update": "width<550 ? 345 : 440"
+    },
+    {
       "name": "selectedAirport",
-      "value": ""
+      "value": "",
+      "bind": {
+        "input": "select",
+        "name": "Show the routes of ",
+        "options": [
+          "",
+          "ADL",
+          "ABX",
+          "ASP",
+          "AYQ",
+          "BNK",
+          "BNE",
+          "BME",
+          "BDB",
+          "CNS",
+          "CBR",
+          "CFS",
+          "DRW",
+          "DPO",
+          "DBO",
+          "EMD",
+          "GET",
+          "GLT",
+          "OOL",
+          "HTI",
+          "HBA",
+          "KGI",
+          "KTA",
+          "LST",
+          "MKY",
+          "MEL",
+          "MQL",
+          "ISA",
+          "NTL",
+          "ZNE",
+          "OAG",
+          "PER",
+          "PHE",
+          "PLO",
+          "PQQ",
+          "PPP",
+          "ROK",
+          "MCY",
+          "SYD",
+          "TSV",
+          "WGA"
+        ],
+        "labels": [
+          "All airports (top 15 routes)",
+          "Adelaide (ADL)",
+          "Albury (ABX)",
+          "Alice Springs (ASP)",
+          "Ayers Rock (AYQ)",
+          "Ballina (BNK)",
+          "Brisbane (BNE)",
+          "Broome (BME)",
+          "Bundaberg (BDB)",
+          "Cairns (CNS)",
+          "Canberra (CBR)",
+          "Coffs Harbour (CFS)",
+          "Darwin (DRW)",
+          "Devonport (DPO)",
+          "Dubbo (DBO)",
+          "Emerald (EMD)",
+          "Geraldton (GET)",
+          "Gladstone (GLT)",
+          "Gold Coast (OOL)",
+          "Hamilton Island (HTI)",
+          "Hobart (HBA)",
+          "Kalgoorlie (KGI)",
+          "Karratha (KTA)",
+          "Launceston (LST)",
+          "Mackay (MKY)",
+          "Melbourne (MEL)",
+          "Mildura (MQL)",
+          "Mount Isa (ISA)",
+          "Newcastle (NTL)",
+          "Newman (ZNE)",
+          "Orange (OAG)",
+          "Perth (PER)",
+          "Port Hedland (PHE)",
+          "Port Lincoln (PLO)",
+          "Port Macquarie (PQQ)",
+          "Proserpine (PPP)",
+          "Rockhampton (ROK)",
+          "Sunshine Coast (MCY)",
+          "Sydney (SYD)",
+          "Townsville (TSV)",
+          "Wagga Wagga (WGA)"
+        ]
+      },
+      "on": [
+        {
+          "events": "@airportNodes:click",
+          "update": "datum.airport_id===selectedAirport ? '' : datum.airport_id"
+        }
+      ]
     }
   ],
   "projections": [
@@ -226,6 +337,9 @@
           },
           "tooltip": {
             "signal": "{'Airport':datum.name,'City':datum.city,'Disclosed endpoint movements':format(datum.endpoint_movements,',d')}"
+          },
+          "cursor": {
+            "value": "pointer"
           }
         }
       }

@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Selected large route changes, the remaining national change and the net result, FY2018-19 to FY2025-26.",
-  "width": 500,
+  "width": "container",
   "height": 325,
   "autosize": {
     "type": "fit",
@@ -77,7 +77,9 @@
     {
       "mark": {
         "type": "bar",
-        "size": 40
+        "size": {
+          "expr": "width<550 ? 28 : 40"
+        }
       },
       "encoding": {
         "x": {
@@ -96,8 +98,10 @@
           "axis": {
             "title": null,
             "labelAngle": 0,
-            "labelExpr": "[['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']][datum.value]",
-            "labelFontSize": 10
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
           }
         },
         "y": {
@@ -169,7 +173,9 @@
       },
       "mark": {
         "type": "bar",
-        "size": 40,
+        "size": {
+          "expr": "width<550 ? 28 : 40"
+        },
         "color": "#243637"
       },
       "encoding": {
@@ -189,8 +195,10 @@
           "axis": {
             "title": null,
             "labelAngle": 0,
-            "labelExpr": "[['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']][datum.value]",
-            "labelFontSize": 10
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
           }
         },
         "y": {
@@ -245,8 +253,10 @@
           "axis": {
             "title": null,
             "labelAngle": 0,
-            "labelExpr": "[['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']][datum.value]",
-            "labelFontSize": 10
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
           }
         },
         "y": {
@@ -289,8 +299,10 @@
           "axis": {
             "title": null,
             "labelAngle": 0,
-            "labelExpr": "[['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']][datum.value]",
-            "labelFontSize": 10
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
           }
         },
         "y": {
@@ -339,8 +351,10 @@
           "axis": {
             "title": null,
             "labelAngle": 0,
-            "labelExpr": "[['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']][datum.value]",
-            "labelFontSize": 10
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
           }
         },
         "y": {

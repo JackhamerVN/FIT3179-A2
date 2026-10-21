@@ -1,7 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "width": 850,
-  "height": 400,
   "padding": {
     "top": 8,
     "right": 8,
@@ -29,8 +27,53 @@
   },
   "signals": [
     {
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
+        {
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
+        }
+      ]
+    },
+    {
+      "name": "height",
+      "value": 370
+    },
+    {
       "name": "selectedGroup",
-      "value": ""
+      "value": "",
+      "bind": {
+        "input": "select",
+        "name": "Highlight route group ",
+        "options": [
+          "",
+          "0-0",
+          "0-1",
+          "0-2",
+          "1-0",
+          "1-1",
+          "1-2"
+        ],
+        "labels": [
+          "All route groups",
+          "Between states / <500 km",
+          "Between states / 500-1,499 km",
+          "Between states / 1,500+ km",
+          "Within a state / <500 km",
+          "Within a state / 500-1,499 km",
+          "Within a state / 1,500+ km"
+        ]
+      },
+      "on": [
+        {
+          "events": "@ribbons:click",
+          "update": "datum.group_id===selectedGroup ? '' : datum.group_id"
+        }
+      ]
     },
     {
       "name": "gap",
@@ -222,6 +265,9 @@
           },
           "tooltip": {
             "signal": "{'Group':datum.relation,'Distance':datum.distance_band,'Passenger trips':format(datum.passenger_trips,',d'),'Routes':length(datum.route_ids)}"
+          },
+          "cursor": {
+            "value": "pointer"
           }
         }
       }

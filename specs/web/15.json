@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Rank of the 15 busiest airports by domestic passenger movements, FY2014-15 to FY2025-26.",
-  "width": 500,
+  "width": "container",
   "height": 430,
   "autosize": {
     "type": "fit",
@@ -40,11 +40,7 @@
   "params": [
     {
       "name": "compactLabels",
-      "value": false
-    },
-    {
-      "name": "selectedRankAirport",
-      "value": ""
+      "expr": "width<550"
     }
   ],
   "transform": [
@@ -179,8 +175,7 @@
       "mark": {
         "type": "line",
         "strokeWidth": 2.4,
-        "interpolate": "monotone",
-        "cursor": "pointer"
+        "interpolate": "monotone"
       },
       "encoding": {
         "x": {
@@ -267,7 +262,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
+            "param": "pickedAirport",
+            "empty": true,
             "value": 1
           },
           "value": 0.14
@@ -275,6 +271,141 @@
       }
     },
     {
+      "name": "rankTargets",
+      "params": [
+        {
+          "name": "pickedAirport",
+          "select": {
+            "type": "point",
+            "fields": [
+              "airport_id"
+            ],
+            "on": "click",
+            "clear": "dblclick"
+          },
+          "bind": {
+            "input": "select",
+            "options": [
+              null,
+              "ADL",
+              "BNE",
+              "CNS",
+              "CBR",
+              "DRW",
+              "OOL",
+              "HBA",
+              "LST",
+              "MKY",
+              "MEL",
+              "NTL",
+              "PER",
+              "MCY",
+              "SYD",
+              "TSV"
+            ],
+            "labels": [
+              "All 15 airports",
+              "Adelaide (ADL)",
+              "Brisbane (BNE)",
+              "Cairns (CNS)",
+              "Canberra (CBR)",
+              "Darwin (DRW)",
+              "Gold Coast (OOL)",
+              "Hobart (HBA)",
+              "Launceston (LST)",
+              "Mackay (MKY)",
+              "Melbourne (MEL)",
+              "Newcastle (NTL)",
+              "Perth (PER)",
+              "Sunshine Coast (MCY)",
+              "Sydney (SYD)",
+              "Townsville (TSV)"
+            ],
+            "name": "Highlight an airport "
+          }
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeWidth": 12,
+        "opacity": 0,
+        "interpolate": "monotone",
+        "cursor": "pointer"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -1.2,
+              16.6
+            ],
+            "reverse": true,
+            "nice": false
+          },
+          "axis": {
+            "title": "Rank",
+            "values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "grid": false
+          }
+        },
+        "detail": {
+          "field": "airport_id",
+          "type": "nominal"
+        },
+        "tooltip": [
+          {
+            "field": "airport",
+            "type": "nominal",
+            "title": "Airport"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rankDots",
       "mark": {
         "type": "circle",
         "size": 62,
@@ -364,7 +495,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
+            "param": "pickedAirport",
+            "empty": true,
             "value": 1
           },
           "value": 0.14
@@ -475,7 +607,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
+            "param": "pickedAirport",
+            "empty": true,
             "value": 1
           },
           "value": 0.14

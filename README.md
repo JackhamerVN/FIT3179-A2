@@ -7,11 +7,11 @@ Built for FIT3179 Data Visualisation (Monash University), Data Visualisation 2, 
 
 **Design sketch:** [sketch/sketch.pdf](sketch/sketch.pdf) (hand-drawn, A4)
 
-**Author:** Quy Duong Vu. **Prepared:** 4 October 2026. **Updated:** 15 October 2026.
+**Author:** Quy Duong Vu. **Prepared:** 4 October 2026. **Updated:** 22 October 2026.
 
 ## The charts
 
-Every chart and map is drawn with Vega-Lite or Vega. Each has its own readable JSON specification, numbered as on the page.
+Every chart and map is drawn with Vega-Lite or Vega. Each has its own readable JSON specification, numbered as on the page. Charts 4, 6, 8 and 10 use Vega because they need layouts that Vega-Lite does not provide (curved flow links, a two-level treemap, force-separated circles and alluvial ribbons); the others use Vega-Lite.
 
 | # | Chart | Idiom | Specification |
 |---|---|---|---|
@@ -31,6 +31,15 @@ Every chart and map is drawn with Vega-Lite or Vega. Each has its own readable J
 | 14 | Trips per resident remain 10% below 2018–19 | Line chart | [14.json](specs/web/14.json) |
 | 15 | The top seven returned to their earlier order | Bump chart | [15.json](specs/web/15.json) |
 
+## How the page works
+
+`index.html` embeds each chart in the usual way: `vegaEmbed('#chart-01', 'specs/web/01.json')`. Each specification loads its data with `"data": {"url": "data/...json"}`. Nothing else runs on the page.
+
+The specifications are self-contained:
+
+- **Size:** Vega-Lite charts use `"width": "container"`; the Vega charts read the container width through a `width` signal, so every chart fits a phone or a laptop.
+- **Interaction:** menus and buttons are Vega-Lite `bind` parameters or Vega signal bindings, and highlighting uses selection parameters. Hover the line (1) or the heatmap (2); choose an airport (4, 15), a route (12), a route group (10) or the ranking measure (9); click an airport (5), a state (7, 8), a histogram bar (11) or a line (13, 15) to highlight it. Double-click clears a selection.
+
 ## Data sources
 
 - Bureau of Infrastructure and Transport Research Economics (BITRE), [Australian domestic aviation activity: time series](https://www.bitre.gov.au/publications/ongoing/domestic_airline_activity-time_series), Top routes workbook, July 2014 to June 2026.
@@ -45,15 +54,15 @@ The page loads small prepared extracts from `data/` (about 200 KB in total). `da
 
 | Path | Contents |
 |---|---|
-| `index.html` | The page: narrative, structure and controls |
-| `assets/` | Stylesheet and the script that embeds the charts, tables and CSV downloads |
-| `specs/web/` | The fifteen chart specifications |
+| `index.html` | The page: narrative, layout and the `vegaEmbed` calls |
+| `assets/styles.css` | Layout, typography and colour |
+| `specs/web/` | The fifteen chart specifications (Vega-Lite and Vega JSON) |
 | `data/` | Prepared JSON extracts |
 | `sketch/sketch.pdf` | Hand-drawn A4 design sketch |
-| `vendor/` | Pinned Vega 6.4.0, Vega-Lite 6.4.3, Vega-Embed 7.3.0 and Lucide 0.468.0, with their licences |
+| `vendor/` | Pinned Vega 6.4.0, Vega-Lite 6.4.3 and Vega-Embed 7.3.0, with their licences |
 
-Typefaces (B612, B612 Mono and Source Serif 4) load from Google Fonts. The page fetches JSON, so it needs a web server; opening `index.html` as a file will not load the charts.
+Typefaces (B612, B612 Mono and Source Serif 4) load from Google Fonts. GitHub Pages serves the page. Browsers block JSON requests from a page opened directly from disk, so to view it locally run any static server in this folder (for example `python3 -m http.server`).
 
 ## Acknowledgements
 
-AI tools were used: OpenAI Codex and Anthropic Claude assisted with planning, data preparation, code and verification. Charts use Vega and Vega-Lite; icons use Lucide. Library credits are in `vendor/NOTICE.txt`.
+AI tools were used: OpenAI Codex and Anthropic Claude assisted with planning, data preparation, code and verification. Charts use Vega and Vega-Lite; the plane icon is from Lucide. Library credits are in `vendor/NOTICE.txt`.

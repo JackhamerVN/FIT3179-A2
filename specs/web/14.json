@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Domestic passenger trips per Australian resident by financial year, 2014-15 to 2025-26.",
-  "width": 500,
+  "width": "container",
   "height": 320,
   "autosize": {
     "type": "fit",

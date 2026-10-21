@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Twelve largest absolute route changes among 57 comparable pairs; rank depends on the selected measure.",
-  "width": 500,
-  "height": 425,
+  "width": "container",
+  "height": 460,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -40,7 +40,19 @@
   "params": [
     {
       "name": "changeMode",
-      "value": "percent"
+      "value": "percent",
+      "bind": {
+        "input": "radio",
+        "options": [
+          "percent",
+          "trips"
+        ],
+        "labels": [
+          "% change",
+          "Change in trips"
+        ],
+        "name": "Rank by "
+      }
     }
   ],
   "transform": [
@@ -103,8 +115,14 @@
       },
       "axis": {
         "title": null,
-        "labelLimit": 200,
-        "labelFontSize": 12
+        "labelLimit": {
+          "expr": "width<550 ? 100 : 200"
+        },
+        "labelFontSize": {
+          "expr": "width<550 ? 10 : 12"
+        },
+        "labelLineHeight": 12,
+        "labelExpr": "width<550 ? split(datum.label,' - ') : datum.label"
       }
     },
     "x": {
@@ -115,7 +133,9 @@
         "padding": 52
       },
       "axis": {
-        "title": "Change (%)",
+        "title": {
+          "expr": "changeMode==='percent' ? 'Change (%)' : 'Change in passenger trips'"
+        },
         "format": "~s",
         "tickCount": 5
       }

@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
   "description": "Disclosed route endpoint movements by airport; circle area is proportional to volume.",
-  "width": 500,
+  "width": "container",
   "height": 350,
   "autosize": {
     "type": "fit",
@@ -34,12 +34,6 @@
       "orient": "bottom"
     }
   },
-  "params": [
-    {
-      "name": "selectedAirport",
-      "value": ""
-    }
-  ],
   "projection": {
     "type": "conicEqualArea",
     "rotate": [
@@ -72,10 +66,24 @@
       "data": {
         "url": "data/airports-activity.json"
       },
+      "params": [
+        {
+          "name": "pickedAirport",
+          "select": {
+            "type": "point",
+            "fields": [
+              "airport_id"
+            ],
+            "on": "click",
+            "clear": "dblclick"
+          }
+        }
+      ],
       "mark": {
         "type": "circle",
         "stroke": "#177A88",
-        "strokeWidth": 0.7
+        "strokeWidth": 0.7,
+        "cursor": "pointer"
       },
       "encoding": {
         "longitude": {
@@ -118,7 +126,8 @@
         },
         "opacity": {
           "condition": {
-            "test": "selectedAirport==='' || datum.airport_id===selectedAirport",
+            "param": "pickedAirport",
+            "empty": true,
             "value": 0.65
           },
           "value": 0.12

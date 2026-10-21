@@ -1,7 +1,5 @@
 {
   "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "width": 850,
-  "height": 470,
   "padding": {
     "top": 8,
     "right": 8,
@@ -29,8 +27,35 @@
   },
   "signals": [
     {
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
+        {
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
+        }
+      ]
+    },
+    {
+      "name": "height",
+      "value": 350
+    },
+    {
       "name": "selectedState",
-      "value": ""
+      "value": "",
+      "on": [
+        {
+          "events": "@circles:click",
+          "update": "datum.state_id===selectedState ? '' : datum.state_id"
+        },
+        {
+          "events": "dblclick",
+          "update": "''"
+        }
+      ]
     }
   ],
   "projections": [
@@ -134,6 +159,9 @@
           },
           "tooltip": {
             "signal": "{'State':datum.name,'Disclosed endpoint movements':format(datum.endpoint_movements,',d'),'Period':'FY2025-26'}"
+          },
+          "cursor": {
+            "value": "pointer"
           }
         }
       },
