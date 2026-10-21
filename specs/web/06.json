@@ -153,7 +153,7 @@
             "signal": "(datum.x1-datum.x0)-2"
           },
           "opacity": {
-            "signal": "(datum.x1-datum.x0)>150 ? 1 : 0"
+            "signal": "(datum.x1-datum.x0)>150 && datum.id!=='G-rest' ? 1 : 0"
           }
         }
       }

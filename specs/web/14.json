@@ -273,6 +273,48 @@
           "type": "nominal"
         }
       }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.route_id==='MEL-SYD'"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#506365",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 10,
+        "fontWeight": "bold",
+        "text": "Unchanged: 85%"
+      },
+      "encoding": {
+        "y": {
+          "field": "label",
+          "type": "nominal",
+          "sort": {
+            "field": "rank",
+            "op": "min",
+            "order": "ascending"
+          },
+          "axis": {
+            "title": null,
+            "labelFontSize": {
+              "expr": "width<550 ? 11 : 12"
+            },
+            "labelLimit": 220,
+            "ticks": false,
+            "domain": false
+          }
+        },
+        "x": {
+          "field": "occupancy_2026_pct",
+          "type": "quantitative"
+        }
+      }
     }
   ],
   "usermeta": {

@@ -108,7 +108,8 @@
             ]
           },
           "legend": {
-            "title": "Change (%)"
+            "title": "Change since 2018\u201319",
+            "labelExpr": "!isValid(datum.label) || !isFinite(datum.value) ? '' : (datum.value>0 ? '+' : '')+replace(datum.label,'-','\u2212')+'%'"
           }
         },
         "stroke": {
