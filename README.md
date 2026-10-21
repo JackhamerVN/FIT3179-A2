@@ -27,7 +27,7 @@ All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`]
 - BITRE, [Airport traffic data](https://www.bitre.gov.au/resource/aviation/airport-traffic-data)
 - ABS, [National, state and territory population, March 2026](https://www.abs.gov.au/statistics/people/population/national-state-and-territory-population/mar-2026)
 - [OurAirports](https://ourairports.com/data/) (airport locations) and [Natural Earth](https://www.naturalearthdata.com/) (state boundaries)
-- Context in captions: ACCC domestic airline media releases (12 Aug 2025, 9 Dec 2025), WA Department of Mines, Petroleum and Exploration 2024–25 Statistics Digest, AAP (22 Sep 2023)
+- Context in captions: ABS population change (Table 1), BITRE domestic airfares index, ACCC domestic airline media releases (12 Aug 2025, 9 Dec 2025), WA Department of Mines, Petroleum and Exploration 2024–25 Statistics Digest, AAP (22 Sep 2023)
 
 ## Acknowledgements
 

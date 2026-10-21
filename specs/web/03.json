@@ -132,6 +132,18 @@
     {
       "calculate": "(datum.index>0 ? '+' : '\u2212')+format(abs(datum.index),'.1f')+'%'",
       "as": "label"
+    },
+    {
+      "calculate": "datum.measure==='Resident population' ? 'Residents (at 31 December)' : datum.measure",
+      "as": "shown_name"
+    },
+    {
+      "calculate": "format((datum.measure==='Resident population' ? datum.population_base : datum.measure==='Passenger trips' ? datum.passenger_trips_base : datum.measure==='Seats flown' ? datum.seats_base : null)/1e6,'.2f')+' million'",
+      "as": "before_text"
+    },
+    {
+      "calculate": "format((datum.measure==='Resident population' ? datum.population : datum.measure==='Passenger trips' ? datum.passenger_trips : datum.measure==='Seats flown' ? datum.seats : null)/1e6,'.2f')+' million'",
+      "as": "after_text"
     }
   ],
   "layer": [
@@ -201,33 +213,24 @@
         },
         "tooltip": [
           {
-            "field": "measure",
+            "field": "shown_name",
             "type": "nominal",
             "title": "Measure"
           },
           {
-            "field": "index",
-            "type": "quantitative",
-            "title": "Change since 2018-19 (%)",
-            "format": "+.1f"
+            "field": "before_text",
+            "type": "nominal",
+            "title": "2018\u201319"
           },
           {
-            "field": "population",
-            "type": "quantitative",
-            "title": "Residents at 31 December 2025",
-            "format": ",.0f"
+            "field": "after_text",
+            "type": "nominal",
+            "title": "2025\u201326"
           },
           {
-            "field": "passenger_trips",
-            "type": "quantitative",
-            "title": "Passenger trips, 2025-26",
-            "format": ",.0f"
-          },
-          {
-            "field": "seats",
-            "type": "quantitative",
-            "title": "Seats flown, 2025-26",
-            "format": ",.0f"
+            "field": "label",
+            "type": "nominal",
+            "title": "Change"
           }
         ]
       }
