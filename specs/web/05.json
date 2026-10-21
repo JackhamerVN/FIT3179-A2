@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Disclosed route endpoint movements by airport; circle area is proportional to volume.",
+  "description": "Airport passengers on the 62 disclosed routes; each trip counts at both airports. Circle area is proportional to volume.",
   "width": "container",
   "height": 350,
   "autosize": {
@@ -108,7 +108,7 @@
             ]
           },
           "legend": {
-            "title": "Endpoint movements",
+            "title": "Airport passengers",
             "values": [
               5000000,
               20000000
@@ -141,7 +141,7 @@
           {
             "field": "endpoint_movements",
             "type": "quantitative",
-            "title": "Endpoint movements",
+            "title": "Airport passengers",
             "format": ",.0f"
           }
         ]

@@ -1,301 +1,533 @@
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Change in state endpoint movements on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
-  "width": "container",
-  "height": 350,
-  "autosize": {
-    "type": "fit",
-    "contains": "padding"
+  "$schema": "https://vega.github.io/schema/vega/v6.json",
+  "padding": {
+    "top": 8,
+    "right": 8,
+    "bottom": 8,
+    "left": 8
   },
-  "padding": 8,
   "background": "transparent",
   "config": {
-    "font": "B612, Arial, Helvetica, sans-serif",
-    "view": {
-      "stroke": null
-    },
-    "axis": {
-      "labelFontSize": 12,
-      "titleFontSize": 12,
-      "titleFontWeight": "normal",
-      "labelColor": "#506365",
-      "titleColor": "#506365",
-      "gridColor": "#DFE6E5",
-      "gridOpacity": 0.7,
-      "domain": false,
-      "tickColor": "#BCCAC8",
-      "labelPadding": 7,
-      "titlePadding": 12
+    "text": {
+      "font": "B612, Arial, Helvetica, sans-serif",
+      "fill": "#242B30"
     },
     "legend": {
-      "labelFontSize": 11,
-      "titleFontSize": 11,
-      "titleFontWeight": "normal",
-      "orient": "bottom"
+      "labelFont": "B612, Arial, Helvetica, sans-serif",
+      "titleFont": "B612, Arial, Helvetica, sans-serif",
+      "labelFontSize": 12
     }
   },
-  "projection": {
-    "type": "conicEqualArea",
-    "rotate": [
-      -134,
-      0,
-      0
-    ],
-    "center": [
-      0,
-      -27
-    ],
-    "parallels": [
-      -18,
-      -36
-    ]
+  "usermeta": {
+    "status": "webpage chart",
+    "data_snapshot": "FY2025-26",
+    "engine_test_target": "Vega 6.4.0",
+    "chart_id": 7,
+    "source": "Supplied BITRE workbook; FY2025-26"
   },
-  "layer": [
+  "signals": [
     {
-      "data": {
-        "url": "data/states-geometry.json"
-      },
-      "transform": [
+      "name": "width",
+      "init": "max(containerSize()[0]-16, 280)",
+      "on": [
         {
-          "lookup": "properties.state_id",
-          "from": {
-            "data": {
-              "url": "data/states-summary.json"
-            },
-            "key": "state_id",
-            "fields": [
-              "state_id",
-              "name",
-              "change_pct",
-              "represented_routes"
-            ]
-          }
+          "events": {
+            "source": "window",
+            "type": "resize"
+          },
+          "update": "max(containerSize()[0]-16, 280)"
         }
-      ],
-      "params": [
-        {
-          "name": "pickedState",
-          "select": {
-            "type": "point",
-            "fields": [
-              "state_id"
-            ],
-            "on": "click",
-            "clear": "dblclick"
-          }
-        }
-      ],
-      "mark": {
-        "type": "geoshape",
-        "cursor": "pointer"
-      },
-      "encoding": {
-        "color": {
-          "field": "change_pct",
-          "type": "quantitative",
-          "scale": {
-            "type": "threshold",
-            "domain": [
-              -10,
-              0,
-              10
-            ],
-            "range": [
-              "#B55732",
-              "#E6BFAE",
-              "#B9CFE6",
-              "#316EAC"
-            ]
-          },
-          "legend": {
-            "title": "Change (%)"
-          }
-        },
-        "stroke": {
-          "condition": {
-            "param": "pickedState",
-            "empty": false,
-            "value": "#243637"
-          },
-          "value": "white"
-        },
-        "strokeWidth": {
-          "condition": {
-            "param": "pickedState",
-            "empty": false,
-            "value": 2.5
-          },
-          "value": 0.8
-        },
-        "opacity": {
-          "condition": {
-            "param": "pickedState",
-            "empty": true,
-            "value": 1
-          },
-          "value": 0.35
-        },
-        "tooltip": [
-          {
-            "field": "name",
-            "type": "nominal",
-            "title": "State / territory"
-          },
-          {
-            "field": "change_pct",
-            "type": "quantitative",
-            "title": "Change (%)",
-            "format": "+.1f"
-          },
-          {
-            "field": "represented_routes",
-            "type": "quantitative",
-            "title": "Comparable routes",
-            "format": ".0f"
-          }
+      ]
+    },
+    {
+      "name": "height",
+      "value": 370
+    },
+    {
+      "name": "selectedGroup",
+      "value": "",
+      "bind": {
+        "input": "select",
+        "name": "Highlight route group ",
+        "options": [
+          "",
+          "0-0",
+          "0-1",
+          "0-2",
+          "1-0",
+          "1-1",
+          "1-2"
+        ],
+        "labels": [
+          "All route groups",
+          "Between states / <500 km",
+          "Between states / 500-1,499 km",
+          "Between states / 1,500+ km",
+          "Within a state / <500 km",
+          "Within a state / 500-1,499 km",
+          "Within a state / 1,500+ km"
         ]
-      }
+      },
+      "on": [
+        {
+          "events": "click",
+          "update": "datum && datum.group_id && datum.group_id!==selectedGroup ? datum.group_id : ''"
+        }
+      ]
     },
     {
-      "data": {
-        "url": "data/states-summary.json"
-      },
-      "transform": [
-        {
-          "filter": "datum.state_id==='ACT'"
-        },
-        {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
-        }
-      ],
-      "mark": {
-        "type": "rule",
-        "color": "#243637",
-        "strokeWidth": 0.8
-      },
-      "encoding": {
-        "longitude": {
-          "field": "anchor_lon",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "anchor_lat",
-          "type": "quantitative"
-        },
-        "longitude2": {
-          "datum": 150.4
-        },
-        "latitude2": {
-          "datum": -38.5
-        }
-      }
+      "name": "gap",
+      "value": 20
     },
     {
-      "data": {
-        "url": "data/states-summary.json"
-      },
-      "transform": [
+      "name": "sourceX",
+      "update": "width<500 ? 94 : 156"
+    },
+    {
+      "name": "targetX",
+      "update": "width-122"
+    },
+    {
+      "name": "headerHeight",
+      "value": 32
+    }
+  ],
+  "scales": [
+    {
+      "name": "flow",
+      "type": "linear",
+      "domain": [
+        0,
+        53982647
+      ],
+      "range": [
+        0,
         {
-          "filter": "datum.state_id!=='TAS' && datum.state_id!=='VIC'"
-        },
-        {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
+          "signal": "height-headerHeight-2*gap"
         }
       ],
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "fontWeight": "bold"
-      },
-      "encoding": {
-        "longitude": {
-          "field": "label_lon",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "label_lat",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "label",
-          "type": "nominal"
-        },
-        "color": {
-          "condition": {
-            "test": "abs(datum.change_pct)>=10 && datum.state_id!=='ACT'",
-            "value": "white"
+      "zero": true
+    },
+    {
+      "name": "colour",
+      "type": "ordinal",
+      "domain": [
+        "Between states",
+        "Within a state"
+      ],
+      "range": [
+        "#177A88",
+        "#86949B"
+      ]
+    }
+  ],
+  "data": [
+    {
+      "name": "flows",
+      "url": "data/route-groups.json",
+      "transform": [
+        {
+          "type": "stack",
+          "field": "passenger_trips",
+          "sort": {
+            "field": [
+              "left_order",
+              "right_order"
+            ],
+            "order": [
+              "ascending",
+              "ascending"
+            ]
           },
-          "value": "#243637"
+          "as": [
+            "s0",
+            "s1"
+          ]
+        },
+        {
+          "type": "stack",
+          "field": "passenger_trips",
+          "sort": {
+            "field": [
+              "right_order",
+              "left_order"
+            ],
+            "order": [
+              "ascending",
+              "ascending"
+            ]
+          },
+          "as": [
+            "t0",
+            "t1"
+          ]
+        },
+        {
+          "type": "formula",
+          "as": "sy0",
+          "expr": "scale('flow',datum.s0)+datum.left_order*gap+gap/2+headerHeight"
+        },
+        {
+          "type": "formula",
+          "as": "sy1",
+          "expr": "scale('flow',datum.s1)+datum.left_order*gap+gap/2+headerHeight"
+        },
+        {
+          "type": "formula",
+          "as": "ty0",
+          "expr": "scale('flow',datum.t0)+datum.right_order*gap+headerHeight"
+        },
+        {
+          "type": "formula",
+          "as": "ty1",
+          "expr": "scale('flow',datum.t1)+datum.right_order*gap+headerHeight"
+        },
+        {
+          "type": "formula",
+          "as": "ribbon",
+          "expr": "'M'+(sourceX+7)+','+datum.sy0+' C'+(sourceX+(targetX-sourceX)*.45)+','+datum.sy0+' '+(sourceX+(targetX-sourceX)*.55)+','+datum.ty0+' '+targetX+','+datum.ty0+' L'+targetX+','+datum.ty1+' C'+(sourceX+(targetX-sourceX)*.55)+','+datum.ty1+' '+(sourceX+(targetX-sourceX)*.45)+','+datum.sy1+' '+(sourceX+7)+','+datum.sy1+' Z'"
+        }
+      ]
+    },
+    {
+      "name": "leftNodes",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "relation"
+          ],
+          "fields": [
+            "sy0",
+            "sy1",
+            "passenger_trips"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "sum"
+          ],
+          "as": [
+            "y0",
+            "y1",
+            "passenger_trips"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "rightNodes",
+      "source": "flows",
+      "transform": [
+        {
+          "type": "aggregate",
+          "groupby": [
+            "distance_band"
+          ],
+          "fields": [
+            "ty0",
+            "ty1",
+            "passenger_trips"
+          ],
+          "ops": [
+            "min",
+            "max",
+            "sum"
+          ],
+          "as": [
+            "y0",
+            "y1",
+            "passenger_trips"
+          ]
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "ribbons",
+      "type": "path",
+      "from": {
+        "data": "flows"
+      },
+      "encode": {
+        "update": {
+          "path": {
+            "field": "ribbon"
+          },
+          "fill": {
+            "scale": "colour",
+            "field": "relation"
+          },
+          "fillOpacity": {
+            "signal": "selectedGroup==='' || datum.group_id===selectedGroup ? .72 : .12"
+          },
+          "tooltip": {
+            "signal": "{'Group':datum.relation,'Distance':datum.distance_band,'Passenger trips':format(datum.passenger_trips,',d'),'Routes':length(datum.route_ids)}"
+          },
+          "cursor": {
+            "value": "pointer"
+          }
         }
       }
     },
     {
-      "data": {
-        "url": "data/states-summary.json"
+      "type": "rect",
+      "from": {
+        "data": "leftNodes"
       },
-      "transform": [
-        {
-          "filter": "datum.state_id==='TAS' || datum.state_id==='VIC'"
-        },
-        {
-          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
-          "as": "label"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
-          "as": "label_lon"
-        },
-        {
-          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
-          "as": "label_lat"
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "width": {
+            "value": 7
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "#242B30"
+          }
         }
-      ],
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "fontWeight": "bold",
-        "align": "right"
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leftNodes"
       },
-      "encoding": {
-        "longitude": {
-          "field": "label_lon",
-          "type": "quantitative"
-        },
-        "latitude": {
-          "field": "label_lat",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "label",
-          "type": "nominal"
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "value": -11
+          },
+          "text": {
+            "signal": "datum.relation==='Between states' ? ['Between states','or territories'] : ['Within one state','or territory']"
+          },
+          "lineHeight": {
+            "value": 14
+          },
+          "fontSize": {
+            "signal": "width<500 ? 11 : 12"
+          },
+          "align": {
+            "value": "right"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "leftNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "value": 23
+          },
+          "text": {
+            "signal": "format(datum.passenger_trips/1e6,'.2f')+'m trips'"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#64727A"
+          },
+          "align": {
+            "value": "right"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "width": {
+            "value": 7
+          },
+          "y": {
+            "field": "y0"
+          },
+          "y2": {
+            "field": "y1"
+          },
+          "fill": {
+            "value": "#242B30"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'rightNodes'==='leftNodes' ? -9 : -3"
+          },
+          "text": {
+            "field": "distance_band"
+          },
+          "lineHeight": {
+            "value": 14
+          },
+          "fontSize": {
+            "value": 12
+          },
+          "align": {
+            "value": "left"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "from": {
+        "data": "rightNodes"
+      },
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "signal": "(datum.y0+datum.y1)/2"
+          },
+          "dy": {
+            "signal": "width<500 && 'rightNodes'==='leftNodes' ? 24 : 13"
+          },
+          "text": {
+            "signal": "format(datum.passenger_trips/1e6,'.2f')+'m trips'"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fill": {
+            "value": "#64727A"
+          },
+          "align": {
+            "value": "left"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "value": 0
+          },
+          "text": {
+            "value": "State / territory"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "align": {
+            "value": "right"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#506365"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "value": 0
+          },
+          "text": {
+            "value": "Route distance"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#506365"
+          }
         }
       }
     }
   ],
-  "usermeta": {
-    "chart_id": 7,
-    "source": "Supplied BITRE workbook; FY2025-26"
-  }
+  "description": "The same passenger trips classified by state or territory link and route distance; city pairs combine both directions."
 }

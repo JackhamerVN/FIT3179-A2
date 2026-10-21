@@ -1,247 +1,245 @@
 {
-  "$schema": "https://vega.github.io/schema/vega/v6.json",
-  "padding": {
-    "top": 8,
-    "right": 8,
-    "bottom": 8,
-    "left": 8
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "description": "Twelve largest absolute route changes among 57 comparable pairs; rank depends on the selected measure.",
+  "width": "container",
+  "height": 460,
+  "autosize": {
+    "type": "fit",
+    "contains": "padding"
   },
+  "padding": 8,
   "background": "transparent",
   "config": {
-    "text": {
-      "font": "B612, Arial, Helvetica, sans-serif",
-      "fill": "#242B30"
+    "font": "B612, Arial, Helvetica, sans-serif",
+    "view": {
+      "stroke": null
+    },
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 12,
+      "titleFontWeight": "normal",
+      "labelColor": "#506365",
+      "titleColor": "#506365",
+      "gridColor": "#DFE6E5",
+      "gridOpacity": 0.7,
+      "domain": false,
+      "tickColor": "#BCCAC8",
+      "labelPadding": 7,
+      "titlePadding": 12
     },
     "legend": {
-      "labelFont": "B612, Arial, Helvetica, sans-serif",
-      "titleFont": "B612, Arial, Helvetica, sans-serif",
-      "labelFontSize": 12
+      "labelFontSize": 11,
+      "titleFontSize": 11,
+      "titleFontWeight": "normal",
+      "orient": "bottom"
     }
   },
-  "usermeta": {
-    "status": "webpage chart",
-    "data_snapshot": "FY2025-26",
-    "engine_test_target": "Vega 6.4.0",
-    "chart_id": 8,
-    "source": "Supplied BITRE workbook; FY2025-26"
+  "data": {
+    "url": "data/routes-comparison.json"
   },
-  "signals": [
+  "params": [
     {
-      "name": "width",
-      "init": "max(containerSize()[0]-16, 280)",
-      "on": [
-        {
-          "events": {
-            "source": "window",
-            "type": "resize"
-          },
-          "update": "max(containerSize()[0]-16, 280)"
-        }
-      ]
-    },
-    {
-      "name": "height",
-      "value": 350
-    },
-    {
-      "name": "selectedState",
-      "value": "",
-      "on": [
-        {
-          "events": "click",
-          "update": "datum && datum.state_id && datum.state_id!==selectedState ? datum.state_id : ''"
-        }
-      ]
-    }
-  ],
-  "projections": [
-    {
-      "name": "au",
-      "type": "conicEqualArea",
-      "rotate": [
-        -134,
-        0,
-        0
-      ],
-      "center": [
-        0,
-        -27
-      ],
-      "parallels": [
-        -18,
-        -36
-      ],
-      "fit": {
-        "signal": "{'type':'FeatureCollection','features':data('geometry')}"
-      },
-      "extent": {
-        "signal": "[[42,12],[width-65,height-85]]"
+      "name": "changeMode",
+      "value": "percent",
+      "bind": {
+        "input": "radio",
+        "options": [
+          "percent",
+          "trips"
+        ],
+        "labels": [
+          "% change",
+          "Change in trips"
+        ],
+        "name": "Rank by "
       }
     }
   ],
-  "data": [
+  "transform": [
     {
-      "name": "geometry",
-      "url": "data/states-geometry.json"
+      "calculate": "changeMode==='percent' ? datum.change_pct : datum.delta_trips",
+      "as": "change"
     },
     {
-      "name": "states",
-      "url": "data/states-summary.json",
-      "transform": [
-        {
-          "type": "geopoint",
-          "projection": "au",
-          "fields": [
-            "anchor_lon",
-            "anchor_lat"
-          ],
-          "as": [
-            "anchor_x",
-            "anchor_y"
-          ]
-        }
-      ]
-    }
-  ],
-  "scales": [
+      "calculate": "abs(datum.change)",
+      "as": "magnitude"
+    },
     {
-      "name": "size",
-      "type": "linear",
-      "domain": [
-        0,
-        30972240
-      ],
-      "range": [
-        0,
+      "window": [
         {
-          "signal": "4*pow(min(width,height)*.145,2)"
+          "op": "row_number",
+          "as": "rank"
         }
       ],
-      "zero": true
-    }
-  ],
-  "marks": [
-    {
-      "name": "circles",
-      "type": "symbol",
-      "from": {
-        "data": "states"
-      },
-      "encode": {
-        "enter": {
-          "x": {
-            "field": "anchor_x"
-          },
-          "y": {
-            "field": "anchor_y"
-          }
+      "sort": [
+        {
+          "field": "magnitude",
+          "order": "descending"
         },
-        "update": {
-          "size": {
-            "scale": "size",
-            "field": "endpoint_movements"
-          },
-          "fill": {
-            "value": "#177A88"
-          },
-          "fillOpacity": {
-            "signal": "selectedState==='' || datum.state_id===selectedState ? 1 : .25"
-          },
-          "stroke": {
-            "value": "white"
-          },
-          "strokeWidth": {
-            "value": 2
-          },
-          "tooltip": {
-            "signal": "{'State':datum.name,'Disclosed endpoint movements':format(datum.endpoint_movements,',d'),'Period':'FY2025-26'}"
-          },
-          "cursor": {
-            "value": "pointer"
-          }
-        }
-      },
-      "transform": [
         {
-          "type": "force",
-          "static": true,
-          "iterations": 600,
-          "forces": [
-            {
-              "force": "x",
-              "x": "datum.anchor_x",
-              "strength": 0.1
-            },
-            {
-              "force": "y",
-              "y": "datum.anchor_y",
-              "strength": 0.1
-            },
-            {
-              "force": "collide",
-              "radius": {
-                "expr": "sqrt(datum.size)/2+4"
-              },
-              "iterations": 6
-            }
-          ]
+          "field": "route_id",
+          "order": "ascending"
         }
       ]
     },
     {
-      "name": "stateLabels",
-      "type": "text",
-      "from": {
-        "data": "circles"
+      "filter": "datum.rank<=12"
+    },
+    {
+      "calculate": "replace(changeMode==='percent' ? format(datum.change,'+.1f')+'%' : format(datum.change,'+,.0f'),'-','\u2212')",
+      "as": "value_label"
+    },
+    {
+      "window": [
+        {
+          "op": "row_number",
+          "as": "position"
+        }
+      ],
+      "sort": [
+        {
+          "field": "change",
+          "order": "descending"
+        }
+      ]
+    }
+  ],
+  "encoding": {
+    "y": {
+      "field": "route_name",
+      "type": "nominal",
+      "sort": {
+        "field": "position",
+        "op": "min",
+        "order": "ascending"
       },
-      "interactive": false,
-      "encode": {
-        "update": {
-          "x": {
-            "field": "x"
+      "axis": {
+        "title": null,
+        "labelLimit": {
+          "expr": "width<550 ? 100 : 200"
+        },
+        "labelFontSize": {
+          "expr": "width<550 ? 10 : 12"
+        },
+        "labelLineHeight": 12,
+        "labelExpr": "width<550 ? split(datum.label,' - ') : datum.label"
+      }
+    },
+    "x": {
+      "field": "change",
+      "type": "quantitative",
+      "scale": {
+        "zero": true,
+        "padding": 52
+      },
+      "axis": {
+        "title": {
+          "expr": "changeMode==='percent' ? 'Change (%)' : 'Change in passenger trips'"
+        },
+        "format": "~s",
+        "tickCount": 5
+      }
+    }
+  },
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "height": 16,
+        "cornerRadiusEnd": 2
+      },
+      "encoding": {
+        "color": {
+          "condition": {
+            "test": "datum.change>=0",
+            "value": "#316EAC"
           },
-          "y": {
-            "field": "y"
+          "value": "#B55732"
+        },
+        "tooltip": [
+          {
+            "field": "route_name",
+            "type": "nominal",
+            "title": "Route"
           },
-          "text": {
-            "field": "datum.state_id"
+          {
+            "field": "baseline_trips",
+            "type": "quantitative",
+            "title": "FY2018-19 trips",
+            "format": ",.0f"
           },
-          "fill": {
-            "signal": "sqrt(datum.size)/2<16 || (selectedState!=='' && datum.datum.state_id!==selectedState) ? '#243637' : 'white'"
+          {
+            "field": "latest_trips",
+            "type": "quantitative",
+            "title": "FY2025-26 trips",
+            "format": ",.0f"
           },
-          "fontSize": {
-            "value": 13
+          {
+            "field": "change_pct",
+            "type": "quantitative",
+            "title": "Change (%)",
+            "format": "+.1f"
           },
-          "fontWeight": {
-            "value": "bold"
-          },
-          "dx": {
-            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? -1 : 1)*(sqrt(datum.size)/2+5) : 0"
-          },
-          "align": {
-            "signal": "sqrt(datum.size)/2<16 ? (datum.datum.state_id==='NT' ? 'right' : 'left') : 'center'"
-          },
-          "baseline": {
-            "value": "middle"
+          {
+            "field": "delta_trips",
+            "type": "quantitative",
+            "title": "Change in trips",
+            "format": "+,.0f"
           }
+        ]
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 5
+      },
+      "encoding": {
+        "text": {
+          "field": "value_label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.change>=0",
+            "value": 1
+          },
+          "value": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -5
+      },
+      "encoding": {
+        "text": {
+          "field": "value_label",
+          "type": "nominal"
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.change<0",
+            "value": 1
+          },
+          "value": 0
         }
       }
     }
   ],
-  "legends": [
-    {
-      "size": "size",
-      "title": "Endpoint movements",
-      "orient": "bottom-left",
-      "values": [
-        5000000,
-        20000000
-      ],
-      "format": ".2s",
-      "symbolFillColor": "#177A88",
-      "symbolStrokeColor": "white",
-      "symbolLimit": 2
-    }
-  ],
-  "description": "State endpoint movements on 62 disclosed routes; circle area represents volume."
+  "usermeta": {
+    "chart_id": 8,
+    "source": "Supplied BITRE workbook; FY2018-19 and FY2025-26"
+  }
 }

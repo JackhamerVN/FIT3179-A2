@@ -336,7 +336,7 @@
             "value": 1
           },
           "tooltip": {
-            "signal": "{'Airport':datum.name,'City':datum.city,'Disclosed endpoint movements':format(datum.endpoint_movements,',d')}"
+            "signal": "{'Airport':datum.name,'City':datum.city,'Airport passengers (disclosed routes)':format(datum.endpoint_movements,',d')}"
           },
           "cursor": {
             "value": "pointer"

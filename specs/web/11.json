@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Distribution of annual seat occupancy across 62 disclosed routes. Every route has equal weight.",
+  "description": "Change in airport passengers by state on the same 57 routes, FY2018-19 to FY2025-26, in four classes.",
   "width": "container",
-  "height": 300,
+  "height": 350,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -34,73 +34,51 @@
       "orient": "bottom"
     }
   },
-  "data": {
-    "url": "data/routes-fy2026.json"
+  "projection": {
+    "type": "conicEqualArea",
+    "rotate": [
+      -134,
+      0,
+      0
+    ],
+    "center": [
+      0,
+      -27
+    ],
+    "parallels": [
+      -18,
+      -36
+    ]
   },
-  "transform": [
-    {
-      "filter": "datum.disclosure_status==='reported' && isValid(datum.occupancy_pct)"
-    },
-    {
-      "bin": {
-        "step": 10,
-        "extent": [
-          0,
-          100
-        ]
-      },
-      "field": "occupancy_pct",
-      "as": [
-        "bin_start",
-        "bin_end"
-      ]
-    },
-    {
-      "aggregate": [
-        {
-          "op": "count",
-          "as": "routes"
-        }
-      ],
-      "groupby": [
-        "bin_start"
-      ]
-    },
-    {
-      "impute": "routes",
-      "key": "bin_start",
-      "keyvals": [
-        0,
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80,
-        90
-      ],
-      "value": 0
-    },
-    {
-      "calculate": "datum.bin_start+10",
-      "as": "bin_end"
-    },
-    {
-      "calculate": "datum.bin_start+5",
-      "as": "bin_middle"
-    }
-  ],
   "layer": [
     {
+      "data": {
+        "url": "data/states-geometry.json"
+      },
+      "transform": [
+        {
+          "lookup": "properties.state_id",
+          "from": {
+            "data": {
+              "url": "data/states-summary.json"
+            },
+            "key": "state_id",
+            "fields": [
+              "state_id",
+              "name",
+              "change_pct",
+              "represented_routes"
+            ]
+          }
+        }
+      ],
       "params": [
         {
-          "name": "pickedBand",
+          "name": "pickedState",
           "select": {
             "type": "point",
             "fields": [
-              "bin_start"
+              "state_id"
             ],
             "on": "click",
             "clear": "dblclick"
@@ -108,176 +86,210 @@
         }
       ],
       "mark": {
-        "type": "bar",
-        "color": "#177A88",
-        "binSpacing": 2,
+        "type": "geoshape",
         "cursor": "pointer"
       },
       "encoding": {
-        "x": {
-          "field": "bin_start",
-          "type": "quantitative",
-          "bin": "binned",
-          "scale": {
-            "domain": [
-              0,
-              100
-            ]
-          },
-          "axis": {
-            "title": "Seats occupied (%)",
-            "tickCount": 6
-          }
-        },
-        "x2": {
-          "field": "bin_end"
-        },
-        "y": {
-          "field": "routes",
+        "color": {
+          "field": "change_pct",
           "type": "quantitative",
           "scale": {
+            "type": "threshold",
             "domain": [
+              -10,
               0,
-              36
+              10
+            ],
+            "range": [
+              "#B55732",
+              "#E6BFAE",
+              "#B9CFE6",
+              "#316EAC"
             ]
           },
-          "axis": {
-            "title": "Number of routes",
-            "tickMinStep": 1,
-            "tickCount": 5
+          "legend": {
+            "title": "Change (%)"
           }
+        },
+        "stroke": {
+          "condition": {
+            "param": "pickedState",
+            "empty": false,
+            "value": "#243637"
+          },
+          "value": "white"
+        },
+        "strokeWidth": {
+          "condition": {
+            "param": "pickedState",
+            "empty": false,
+            "value": 2.5
+          },
+          "value": 0.8
         },
         "opacity": {
           "condition": {
-            "param": "pickedBand",
+            "param": "pickedState",
             "empty": true,
             "value": 1
           },
-          "value": 0.22
+          "value": 0.35
         },
         "tooltip": [
           {
-            "field": "bin_start",
-            "type": "quantitative",
-            "title": "From (%)",
-            "format": ".0f"
+            "field": "name",
+            "type": "nominal",
+            "title": "State / territory"
           },
           {
-            "field": "bin_end",
+            "field": "change_pct",
             "type": "quantitative",
-            "title": "To (%)",
-            "format": ".0f"
+            "title": "Change (%)",
+            "format": "+.1f"
           },
           {
-            "field": "routes",
+            "field": "represented_routes",
             "type": "quantitative",
-            "title": "Routes",
+            "title": "Comparable routes",
             "format": ".0f"
           }
         ]
       }
     },
     {
+      "data": {
+        "url": "data/states-summary.json"
+      },
       "transform": [
         {
-          "filter": "datum.routes>0"
+          "filter": "datum.state_id==='ACT'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
+        }
+      ],
+      "mark": {
+        "type": "rule",
+        "color": "#243637",
+        "strokeWidth": 0.8
+      },
+      "encoding": {
+        "longitude": {
+          "field": "anchor_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "anchor_lat",
+          "type": "quantitative"
+        },
+        "longitude2": {
+          "datum": 150.4
+        },
+        "latitude2": {
+          "datum": -38.5
+        }
+      }
+    },
+    {
+      "data": {
+        "url": "data/states-summary.json"
+      },
+      "transform": [
+        {
+          "filter": "datum.state_id!=='TAS' && datum.state_id!=='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
         }
       ],
       "mark": {
         "type": "text",
         "fontSize": 11,
         "lineHeight": 15,
-        "color": "#506365",
-        "dy": -8
+        "color": "#243637",
+        "fontWeight": "bold"
       },
       "encoding": {
-        "x": {
-          "field": "bin_middle",
-          "type": "quantitative",
-          "axis": {
-            "title": "Seats occupied (%)",
-            "tickCount": 6
-          }
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
         },
-        "y": {
-          "field": "routes",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              36
-            ]
-          },
-          "axis": {
-            "title": "Number of routes",
-            "tickMinStep": 1,
-            "tickCount": 5
-          }
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
         },
         "text": {
-          "field": "routes",
-          "type": "quantitative",
-          "format": ".0f"
+          "field": "label",
+          "type": "nominal"
+        },
+        "color": {
+          "condition": {
+            "test": "abs(datum.change_pct)>=10 && datum.state_id!=='ACT'",
+            "value": "white"
+          },
+          "value": "#243637"
         }
       }
     },
     {
       "data": {
-        "values": [
-          {
-            "occupancy": 80.72
-          }
-        ]
+        "url": "data/states-summary.json"
       },
-      "mark": {
-        "type": "rule",
-        "color": "#243637",
-        "strokeDash": [
-          3,
-          3
-        ]
-      },
-      "encoding": {
-        "x": {
-          "field": "occupancy",
-          "type": "quantitative",
-          "axis": {
-            "title": "Seats occupied (%)",
-            "tickCount": 6
-          }
+      "transform": [
+        {
+          "filter": "datum.state_id==='TAS' || datum.state_id==='VIC'"
+        },
+        {
+          "calculate": "datum.state_id+' '+replace(format(datum.change_pct,'+.1f'),'-','\u2212')+'%'",
+          "as": "label"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? 150.5 : datum.state_id==='TAS' ? 144.2 : datum.state_id==='VIC' ? 140.6 : datum.anchor_lon",
+          "as": "label_lon"
+        },
+        {
+          "calculate": "datum.state_id==='ACT' ? -39.3 : datum.state_id==='TAS' ? -42.1 : datum.state_id==='VIC' ? -38.9 : datum.anchor_lat",
+          "as": "label_lat"
         }
-      }
-    },
-    {
-      "data": {
-        "values": [
-          {
-            "occupancy": 80.72
-          }
-        ]
-      },
+      ],
       "mark": {
         "type": "text",
         "fontSize": 11,
         "lineHeight": 15,
         "color": "#243637",
-        "align": "right",
-        "baseline": "top",
-        "dx": -7,
-        "y": 2,
-        "text": [
-          "All routes together:",
-          "80.7% of seats filled"
-        ]
+        "fontWeight": "bold",
+        "align": "right"
       },
       "encoding": {
-        "x": {
-          "field": "occupancy",
-          "type": "quantitative",
-          "axis": {
-            "title": "Seats occupied (%)",
-            "tickCount": 6
-          }
+        "longitude": {
+          "field": "label_lon",
+          "type": "quantitative"
+        },
+        "latitude": {
+          "field": "label_lat",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
         }
       }
     }

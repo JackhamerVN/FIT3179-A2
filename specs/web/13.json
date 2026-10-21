@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Share of seats filled on the 15 busiest comparable routes, FY2018-19 and FY2025-26.",
+  "description": "Rank of the 15 busiest airports by domestic passenger movements, FY2014-15 to FY2025-26.",
   "width": "container",
-  "height": 440,
+  "height": 430,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -35,240 +35,595 @@
     }
   },
   "data": {
-    "url": "data/route-occupancy.json"
+    "url": "data/airport-ranks.json"
   },
+  "params": [
+    {
+      "name": "compactLabels",
+      "expr": "width<550"
+    }
+  ],
   "transform": [
     {
-      "filter": "datum.rank<=15"
-    },
-    {
-      "calculate": "width<420 ? replace(datum.route_id,'-','\u2013') : replace(datum.route_name,' - ',' \u2013 ')",
+      "calculate": "(compactLabels ? datum.airport_id : datum.airport)+(datum.places_gained>0 ? '  +'+datum.places_gained : datum.places_gained<0 ? '  \u2212'+abs(datum.places_gained) : '')",
       "as": "label"
-    },
-    {
-      "calculate": "abs(datum.change_points)<0.05 ? '0.0' : (datum.change_points>0 ? '+' : '\u2212')+format(abs(datum.change_points),'.1f')",
-      "as": "change_label"
-    },
-    {
-      "calculate": "max(datum.occupancy_2019_pct, datum.occupancy_2026_pct)",
-      "as": "right_end"
     }
   ],
   "layer": [
     {
+      "data": {
+        "values": [
+          {
+            "start": "2019-20",
+            "end": "2021-22"
+          }
+        ]
+      },
       "mark": {
-        "type": "rule",
-        "strokeWidth": 3
+        "type": "rect",
+        "color": "#E4ECEA",
+        "opacity": 0.75
       },
       "encoding": {
-        "y": {
-          "field": "label",
-          "type": "nominal",
-          "sort": {
-            "field": "rank",
-            "op": "min",
-            "order": "ascending"
-          },
-          "axis": {
-            "title": null,
-            "labelFontSize": {
-              "expr": "width<550 ? 11 : 12"
-            },
-            "labelLimit": 220,
-            "ticks": false,
-            "domain": false
-          }
-        },
         "x": {
-          "field": "occupancy_2019_pct",
-          "type": "quantitative",
+          "field": "start",
+          "type": "ordinal",
           "scale": {
+            "type": "point",
             "domain": [
-              65,
-              95
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
             ]
           },
           "axis": {
-            "title": "Seats filled (%)",
-            "tickCount": 6,
-            "grid": true
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "x2": {
-          "field": "occupancy_2026_pct"
+          "field": "end"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "fy": "2020-21",
+            "note": [
+              "Travel bans",
+              "and lockdowns"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "baseline": "middle",
+        "fontSize": 11,
+        "lineHeight": 13,
+        "color": "#506365"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "datum": -0.45
+        },
+        "text": {
+          "field": "note",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "line",
+        "interpolate": "monotone"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -1.2,
+              16.6
+            ],
+            "reverse": true,
+            "nice": false
+          },
+          "axis": {
+            "title": "Rank",
+            "values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "grid": false
+          }
+        },
+        "detail": {
+          "field": "airport_id",
+          "type": "nominal"
         },
         "color": {
-          "condition": {
-            "test": "datum.change_points>=0",
-            "value": "#316EAC"
+          "field": "direction",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "up",
+              "same",
+              "down"
+            ],
+            "range": [
+              "#316EAC",
+              "#93A3A1",
+              "#B55732"
+            ]
           },
-          "value": "#B55732"
+          "legend": {
+            "title": "Change since 2014\u201315",
+            "labelExpr": "datum.label==='up' ? 'Up' : datum.label==='down' ? 'Down' : 'Same'"
+          }
         },
         "opacity": {
-          "value": 0.55
+          "condition": {
+            "param": "pickedAirport",
+            "empty": true,
+            "value": 1
+          },
+          "value": 0.14
+        },
+        "strokeWidth": {
+          "condition": {
+            "test": "datum.airport_id==='MCY'",
+            "value": 5
+          },
+          "value": 2.4
         }
+      }
+    },
+    {
+      "name": "rankTargets",
+      "params": [
+        {
+          "name": "pickedAirport",
+          "select": {
+            "type": "point",
+            "fields": [
+              "airport_id"
+            ],
+            "on": "click",
+            "clear": "dblclick"
+          },
+          "bind": {
+            "input": "select",
+            "options": [
+              null,
+              "ADL",
+              "BNE",
+              "CNS",
+              "CBR",
+              "DRW",
+              "OOL",
+              "HBA",
+              "LST",
+              "MKY",
+              "MEL",
+              "NTL",
+              "PER",
+              "MCY",
+              "SYD",
+              "TSV"
+            ],
+            "labels": [
+              "All 15 airports",
+              "Adelaide (ADL)",
+              "Brisbane (BNE)",
+              "Cairns (CNS)",
+              "Canberra (CBR)",
+              "Darwin (DRW)",
+              "Gold Coast (OOL)",
+              "Hobart (HBA)",
+              "Launceston (LST)",
+              "Mackay (MKY)",
+              "Melbourne (MEL)",
+              "Newcastle (NTL)",
+              "Perth (PER)",
+              "Sunshine Coast (MCY)",
+              "Sydney (SYD)",
+              "Townsville (TSV)"
+            ],
+            "name": "Highlight an airport "
+          }
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeWidth": 12,
+        "opacity": 0,
+        "interpolate": "monotone",
+        "cursor": "pointer"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -1.2,
+              16.6
+            ],
+            "reverse": true,
+            "nice": false
+          },
+          "axis": {
+            "title": "Rank",
+            "values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "grid": false
+          }
+        },
+        "detail": {
+          "field": "airport_id",
+          "type": "nominal"
+        },
+        "tooltip": [
+          {
+            "field": "airport",
+            "type": "nominal",
+            "title": "Airport"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rankDots",
+      "mark": {
+        "type": "circle",
+        "size": 62,
+        "stroke": "white",
+        "strokeWidth": 1.2,
+        "opacity": 1,
+        "cursor": "pointer"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -1.2,
+              16.6
+            ],
+            "reverse": true,
+            "nice": false
+          },
+          "axis": {
+            "title": "Rank",
+            "values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "grid": false
+          }
+        },
+        "color": {
+          "field": "direction",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "up",
+              "same",
+              "down"
+            ],
+            "range": [
+              "#316EAC",
+              "#93A3A1",
+              "#B55732"
+            ]
+          },
+          "legend": {
+            "title": "Change since 2014\u201315",
+            "labelExpr": "datum.label==='up' ? 'Up' : datum.label==='down' ? 'Down' : 'Same'"
+          }
+        },
+        "opacity": {
+          "condition": {
+            "param": "pickedAirport",
+            "empty": true,
+            "value": 1
+          },
+          "value": 0.14
+        },
+        "tooltip": [
+          {
+            "field": "airport",
+            "type": "nominal",
+            "title": "Airport"
+          },
+          {
+            "field": "fy",
+            "type": "nominal",
+            "title": "Financial year"
+          },
+          {
+            "field": "rank",
+            "type": "quantitative",
+            "title": "Rank",
+            "format": ".0f"
+          },
+          {
+            "field": "passenger_movements",
+            "type": "quantitative",
+            "title": "Passenger movements",
+            "format": ",.0f"
+          }
+        ]
       }
     },
     {
       "transform": [
         {
-          "fold": [
-            "occupancy_2019_pct",
-            "occupancy_2026_pct"
-          ],
-          "as": [
-            "year",
-            "occupancy"
-          ]
-        },
-        {
-          "calculate": "datum.year==='occupancy_2019_pct' ? '2018\u201319' : '2025\u201326'",
-          "as": "year"
+          "filter": "datum.year_ending===2026"
         }
       ],
       "mark": {
-        "type": "circle",
-        "size": 90,
-        "opacity": 1,
-        "stroke": "white",
-        "strokeWidth": 1
-      },
-      "encoding": {
-        "y": {
-          "field": "label",
-          "type": "nominal",
-          "sort": {
-            "field": "rank",
-            "op": "min",
-            "order": "ascending"
-          },
-          "axis": {
-            "title": null,
-            "labelFontSize": {
-              "expr": "width<550 ? 11 : 12"
-            },
-            "labelLimit": 220,
-            "ticks": false,
-            "domain": false
-          }
-        },
-        "x": {
-          "field": "occupancy",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              65,
-              95
-            ]
-          },
-          "axis": {
-            "title": "Seats filled (%)",
-            "tickCount": 6,
-            "grid": true
-          }
-        },
-        "tooltip": [
-          {
-            "field": "route_name",
-            "type": "nominal",
-            "title": "Route"
-          },
-          {
-            "field": "occupancy_2019_pct",
-            "type": "quantitative",
-            "title": "FY2018-19 seats filled (%)",
-            "format": ".1f"
-          },
-          {
-            "field": "occupancy_2026_pct",
-            "type": "quantitative",
-            "title": "FY2025-26 seats filled (%)",
-            "format": ".1f"
-          },
-          {
-            "field": "change_points",
-            "type": "quantitative",
-            "title": "Change (percentage points)",
-            "format": "+.1f"
-          },
-          {
-            "field": "latest_trips",
-            "type": "quantitative",
-            "title": "FY2025-26 passenger trips",
-            "format": ",.0f"
-          }
-        ],
-        "color": {
-          "field": "year",
-          "type": "nominal",
-          "scale": {
-            "domain": [
-              "2018\u201319",
-              "2025\u201326"
-            ],
-            "range": [
-              "#AEBBBA",
-              "#243637"
-            ]
-          },
-          "legend": {
-            "title": null,
-            "orient": "top",
-            "direction": "horizontal"
-          }
-        }
-      }
-    },
-    {
-      "mark": {
         "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
         "align": "left",
         "baseline": "middle",
         "dx": 10,
-        "fontWeight": "bold"
+        "fontSize": 11.5,
+        "color": "#243637",
+        "cursor": "pointer"
       },
       "encoding": {
-        "y": {
-          "field": "label",
-          "type": "nominal",
-          "sort": {
-            "field": "rank",
-            "op": "min",
-            "order": "ascending"
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "14"
+              },
+              {
+                "expr": "width-(compactLabels ? 58 : 132)"
+              }
+            ]
           },
           "axis": {
-            "title": null,
-            "labelFontSize": {
-              "expr": "width<550 ? 11 : 12"
-            },
-            "labelLimit": 220,
-            "ticks": false,
-            "domain": false
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
-        "x": {
-          "field": "right_end",
-          "type": "quantitative"
+        "y": {
+          "field": "rank",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -1.2,
+              16.6
+            ],
+            "reverse": true,
+            "nice": false
+          },
+          "axis": {
+            "title": "Rank",
+            "values": [
+              1,
+              5,
+              10,
+              15
+            ],
+            "grid": false
+          }
         },
         "text": {
-          "field": "change_label",
+          "field": "label",
           "type": "nominal"
         },
-        "color": {
+        "opacity": {
           "condition": {
-            "test": "datum.change_points>=0",
-            "value": "#316EAC"
+            "param": "pickedAirport",
+            "empty": true,
+            "value": 1
           },
-          "value": "#B55732"
+          "value": 0.14
         }
       }
     }
   ],
   "usermeta": {
     "chart_id": 13,
-    "source": "Supplied BITRE workbook; FY2018-19 and FY2025-26"
+    "source": "BITRE Airport traffic data; FY2014-15 to FY2025-26"
   }
 }

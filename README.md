@@ -13,14 +13,14 @@ All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`]
 
 | # | Idiom | # | Idiom |
 |---|---|---|---|
-| 1 | Line chart | 9 | Bar chart |
-| 2 | Heatmap | 10 | Alluvial diagram |
-| 3 | Waterfall chart | 11 | Histogram |
-| 4 | Flow map | 12 | Scatterplot |
-| 5 | Proportional symbol map | 13 | Connected dot plot |
-| 6 | Treemap | 14 | Indexed line chart |
-| 7 | Choropleth map | 15 | Bump chart |
-| 8 | Dorling cartogram | | |
+| 1 | Line chart | 9 | Waterfall chart |
+| 2 | Heatmap | 10 | Scatterplot |
+| 3 | Indexed line chart | 11 | Choropleth map |
+| 4 | Flow map | 12 | Dorling cartogram |
+| 5 | Proportional symbol map | 13 | Bump chart |
+| 6 | Treemap | 14 | Histogram |
+| 7 | Alluvial diagram | 15 | Connected dot plot |
+| 8 | Bar chart |  |  |
 
 ## Data sources
 

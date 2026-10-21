@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Selected large route changes, the remaining national change and the net result, FY2018-19 to FY2025-26.",
+  "description": "Resident population, domestic passenger trips and seats flown, indexed to 100 in FY2018-19.",
   "width": "container",
-  "height": 325,
+  "height": 330,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -35,113 +35,222 @@
     }
   },
   "data": {
-    "url": "data/waterfall.json"
+    "url": "data/national-monthly.json"
   },
   "transform": [
     {
-      "window": [
+      "calculate": "utcmonth(toDate(datum.month))>=6 ? utcyear(toDate(datum.month))+1 : utcyear(toDate(datum.month))",
+      "as": "year_ending"
+    },
+    {
+      "aggregate": [
         {
           "op": "sum",
-          "field": "delta_trips",
-          "as": "end"
-        }
-      ],
-      "sort": [
+          "field": "passenger_trips",
+          "as": "passenger_trips"
+        },
         {
-          "field": "step"
+          "op": "sum",
+          "field": "seats",
+          "as": "seats"
         }
       ],
-      "frame": [
-        null,
-        0
+      "groupby": [
+        "year_ending"
       ]
     },
     {
-      "calculate": "datum.end-datum.delta_trips",
-      "as": "start"
+      "lookup": "year_ending",
+      "from": {
+        "data": {
+          "url": "data/trips-per-resident.json"
+        },
+        "key": "year_ending",
+        "fields": [
+          "fy",
+          "population"
+        ]
+      }
     },
     {
-      "calculate": "datum.label==='KTA-PER' ? ['Karratha','Perth'] : datum.label==='MCY-MEL' ? ['Sunshine Coast','Melbourne'] : datum.label==='MEL-SYD' ? ['Melbourne','Sydney'] : datum.label==='BNE-SYD' ? ['Brisbane','Sydney'] : ['All other','changes']",
-      "as": "display"
+      "calculate": "datum.year_ending===2019 ? datum.population : null",
+      "as": "population_2019"
     },
     {
-      "calculate": "datum.label==='KTA-PER' ? 'Karratha \u2013 Perth' : datum.label==='MCY-MEL' ? 'Sunshine Coast \u2013 Melbourne' : datum.label==='MEL-SYD' ? 'Melbourne \u2013 Sydney' : datum.label==='BNE-SYD' ? 'Brisbane \u2013 Sydney' : 'All other national changes'",
-      "as": "route_name"
+      "calculate": "datum.year_ending===2019 ? datum.passenger_trips : null",
+      "as": "passenger_trips_2019"
     },
     {
-      "calculate": "(datum.delta_trips>=0 ? '+' : '\u2212')+format(abs(datum.delta_trips)/1000,',.0f')+'k'",
-      "as": "value_label"
+      "calculate": "datum.year_ending===2019 ? datum.seats : null",
+      "as": "seats_2019"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "population_2019",
+          "as": "population_base"
+        },
+        {
+          "op": "max",
+          "field": "passenger_trips_2019",
+          "as": "passenger_trips_base"
+        },
+        {
+          "op": "max",
+          "field": "seats_2019",
+          "as": "seats_base"
+        }
+      ]
+    },
+    {
+      "calculate": "100*datum.population/datum.population_base",
+      "as": "Resident population"
+    },
+    {
+      "calculate": "100*datum.passenger_trips/datum.passenger_trips_base",
+      "as": "Passenger trips"
+    },
+    {
+      "calculate": "100*datum.seats/datum.seats_base",
+      "as": "Seats flown"
+    },
+    {
+      "fold": [
+        "Resident population",
+        "Passenger trips",
+        "Seats flown"
+      ],
+      "as": [
+        "measure",
+        "index"
+      ]
+    },
+    {
+      "calculate": "datum.measure==='Resident population' ? (width<550 ? 'People' : 'Resident population') : datum.measure==='Passenger trips' ? (width<550 ? 'Trips' : 'Passenger trips') : datum.measure==='Seats flown' ? (width<550 ? 'Seats' : 'Seats flown') : ''",
+      "as": "name"
     }
   ],
   "layer": [
     {
+      "data": {
+        "values": [
+          {
+            "start": "2019-20",
+            "end": "2021-22"
+          }
+        ]
+      },
       "mark": {
-        "type": "bar",
-        "size": {
-          "expr": "width<550 ? 28 : 40"
-        }
+        "type": "rect",
+        "color": "#E4ECEA",
+        "opacity": 0.75
       },
       "encoding": {
         "x": {
-          "field": "step",
+          "field": "start",
           "type": "ordinal",
           "scale": {
+            "type": "point",
             "domain": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
             ]
           },
           "axis": {
-            "title": null,
+            "title": "Financial year",
             "labelAngle": 0,
-            "labelFontSize": 10,
-            "labelLineHeight": 12,
-            "labelPadding": 10,
-            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "x2": {
+          "field": "end"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "fy": "2020-21",
+            "note": [
+              "Travel bans",
+              "and lockdowns"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#506365",
+        "baseline": "bottom"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "start",
-          "type": "quantitative",
-          "axis": {
-            "title": "Cumulative change in trips",
-            "format": "~s",
-            "tickCount": 5
-          }
+          "datum": 117
         },
-        "y2": {
-          "field": "end"
-        },
-        "color": {
-          "condition": {
-            "test": "datum.delta_trips>=0",
-            "value": "#316EAC"
-          },
-          "value": "#B55732"
-        },
-        "tooltip": [
-          {
-            "field": "route_name",
-            "type": "nominal",
-            "title": "Route / group"
-          },
-          {
-            "field": "delta_trips",
-            "type": "quantitative",
-            "title": "Change in trips",
-            "format": "+,.0f"
-          },
-          {
-            "field": "end",
-            "type": "quantitative",
-            "title": "Cumulative change",
-            "format": "+,.0f"
-          }
-        ]
+        "text": {
+          "field": "note",
+          "type": "nominal"
+        }
       }
     },
     {
@@ -152,73 +261,241 @@
       },
       "mark": {
         "type": "rule",
-        "color": "#809492"
+        "strokeDash": [
+          2,
+          3
+        ],
+        "color": "#9AAAA8"
       },
       "encoding": {
         "y": {
-          "datum": 0
+          "datum": 100
         }
       }
     },
     {
-      "data": {
-        "values": [
-          {
-            "step": 5,
-            "start": 0,
-            "end": -228634,
-            "value_label": "\u2212228,634"
-          }
-        ]
-      },
       "mark": {
-        "type": "bar",
-        "size": {
-          "expr": "width<550 ? 28 : 40"
-        },
-        "color": "#243637"
+        "type": "line",
+        "strokeWidth": 2.5
       },
       "encoding": {
         "x": {
-          "field": "step",
+          "field": "fy",
           "type": "ordinal",
           "scale": {
+            "type": "point",
             "domain": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
             ]
           },
           "axis": {
-            "title": null,
+            "title": "Financial year",
             "labelAngle": 0,
-            "labelFontSize": 10,
-            "labelLineHeight": 12,
-            "labelPadding": 10,
-            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "start",
+          "field": "index",
           "type": "quantitative",
+          "scale": {
+            "domain": [
+              30,
+              120
+            ]
+          },
           "axis": {
-            "title": "Cumulative change in trips",
-            "format": "~s",
-            "tickCount": 5
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
           }
         },
-        "y2": {
-          "field": "end"
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        },
+        "strokeDash": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              [
+                1,
+                0
+              ],
+              [
+                1,
+                0
+              ],
+              [
+                5,
+                3
+              ]
+            ]
+          },
+          "legend": null
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "point",
+        "filled": true,
+        "size": 36,
+        "stroke": "white",
+        "strokeWidth": 1.2
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              30,
+              120
+            ]
+          },
+          "axis": {
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
+          }
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
         },
         "tooltip": [
           {
-            "field": "end",
+            "field": "fy",
+            "type": "nominal",
+            "title": "Financial year"
+          },
+          {
+            "field": "measure",
+            "type": "nominal",
+            "title": "Measure"
+          },
+          {
+            "field": "index",
             "type": "quantitative",
-            "title": "Net change in trips",
-            "format": "+,.0f"
+            "title": "Index (2018-19 = 100)",
+            "format": ".1f"
+          },
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Residents at 31 December",
+            "format": ",.0f"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips",
+            "format": ",.0f"
+          },
+          {
+            "field": "seats",
+            "type": "quantitative",
+            "title": "Seats flown",
+            "format": ",.0f"
           }
         ]
       }
@@ -226,150 +503,309 @@
     {
       "transform": [
         {
-          "filter": "datum.delta_trips>=0"
+          "filter": "datum.year_ending===2026 && datum.measure==='Resident population'"
+        },
+        {
+          "calculate": "datum.name+'  '+format(datum.index,'.1f')",
+          "as": "label"
         }
       ],
       "mark": {
         "type": "text",
-        "fontSize": 11,
+        "fontSize": 12,
         "lineHeight": 15,
         "color": "#243637",
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 9,
+        "dy": 0
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              30,
+              120
+            ]
+          },
+          "axis": {
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
+          }
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year_ending===2026 && datum.measure==='Passenger trips'"
+        },
+        {
+          "calculate": "datum.name+'  '+format(datum.index,'.1f')",
+          "as": "label"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 12,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 9,
         "dy": -8
       },
       "encoding": {
         "x": {
-          "field": "step",
+          "field": "fy",
           "type": "ordinal",
           "scale": {
+            "type": "point",
             "domain": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
             ]
           },
           "axis": {
-            "title": null,
+            "title": "Financial year",
             "labelAngle": 0,
-            "labelFontSize": 10,
-            "labelLineHeight": 12,
-            "labelPadding": 10,
-            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "end",
-          "type": "quantitative"
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              30,
+              120
+            ]
+          },
+          "axis": {
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
+          }
         },
         "text": {
-          "field": "value_label",
+          "field": "label",
           "type": "nominal"
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
         }
       }
     },
     {
       "transform": [
         {
-          "filter": "datum.delta_trips<0"
+          "filter": "datum.year_ending===2026 && datum.measure==='Seats flown'"
+        },
+        {
+          "calculate": "datum.name+'  '+format(datum.index,'.1f')",
+          "as": "label"
         }
       ],
       "mark": {
         "type": "text",
-        "fontSize": 11,
+        "fontSize": 12,
         "lineHeight": 15,
         "color": "#243637",
-        "dy": 13
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 9,
+        "dy": 8
       },
       "encoding": {
         "x": {
-          "field": "step",
+          "field": "fy",
           "type": "ordinal",
           "scale": {
+            "type": "point",
             "domain": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
             ]
           },
           "axis": {
-            "title": null,
+            "title": "Financial year",
             "labelAngle": 0,
-            "labelFontSize": 10,
-            "labelLineHeight": 12,
-            "labelPadding": 10,
-            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "end",
-          "type": "quantitative"
-        },
-        "text": {
-          "field": "value_label",
-          "type": "nominal"
-        }
-      }
-    },
-    {
-      "data": {
-        "values": [
-          {
-            "step": 5,
-            "start": 0,
-            "end": -228634,
-            "value_label": "\u2212228,634"
-          }
-        ]
-      },
-      "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "dy": 13,
-        "fontWeight": "bold"
-      },
-      "encoding": {
-        "x": {
-          "field": "step",
-          "type": "ordinal",
+          "field": "index",
+          "type": "quantitative",
           "scale": {
             "domain": [
-              0,
-              1,
-              2,
-              3,
-              4,
-              5
+              30,
+              120
             ]
           },
           "axis": {
-            "title": null,
-            "labelAngle": 0,
-            "labelFontSize": 10,
-            "labelLineHeight": 12,
-            "labelPadding": 10,
-            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
           }
         },
-        "y": {
-          "field": "end",
-          "type": "quantitative"
-        },
         "text": {
-          "field": "value_label",
+          "field": "label",
           "type": "nominal"
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
         }
       }
     }
   ],
   "usermeta": {
     "chart_id": 3,
-    "source": "Supplied BITRE workbook; FY2025-26"
+    "source": "BITRE workbook and ABS National, state and territory population, March 2026"
   }
 }

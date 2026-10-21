@@ -1,8 +1,8 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Twelve largest absolute route changes among 57 comparable pairs; rank depends on the selected measure.",
+  "description": "Selected large route changes, the remaining national change and the net result, FY2018-19 to FY2025-26.",
   "width": "container",
-  "height": 460,
+  "height": 325,
   "autosize": {
     "type": "fit",
     "contains": "padding"
@@ -35,123 +35,90 @@
     }
   },
   "data": {
-    "url": "data/routes-comparison.json"
+    "url": "data/waterfall.json"
   },
-  "params": [
-    {
-      "name": "changeMode",
-      "value": "percent",
-      "bind": {
-        "input": "radio",
-        "options": [
-          "percent",
-          "trips"
-        ],
-        "labels": [
-          "% change",
-          "Change in trips"
-        ],
-        "name": "Rank by "
-      }
-    }
-  ],
   "transform": [
     {
-      "calculate": "changeMode==='percent' ? datum.change_pct : datum.delta_trips",
-      "as": "change"
-    },
-    {
-      "calculate": "abs(datum.change)",
-      "as": "magnitude"
-    },
-    {
       "window": [
         {
-          "op": "row_number",
-          "as": "rank"
+          "op": "sum",
+          "field": "delta_trips",
+          "as": "end"
         }
       ],
       "sort": [
         {
-          "field": "magnitude",
-          "order": "descending"
-        },
-        {
-          "field": "route_id",
-          "order": "ascending"
+          "field": "step"
         }
+      ],
+      "frame": [
+        null,
+        0
       ]
     },
     {
-      "filter": "datum.rank<=12"
+      "calculate": "datum.end-datum.delta_trips",
+      "as": "start"
     },
     {
-      "calculate": "replace(changeMode==='percent' ? format(datum.change,'+.1f')+'%' : format(datum.change,'+,.0f'),'-','\u2212')",
+      "calculate": "datum.label==='KTA-PER' ? ['Karratha','Perth'] : datum.label==='MCY-MEL' ? ['Sunshine Coast','Melbourne'] : datum.label==='MEL-SYD' ? ['Melbourne','Sydney'] : datum.label==='BNE-SYD' ? ['Brisbane','Sydney'] : ['All other','changes']",
+      "as": "display"
+    },
+    {
+      "calculate": "datum.label==='KTA-PER' ? 'Karratha \u2013 Perth' : datum.label==='MCY-MEL' ? 'Sunshine Coast \u2013 Melbourne' : datum.label==='MEL-SYD' ? 'Melbourne \u2013 Sydney' : datum.label==='BNE-SYD' ? 'Brisbane \u2013 Sydney' : 'All other national changes'",
+      "as": "route_name"
+    },
+    {
+      "calculate": "(datum.delta_trips>=0 ? '+' : '\u2212')+format(abs(datum.delta_trips)/1000,',.0f')+'k'",
       "as": "value_label"
-    },
-    {
-      "window": [
-        {
-          "op": "row_number",
-          "as": "position"
-        }
-      ],
-      "sort": [
-        {
-          "field": "change",
-          "order": "descending"
-        }
-      ]
     }
   ],
-  "encoding": {
-    "y": {
-      "field": "route_name",
-      "type": "nominal",
-      "sort": {
-        "field": "position",
-        "op": "min",
-        "order": "ascending"
-      },
-      "axis": {
-        "title": null,
-        "labelLimit": {
-          "expr": "width<550 ? 100 : 200"
-        },
-        "labelFontSize": {
-          "expr": "width<550 ? 10 : 12"
-        },
-        "labelLineHeight": 12,
-        "labelExpr": "width<550 ? split(datum.label,' - ') : datum.label"
-      }
-    },
-    "x": {
-      "field": "change",
-      "type": "quantitative",
-      "scale": {
-        "zero": true,
-        "padding": 52
-      },
-      "axis": {
-        "title": {
-          "expr": "changeMode==='percent' ? 'Change (%)' : 'Change in passenger trips'"
-        },
-        "format": "~s",
-        "tickCount": 5
-      }
-    }
-  },
   "layer": [
     {
       "mark": {
         "type": "bar",
-        "height": 16,
-        "cornerRadiusEnd": 2
+        "size": {
+          "expr": "width<550 ? 28 : 40"
+        }
       },
       "encoding": {
+        "x": {
+          "field": "step",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "axis": {
+            "title": null,
+            "labelAngle": 0,
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+          }
+        },
+        "y": {
+          "field": "start",
+          "type": "quantitative",
+          "axis": {
+            "title": "Cumulative change in trips",
+            "format": "~s",
+            "tickCount": 5
+          }
+        },
+        "y2": {
+          "field": "end"
+        },
         "color": {
           "condition": {
-            "test": "datum.change>=0",
+            "test": "datum.delta_trips>=0",
             "value": "#316EAC"
           },
           "value": "#B55732"
@@ -160,86 +127,249 @@
           {
             "field": "route_name",
             "type": "nominal",
-            "title": "Route"
-          },
-          {
-            "field": "baseline_trips",
-            "type": "quantitative",
-            "title": "FY2018-19 trips",
-            "format": ",.0f"
-          },
-          {
-            "field": "latest_trips",
-            "type": "quantitative",
-            "title": "FY2025-26 trips",
-            "format": ",.0f"
-          },
-          {
-            "field": "change_pct",
-            "type": "quantitative",
-            "title": "Change (%)",
-            "format": "+.1f"
+            "title": "Route / group"
           },
           {
             "field": "delta_trips",
             "type": "quantitative",
             "title": "Change in trips",
             "format": "+,.0f"
+          },
+          {
+            "field": "end",
+            "type": "quantitative",
+            "title": "Cumulative change",
+            "format": "+,.0f"
           }
         ]
       }
     },
     {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
       "mark": {
-        "type": "text",
-        "fontSize": 11,
-        "lineHeight": 15,
-        "color": "#243637",
-        "align": "left",
-        "baseline": "middle",
-        "dx": 5
+        "type": "rule",
+        "color": "#809492"
       },
       "encoding": {
-        "text": {
-          "field": "value_label",
-          "type": "nominal"
-        },
-        "opacity": {
-          "condition": {
-            "test": "datum.change>=0",
-            "value": 1
-          },
-          "value": 0
+        "y": {
+          "datum": 0
         }
       }
     },
     {
+      "data": {
+        "values": [
+          {
+            "step": 5,
+            "start": 0,
+            "end": -228634,
+            "value_label": "\u2212228,634"
+          }
+        ]
+      },
+      "mark": {
+        "type": "bar",
+        "size": {
+          "expr": "width<550 ? 28 : 40"
+        },
+        "color": "#243637"
+      },
+      "encoding": {
+        "x": {
+          "field": "step",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "axis": {
+            "title": null,
+            "labelAngle": 0,
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+          }
+        },
+        "y": {
+          "field": "start",
+          "type": "quantitative",
+          "axis": {
+            "title": "Cumulative change in trips",
+            "format": "~s",
+            "tickCount": 5
+          }
+        },
+        "y2": {
+          "field": "end"
+        },
+        "tooltip": [
+          {
+            "field": "end",
+            "type": "quantitative",
+            "title": "Net change in trips",
+            "format": "+,.0f"
+          }
+        ]
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.delta_trips>=0"
+        }
+      ],
       "mark": {
         "type": "text",
         "fontSize": 11,
         "lineHeight": 15,
         "color": "#243637",
-        "align": "right",
-        "baseline": "middle",
-        "dx": -5
+        "dy": -8
       },
       "encoding": {
+        "x": {
+          "field": "step",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "axis": {
+            "title": null,
+            "labelAngle": 0,
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+          }
+        },
+        "y": {
+          "field": "end",
+          "type": "quantitative"
+        },
         "text": {
           "field": "value_label",
           "type": "nominal"
-        },
-        "opacity": {
-          "condition": {
-            "test": "datum.change<0",
-            "value": 1
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.delta_trips<0"
+        }
+      ],
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "dy": 13
+      },
+      "encoding": {
+        "x": {
+          "field": "step",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
           },
-          "value": 0
+          "axis": {
+            "title": null,
+            "labelAngle": 0,
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+          }
+        },
+        "y": {
+          "field": "end",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "value_label",
+          "type": "nominal"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "step": 5,
+            "start": 0,
+            "end": -228634,
+            "value_label": "\u2212228,634"
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#243637",
+        "dy": 13,
+        "fontWeight": "bold"
+      },
+      "encoding": {
+        "x": {
+          "field": "step",
+          "type": "ordinal",
+          "scale": {
+            "domain": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          },
+          "axis": {
+            "title": null,
+            "labelAngle": 0,
+            "labelFontSize": 10,
+            "labelLineHeight": 12,
+            "labelPadding": 10,
+            "labelExpr": "(width<420 ? [['KTA', 'PER'], ['MCY', 'MEL'], ['MEL', 'SYD'], ['BNE', 'SYD'], ['All other', 'changes'], ['Net', 'change']] : width<550 ? [['Karratha', 'Perth'], ['Sunshine', 'Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']] : [['Karratha', 'Perth'], ['Sunshine Coast', 'Melbourne'], ['Melbourne', 'Sydney'], ['Brisbane', 'Sydney'], ['All other', 'changes'], ['Net', 'change']])[datum.value]"
+          }
+        },
+        "y": {
+          "field": "end",
+          "type": "quantitative"
+        },
+        "text": {
+          "field": "value_label",
+          "type": "nominal"
         }
       }
     }
   ],
   "usermeta": {
     "chart_id": 9,
-    "source": "Supplied BITRE workbook; FY2025-26"
+    "source": "Supplied BITRE workbook; FY2018-19 and FY2025-26"
   }
 }
