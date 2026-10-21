@@ -47,6 +47,83 @@
     {
       "data": {
         "values": [
+          {
+            "from": 0,
+            "to": 500
+          }
+        ]
+      },
+      "mark": {
+        "type": "rect",
+        "color": "#F3E4DC",
+        "opacity": 0.8
+      },
+      "encoding": {
+        "x": {
+          "field": "from",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              4000
+            ]
+          },
+          "axis": {
+            "title": "Route distance (km)",
+            "tickCount": 4,
+            "format": ",.0f"
+          }
+        },
+        "x2": {
+          "field": "to"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "from": 0,
+            "to": 500
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#B55732",
+        "align": "left",
+        "baseline": "top",
+        "dx": 4,
+        "fontWeight": "bold",
+        "y": 4,
+        "text": [
+          "Under 500 km:",
+          "12 of 13 fell"
+        ]
+      },
+      "encoding": {
+        "x": {
+          "field": "from",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              0,
+              4000
+            ]
+          },
+          "axis": {
+            "title": "Route distance (km)",
+            "tickCount": 4,
+            "format": ",.0f"
+          }
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
           {}
         ]
       },

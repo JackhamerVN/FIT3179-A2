@@ -1,6 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Domestic passenger trips per Australian resident by financial year, 2014-15 to 2025-26.",
+  "description": "Domestic passenger trips and Australia's resident population, indexed to 100 in FY2018-19.",
   "width": "container",
   "height": 320,
   "autosize": {
@@ -37,7 +37,170 @@
   "data": {
     "url": "data/trips-per-resident.json"
   },
+  "transform": [
+    {
+      "calculate": "datum.year_ending===2019 ? datum.passenger_trips : null",
+      "as": "base_trips"
+    },
+    {
+      "calculate": "datum.year_ending===2019 ? datum.population : null",
+      "as": "base_population"
+    },
+    {
+      "joinaggregate": [
+        {
+          "op": "max",
+          "field": "base_trips",
+          "as": "trips_2019"
+        },
+        {
+          "op": "max",
+          "field": "base_population",
+          "as": "population_2019"
+        }
+      ]
+    },
+    {
+      "calculate": "100*datum.passenger_trips/datum.trips_2019",
+      "as": "Passenger trips"
+    },
+    {
+      "calculate": "100*datum.population/datum.population_2019",
+      "as": "Resident population"
+    },
+    {
+      "fold": [
+        "Passenger trips",
+        "Resident population"
+      ],
+      "as": [
+        "measure",
+        "index"
+      ]
+    }
+  ],
   "layer": [
+    {
+      "data": {
+        "values": [
+          {
+            "start": "2019-20",
+            "end": "2021-22"
+          }
+        ]
+      },
+      "mark": {
+        "type": "rect",
+        "color": "#E4ECEA",
+        "opacity": 0.75
+      },
+      "encoding": {
+        "x": {
+          "field": "start",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 64 : 150)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "x2": {
+          "field": "end"
+        }
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {
+            "fy": "2020-21",
+            "note": [
+              "Travel bans",
+              "and lockdowns"
+            ]
+          }
+        ]
+      },
+      "mark": {
+        "type": "text",
+        "fontSize": 11,
+        "lineHeight": 15,
+        "color": "#506365",
+        "baseline": "bottom"
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 64 : 150)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "datum": 113
+        },
+        "text": {
+          "field": "note",
+          "type": "nominal"
+        }
+      }
+    },
     {
       "data": {
         "values": [
@@ -54,103 +217,168 @@
       },
       "encoding": {
         "y": {
-          "datum": 2.4251
+          "datum": 100
         }
       }
     },
     {
       "mark": {
         "type": "line",
-        "strokeWidth": 2.5,
-        "color": "#177A88"
+        "strokeWidth": 2.5
       },
       "encoding": {
         "x": {
           "field": "fy",
           "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 64 : 150)"
+              }
+            ]
+          },
           "axis": {
             "title": "Financial year",
             "labelAngle": 0,
             "labelOverlap": "parity",
+            "grid": false,
             "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "trips_per_resident",
+          "field": "index",
           "type": "quantitative",
           "scale": {
             "domain": [
-              0,
-              3
+              30,
+              120
             ]
           },
           "axis": {
-            "title": "Trips per resident",
-            "tickCount": 4,
-            "format": ".1f"
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
           }
         },
-        "tooltip": [
-          {
-            "field": "fy",
-            "type": "nominal",
-            "title": "Financial year"
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Passenger trips",
+              "Resident population"
+            ],
+            "range": [
+              "#177A88",
+              "#7C8C8E"
+            ]
           },
-          {
-            "field": "trips_per_resident",
-            "type": "quantitative",
-            "title": "Trips per resident",
-            "format": ".2f"
-          },
-          {
-            "field": "passenger_trips",
-            "type": "quantitative",
-            "title": "Passenger trips",
-            "format": ",.0f"
-          },
-          {
-            "field": "population",
-            "type": "quantitative",
-            "title": "Residents at 31 December",
-            "format": ",.0f"
-          }
-        ]
+          "legend": null
+        }
       }
     },
     {
       "mark": {
         "type": "point",
         "filled": true,
-        "size": 46,
-        "color": "#177A88",
+        "size": 40,
         "stroke": "white",
-        "strokeWidth": 1.5
+        "strokeWidth": 1.2
       },
       "encoding": {
         "x": {
           "field": "fy",
           "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 64 : 150)"
+              }
+            ]
+          },
           "axis": {
             "title": "Financial year",
             "labelAngle": 0,
             "labelOverlap": "parity",
+            "grid": false,
             "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "trips_per_resident",
+          "field": "index",
           "type": "quantitative",
           "scale": {
             "domain": [
-              0,
-              3
+              30,
+              120
             ]
           },
           "axis": {
-            "title": "Trips per resident",
-            "tickCount": 4,
-            "format": ".1f"
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
           }
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Passenger trips",
+              "Resident population"
+            ],
+            "range": [
+              "#177A88",
+              "#7C8C8E"
+            ]
+          },
+          "legend": null
         },
         "tooltip": [
           {
@@ -159,10 +387,15 @@
             "title": "Financial year"
           },
           {
-            "field": "trips_per_resident",
+            "field": "measure",
+            "type": "nominal",
+            "title": "Measure"
+          },
+          {
+            "field": "index",
             "type": "quantitative",
-            "title": "Trips per resident",
-            "format": ".2f"
+            "title": "Index (2018-19 = 100)",
+            "format": ".1f"
           },
           {
             "field": "passenger_trips",
@@ -182,98 +415,98 @@
     {
       "transform": [
         {
-          "filter": "datum.year_ending===2019"
-        }
-      ],
-      "mark": {
-        "type": "text",
-        "dy": -14,
-        "fontSize": 13,
-        "fontWeight": "bold",
-        "color": "#243637"
-      },
-      "encoding": {
-        "x": {
-          "field": "fy",
-          "type": "ordinal",
-          "axis": {
-            "title": "Financial year",
-            "labelAngle": 0,
-            "labelOverlap": "parity",
-            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-          }
+          "filter": "datum.year_ending===2026"
         },
-        "y": {
-          "field": "trips_per_resident",
-          "type": "quantitative",
-          "scale": {
-            "domain": [
-              0,
-              3
-            ]
-          },
-          "axis": {
-            "title": "Trips per resident",
-            "tickCount": 4,
-            "format": ".1f"
-          }
-        },
-        "text": {
-          "field": "trips_per_resident",
-          "type": "quantitative",
-          "format": ".2f"
-        }
-      }
-    },
-    {
-      "transform": [
         {
-          "filter": "datum.year_ending===2021 || datum.year_ending===2026"
+          "calculate": "(width<550 ? (datum.measure==='Passenger trips' ? 'Trips' : 'People') : datum.measure)+'  '+format(datum.index,'.1f')",
+          "as": "label"
         }
       ],
       "mark": {
         "type": "text",
-        "dy": 18,
-        "fontSize": 13,
-        "fontWeight": "bold"
+        "fontSize": 12,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 9
       },
       "encoding": {
         "x": {
           "field": "fy",
           "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 64 : 150)"
+              }
+            ]
+          },
           "axis": {
             "title": "Financial year",
             "labelAngle": 0,
             "labelOverlap": "parity",
+            "grid": false,
             "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
           }
         },
         "y": {
-          "field": "trips_per_resident",
+          "field": "index",
           "type": "quantitative",
           "scale": {
             "domain": [
-              0,
-              3
+              30,
+              120
             ]
           },
           "axis": {
-            "title": "Trips per resident",
-            "tickCount": 4,
-            "format": ".1f"
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              40,
+              60,
+              80,
+              100,
+              120
+            ]
           }
         },
         "text": {
-          "field": "trips_per_resident",
-          "type": "quantitative",
-          "format": ".2f"
+          "field": "label",
+          "type": "nominal"
         },
         "color": {
-          "condition": {
-            "test": "datum.year_ending===2021",
-            "value": "#B55732"
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Passenger trips",
+              "Resident population"
+            ],
+            "range": [
+              "#177A88",
+              "#7C8C8E"
+            ]
           },
-          "value": "#243637"
+          "legend": null
         }
       }
     }

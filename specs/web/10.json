@@ -70,8 +70,8 @@
       },
       "on": [
         {
-          "events": "@ribbons:click",
-          "update": "datum.group_id===selectedGroup ? '' : datum.group_id"
+          "events": "click",
+          "update": "datum && datum.group_id && datum.group_id!==selectedGroup ? datum.group_id : ''"
         }
       ]
     },

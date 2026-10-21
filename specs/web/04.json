@@ -138,8 +138,8 @@
       },
       "on": [
         {
-          "events": "@airportNodes:click",
-          "update": "datum.airport_id===selectedAirport ? '' : datum.airport_id"
+          "events": "click",
+          "update": "datum && datum.airport_id && datum.airport_id!==selectedAirport ? datum.airport_id : ''"
         }
       ]
     }

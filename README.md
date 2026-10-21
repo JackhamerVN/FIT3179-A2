@@ -17,8 +17,8 @@ All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`]
 | 2 | Heatmap | 10 | Alluvial diagram |
 | 3 | Waterfall chart | 11 | Histogram |
 | 4 | Flow map | 12 | Scatterplot |
-| 5 | Proportional symbol map | 13 | Slope chart |
-| 6 | Treemap | 14 | Line chart |
+| 5 | Proportional symbol map | 13 | Connected dot plot |
+| 6 | Treemap | 14 | Indexed line chart |
 | 7 | Choropleth map | 15 | Bump chart |
 | 8 | Dorling cartogram | | |
 

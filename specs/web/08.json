@@ -48,12 +48,8 @@
       "value": "",
       "on": [
         {
-          "events": "@circles:click",
-          "update": "datum.state_id===selectedState ? '' : datum.state_id"
-        },
-        {
-          "events": "dblclick",
-          "update": "''"
+          "events": "click",
+          "update": "datum && datum.state_id && datum.state_id!==selectedState ? datum.state_id : ''"
         }
       ]
     }
