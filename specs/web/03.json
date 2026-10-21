@@ -194,8 +194,9 @@
           {
             "fy": "2020-21",
             "note": [
-              "Travel bans",
-              "and lockdowns"
+              "Pandemic years",
+              "left out:",
+              "see chart 01"
             ]
           }
         ]
@@ -205,7 +206,7 @@
         "fontSize": 11,
         "lineHeight": 15,
         "color": "#506365",
-        "baseline": "bottom"
+        "baseline": "top"
       },
       "encoding": {
         "x": {
@@ -245,7 +246,7 @@
           }
         },
         "y": {
-          "datum": 117
+          "datum": 113.5
         },
         "text": {
           "field": "note",
@@ -274,6 +275,108 @@
       }
     },
     {
+      "transform": [
+        {
+          "filter": "datum.year_ending===2019 || datum.year_ending===2023"
+        }
+      ],
+      "mark": {
+        "type": "line",
+        "strokeWidth": 1.5,
+        "strokeDash": [
+          3,
+          4
+        ],
+        "opacity": 0.7
+      },
+      "encoding": {
+        "x": {
+          "field": "fy",
+          "type": "ordinal",
+          "scale": {
+            "type": "point",
+            "domain": [
+              "2014-15",
+              "2015-16",
+              "2016-17",
+              "2017-18",
+              "2018-19",
+              "2019-20",
+              "2020-21",
+              "2021-22",
+              "2022-23",
+              "2023-24",
+              "2024-25",
+              "2025-26"
+            ],
+            "range": [
+              {
+                "expr": "10"
+              },
+              {
+                "expr": "width-(width<550 ? 74 : 168)"
+              }
+            ]
+          },
+          "axis": {
+            "title": "Financial year",
+            "labelAngle": 0,
+            "labelOverlap": "parity",
+            "grid": false,
+            "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
+          }
+        },
+        "y": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
+          },
+          "axis": {
+            "title": "Index (2018\u201319 = 100)",
+            "values": [
+              90,
+              95,
+              100,
+              105,
+              110
+            ]
+          }
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        }
+      }
+    },
+    {
+      "transform": [
+        {
+          "filter": "datum.year_ending<=2019 || datum.year_ending>=2023"
+        },
+        {
+          "calculate": "datum.year_ending<=2019 ? 'before' : 'after'",
+          "as": "period"
+        }
+      ],
       "mark": {
         "type": "line",
         "strokeWidth": 2.5
@@ -320,18 +423,20 @@
           "type": "quantitative",
           "scale": {
             "domain": [
-              30,
-              120
-            ]
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
           },
           "axis": {
             "title": "Index (2018\u201319 = 100)",
             "values": [
-              40,
-              60,
-              80,
+              90,
+              95,
               100,
-              120
+              105,
+              110
             ]
           }
         },
@@ -352,39 +457,22 @@
           },
           "legend": null
         },
-        "strokeDash": {
-          "field": "measure",
-          "type": "nominal",
-          "scale": {
-            "domain": [
-              "Resident population",
-              "Passenger trips",
-              "Seats flown"
-            ],
-            "range": [
-              [
-                1,
-                0
-              ],
-              [
-                1,
-                0
-              ],
-              [
-                5,
-                3
-              ]
-            ]
-          },
-          "legend": null
+        "detail": {
+          "field": "period",
+          "type": "nominal"
         }
       }
     },
     {
+      "transform": [
+        {
+          "filter": "datum.year_ending<=2019 || datum.year_ending>=2023"
+        }
+      ],
       "mark": {
         "type": "point",
         "filled": true,
-        "size": 36,
+        "size": 40,
         "stroke": "white",
         "strokeWidth": 1.2
       },
@@ -430,18 +518,20 @@
           "type": "quantitative",
           "scale": {
             "domain": [
-              30,
-              120
-            ]
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
           },
           "axis": {
             "title": "Index (2018\u201319 = 100)",
             "values": [
-              40,
-              60,
-              80,
+              90,
+              95,
               100,
-              120
+              105,
+              110
             ]
           }
         },
@@ -518,8 +608,7 @@
         "fontWeight": "bold",
         "align": "left",
         "baseline": "middle",
-        "dx": 9,
-        "dy": 0
+        "dx": 9
       },
       "encoding": {
         "x": {
@@ -563,18 +652,20 @@
           "type": "quantitative",
           "scale": {
             "domain": [
-              30,
-              120
-            ]
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
           },
           "axis": {
             "title": "Index (2018\u201319 = 100)",
             "values": [
-              40,
-              60,
-              80,
+              90,
+              95,
               100,
-              120
+              105,
+              110
             ]
           }
         },
@@ -619,8 +710,7 @@
         "fontWeight": "bold",
         "align": "left",
         "baseline": "middle",
-        "dx": 9,
-        "dy": -8
+        "dx": 9
       },
       "encoding": {
         "x": {
@@ -664,18 +754,20 @@
           "type": "quantitative",
           "scale": {
             "domain": [
-              30,
-              120
-            ]
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
           },
           "axis": {
             "title": "Index (2018\u201319 = 100)",
             "values": [
-              40,
-              60,
-              80,
+              90,
+              95,
               100,
-              120
+              105,
+              110
             ]
           }
         },
@@ -720,8 +812,7 @@
         "fontWeight": "bold",
         "align": "left",
         "baseline": "middle",
-        "dx": 9,
-        "dy": 8
+        "dx": 9
       },
       "encoding": {
         "x": {
@@ -765,18 +856,20 @@
           "type": "quantitative",
           "scale": {
             "domain": [
-              30,
-              120
-            ]
+              88,
+              114
+            ],
+            "nice": false,
+            "zero": false
           },
           "axis": {
             "title": "Index (2018\u201319 = 100)",
             "values": [
-              40,
-              60,
-              80,
+              90,
+              95,
               100,
-              120
+              105,
+              110
             ]
           }
         },
