@@ -32,4 +32,3 @@ main .chart.vega-embed{display:flex!important;flex-direction:column}.chart .vega
 @media (max-width:600px){.chart .vega-bind>label,.chart .vega-bind select{width:100%}}
 /* "Why?" notes: one sourced sentence, set apart from the caption. */
 .why{margin:10px 0 0;padding:2px 0 2px 12px;border-left:3px solid var(--teal);font-size:13px;line-height:1.55;color:var(--ink)}.why strong{font-family:'B612 Mono','B612',Arial,sans-serif;font-size:11px;letter-spacing:.04em;color:var(--teal);margin-right:4px}.chapter-deck p{margin:0}.chapter-deck .chapter-why{margin-top:12px}
-.chart-note{margin:6px 0 0;font-size:13px;line-height:1.55;color:var(--muted)}
