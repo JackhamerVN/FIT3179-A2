@@ -1,8 +1,11 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
-  "description": "Resident population, domestic passenger trips and seats flown, indexed to 100 in FY2018-19.",
+  "description": "Percentage change from FY2018-19 to FY2025-26 in resident population, domestic passenger trips and seats flown.",
+  "width": "container",
+  "height": 260,
   "autosize": {
-    "type": "pad"
+    "type": "fit",
+    "contains": "padding"
   },
   "padding": 8,
   "background": "transparent",
@@ -101,15 +104,15 @@
       ]
     },
     {
-      "calculate": "100*datum.population/datum.population_base",
+      "calculate": "100*(datum.population/datum.population_base-1)",
       "as": "Resident population"
     },
     {
-      "calculate": "100*datum.passenger_trips/datum.passenger_trips_base",
+      "calculate": "100*(datum.passenger_trips/datum.passenger_trips_base-1)",
       "as": "Passenger trips"
     },
     {
-      "calculate": "100*datum.seats/datum.seats_base",
+      "calculate": "100*(datum.seats/datum.seats_base-1)",
       "as": "Seats flown"
     },
     {
@@ -124,570 +127,293 @@
       ]
     },
     {
-      "calculate": "datum.year_ending<=2019 ? 'before' : datum.year_ending>=2023 ? 'after' : 'omitted'",
-      "as": "period"
+      "filter": "datum.year_ending===2026"
+    },
+    {
+      "calculate": "(datum.index>0 ? '+' : '\u2212')+format(abs(datum.index),'.1f')+'%'",
+      "as": "label"
     }
   ],
-  "facet": {
-    "column": {
-      "field": "measure",
-      "type": "nominal",
-      "sort": [
-        "Resident population",
-        "Passenger trips",
-        "Seats flown"
-      ],
-      "header": {
-        "title": null,
-        "labelFontSize": 12,
-        "labelFontWeight": "bold",
-        "labelColor": "#243637",
-        "labelFont": "B612, Arial, Helvetica, sans-serif",
-        "labelExpr": "datum.value==='Resident population' ? 'Residents' : datum.value"
+  "layer": [
+    {
+      "mark": {
+        "type": "bar",
+        "height": 38,
+        "cornerRadiusEnd": 2
+      },
+      "encoding": {
+        "y": {
+          "field": "measure",
+          "type": "nominal",
+          "sort": [
+            "Resident population",
+            "Passenger trips",
+            "Seats flown"
+          ],
+          "axis": {
+            "title": null,
+            "labelFontSize": 13,
+            "labelColor": "#243637",
+            "ticks": false,
+            "domain": false,
+            "labelPadding": 10,
+            "labelExpr": "datum.value==='Resident population' ? 'Residents' : datum.value"
+          }
+        },
+        "x": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -10,
+              14
+            ],
+            "nice": false
+          },
+          "axis": {
+            "title": "Change, 2018\u201319 to 2025\u201326 (%)",
+            "values": [
+              -10,
+              -5,
+              0,
+              5,
+              10
+            ],
+            "labelExpr": "(datum.value>0 ? '+' : '')+replace(datum.label,'-','\u2212')+'%'"
+          }
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        },
+        "tooltip": [
+          {
+            "field": "measure",
+            "type": "nominal",
+            "title": "Measure"
+          },
+          {
+            "field": "index",
+            "type": "quantitative",
+            "title": "Change since 2018-19 (%)",
+            "format": "+.1f"
+          },
+          {
+            "field": "population",
+            "type": "quantitative",
+            "title": "Residents at 31 December 2025",
+            "format": ",.0f"
+          },
+          {
+            "field": "passenger_trips",
+            "type": "quantitative",
+            "title": "Passenger trips, 2025-26",
+            "format": ",.0f"
+          },
+          {
+            "field": "seats",
+            "type": "quantitative",
+            "title": "Seats flown, 2025-26",
+            "format": ",.0f"
+          }
+        ]
+      }
+    },
+    {
+      "data": {
+        "values": [
+          {}
+        ]
+      },
+      "mark": {
+        "type": "rule",
+        "color": "#243637",
+        "strokeWidth": 1
+      },
+      "encoding": {
+        "x": {
+          "datum": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 14,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "left",
+        "baseline": "middle",
+        "dx": 7
+      },
+      "encoding": {
+        "y": {
+          "field": "measure",
+          "type": "nominal",
+          "sort": [
+            "Resident population",
+            "Passenger trips",
+            "Seats flown"
+          ],
+          "axis": {
+            "title": null,
+            "labelFontSize": 13,
+            "labelColor": "#243637",
+            "ticks": false,
+            "domain": false,
+            "labelPadding": 10,
+            "labelExpr": "datum.value==='Resident population' ? 'Residents' : datum.value"
+          }
+        },
+        "x": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -10,
+              14
+            ],
+            "nice": false
+          },
+          "axis": {
+            "title": "Change, 2018\u201319 to 2025\u201326 (%)",
+            "values": [
+              -10,
+              -5,
+              0,
+              5,
+              10
+            ],
+            "labelExpr": "(datum.value>0 ? '+' : '')+replace(datum.label,'-','\u2212')+'%'"
+          }
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.index>=0",
+            "value": 1
+          },
+          "value": 0
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "fontSize": 14,
+        "lineHeight": 15,
+        "color": "#243637",
+        "fontWeight": "bold",
+        "align": "right",
+        "baseline": "middle",
+        "dx": -7
+      },
+      "encoding": {
+        "y": {
+          "field": "measure",
+          "type": "nominal",
+          "sort": [
+            "Resident population",
+            "Passenger trips",
+            "Seats flown"
+          ],
+          "axis": {
+            "title": null,
+            "labelFontSize": 13,
+            "labelColor": "#243637",
+            "ticks": false,
+            "domain": false,
+            "labelPadding": 10,
+            "labelExpr": "datum.value==='Resident population' ? 'Residents' : datum.value"
+          }
+        },
+        "x": {
+          "field": "index",
+          "type": "quantitative",
+          "scale": {
+            "domain": [
+              -10,
+              14
+            ],
+            "nice": false
+          },
+          "axis": {
+            "title": "Change, 2018\u201319 to 2025\u201326 (%)",
+            "values": [
+              -10,
+              -5,
+              0,
+              5,
+              10
+            ],
+            "labelExpr": "(datum.value>0 ? '+' : '')+replace(datum.label,'-','\u2212')+'%'"
+          }
+        },
+        "text": {
+          "field": "label",
+          "type": "nominal"
+        },
+        "color": {
+          "field": "measure",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "Resident population",
+              "Passenger trips",
+              "Seats flown"
+            ],
+            "range": [
+              "#7C8C8E",
+              "#177A88",
+              "#243637"
+            ]
+          },
+          "legend": null
+        },
+        "opacity": {
+          "condition": {
+            "test": "datum.index<0",
+            "value": 1
+          },
+          "value": 0
+        }
       }
     }
-  },
-  "spacing": 20,
-  "spec": {
-    "width": 98,
-    "height": 240,
-    "layer": [
-      {
-        "transform": [
-          {
-            "filter": "datum.year_ending===2021"
-          },
-          {
-            "calculate": "'2019-20'",
-            "as": "start"
-          },
-          {
-            "calculate": "'2021-22'",
-            "as": "end"
-          }
-        ],
-        "mark": {
-          "type": "rect",
-          "color": "#E4ECEA",
-          "opacity": 0.75
-        },
-        "encoding": {
-          "x": {
-            "field": "start",
-            "type": "ordinal",
-            "scale": {
-              "type": "point",
-              "domain": [
-                "2014-15",
-                "2015-16",
-                "2016-17",
-                "2017-18",
-                "2018-19",
-                "2019-20",
-                "2020-21",
-                "2021-22",
-                "2022-23",
-                "2023-24",
-                "2024-25",
-                "2025-26"
-              ],
-              "padding": 0.3
-            },
-            "axis": {
-              "title": null,
-              "labelAngle": 0,
-              "values": [
-                "2014-15",
-                "2025-26"
-              ],
-              "grid": false,
-              "labelFontSize": 11,
-              "labelAlign": {
-                "condition": [
-                  {
-                    "test": "datum.value==='2014-15'",
-                    "value": "left"
-                  },
-                  {
-                    "test": "datum.value==='2025-26'",
-                    "value": "right"
-                  }
-                ],
-                "value": "center"
-              },
-              "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-            }
-          },
-          "x2": {
-            "field": "end"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.year_ending===2021"
-          }
-        ],
-        "mark": {
-          "type": "rule",
-          "strokeDash": [
-            2,
-            3
-          ],
-          "color": "#9AAAA8"
-        },
-        "encoding": {
-          "y": {
-            "datum": 100
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.year_ending===2019 || datum.year_ending===2023"
-          }
-        ],
-        "mark": {
-          "type": "line",
-          "strokeWidth": 1.5,
-          "strokeDash": [
-            3,
-            4
-          ],
-          "opacity": 0.7
-        },
-        "encoding": {
-          "x": {
-            "field": "fy",
-            "type": "ordinal",
-            "scale": {
-              "type": "point",
-              "domain": [
-                "2014-15",
-                "2015-16",
-                "2016-17",
-                "2017-18",
-                "2018-19",
-                "2019-20",
-                "2020-21",
-                "2021-22",
-                "2022-23",
-                "2023-24",
-                "2024-25",
-                "2025-26"
-              ],
-              "padding": 0.3
-            },
-            "axis": {
-              "title": null,
-              "labelAngle": 0,
-              "values": [
-                "2014-15",
-                "2025-26"
-              ],
-              "grid": false,
-              "labelFontSize": 11,
-              "labelAlign": {
-                "condition": [
-                  {
-                    "test": "datum.value==='2014-15'",
-                    "value": "left"
-                  },
-                  {
-                    "test": "datum.value==='2025-26'",
-                    "value": "right"
-                  }
-                ],
-                "value": "center"
-              },
-              "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-            }
-          },
-          "y": {
-            "field": "index",
-            "type": "quantitative",
-            "scale": {
-              "domain": [
-                88,
-                114
-              ],
-              "nice": false,
-              "zero": false
-            },
-            "axis": {
-              "title": "Index (2018\u201319 = 100)",
-              "values": [
-                90,
-                100,
-                110
-              ]
-            }
-          },
-          "color": {
-            "field": "measure",
-            "type": "nominal",
-            "scale": {
-              "domain": [
-                "Resident population",
-                "Passenger trips",
-                "Seats flown"
-              ],
-              "range": [
-                "#7C8C8E",
-                "#177A88",
-                "#243637"
-              ]
-            },
-            "legend": null
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.period!=='omitted'"
-          }
-        ],
-        "mark": {
-          "type": "line",
-          "strokeWidth": 2.5
-        },
-        "encoding": {
-          "x": {
-            "field": "fy",
-            "type": "ordinal",
-            "scale": {
-              "type": "point",
-              "domain": [
-                "2014-15",
-                "2015-16",
-                "2016-17",
-                "2017-18",
-                "2018-19",
-                "2019-20",
-                "2020-21",
-                "2021-22",
-                "2022-23",
-                "2023-24",
-                "2024-25",
-                "2025-26"
-              ],
-              "padding": 0.3
-            },
-            "axis": {
-              "title": null,
-              "labelAngle": 0,
-              "values": [
-                "2014-15",
-                "2025-26"
-              ],
-              "grid": false,
-              "labelFontSize": 11,
-              "labelAlign": {
-                "condition": [
-                  {
-                    "test": "datum.value==='2014-15'",
-                    "value": "left"
-                  },
-                  {
-                    "test": "datum.value==='2025-26'",
-                    "value": "right"
-                  }
-                ],
-                "value": "center"
-              },
-              "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-            }
-          },
-          "y": {
-            "field": "index",
-            "type": "quantitative",
-            "scale": {
-              "domain": [
-                88,
-                114
-              ],
-              "nice": false,
-              "zero": false
-            },
-            "axis": {
-              "title": "Index (2018\u201319 = 100)",
-              "values": [
-                90,
-                100,
-                110
-              ]
-            }
-          },
-          "color": {
-            "field": "measure",
-            "type": "nominal",
-            "scale": {
-              "domain": [
-                "Resident population",
-                "Passenger trips",
-                "Seats flown"
-              ],
-              "range": [
-                "#7C8C8E",
-                "#177A88",
-                "#243637"
-              ]
-            },
-            "legend": null
-          },
-          "detail": {
-            "field": "period",
-            "type": "nominal"
-          }
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.period!=='omitted'"
-          }
-        ],
-        "mark": {
-          "type": "point",
-          "filled": true,
-          "size": 34,
-          "stroke": "white",
-          "strokeWidth": 1
-        },
-        "encoding": {
-          "x": {
-            "field": "fy",
-            "type": "ordinal",
-            "scale": {
-              "type": "point",
-              "domain": [
-                "2014-15",
-                "2015-16",
-                "2016-17",
-                "2017-18",
-                "2018-19",
-                "2019-20",
-                "2020-21",
-                "2021-22",
-                "2022-23",
-                "2023-24",
-                "2024-25",
-                "2025-26"
-              ],
-              "padding": 0.3
-            },
-            "axis": {
-              "title": null,
-              "labelAngle": 0,
-              "values": [
-                "2014-15",
-                "2025-26"
-              ],
-              "grid": false,
-              "labelFontSize": 11,
-              "labelAlign": {
-                "condition": [
-                  {
-                    "test": "datum.value==='2014-15'",
-                    "value": "left"
-                  },
-                  {
-                    "test": "datum.value==='2025-26'",
-                    "value": "right"
-                  }
-                ],
-                "value": "center"
-              },
-              "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-            }
-          },
-          "y": {
-            "field": "index",
-            "type": "quantitative",
-            "scale": {
-              "domain": [
-                88,
-                114
-              ],
-              "nice": false,
-              "zero": false
-            },
-            "axis": {
-              "title": "Index (2018\u201319 = 100)",
-              "values": [
-                90,
-                100,
-                110
-              ]
-            }
-          },
-          "color": {
-            "field": "measure",
-            "type": "nominal",
-            "scale": {
-              "domain": [
-                "Resident population",
-                "Passenger trips",
-                "Seats flown"
-              ],
-              "range": [
-                "#7C8C8E",
-                "#177A88",
-                "#243637"
-              ]
-            },
-            "legend": null
-          },
-          "tooltip": [
-            {
-              "field": "fy",
-              "type": "nominal",
-              "title": "Financial year"
-            },
-            {
-              "field": "measure",
-              "type": "nominal",
-              "title": "Measure"
-            },
-            {
-              "field": "index",
-              "type": "quantitative",
-              "title": "Index (2018-19 = 100)",
-              "format": ".1f"
-            },
-            {
-              "field": "population",
-              "type": "quantitative",
-              "title": "Residents at 31 December",
-              "format": ",.0f"
-            },
-            {
-              "field": "passenger_trips",
-              "type": "quantitative",
-              "title": "Passenger trips",
-              "format": ",.0f"
-            },
-            {
-              "field": "seats",
-              "type": "quantitative",
-              "title": "Seats flown",
-              "format": ",.0f"
-            }
-          ]
-        }
-      },
-      {
-        "transform": [
-          {
-            "filter": "datum.year_ending===2026"
-          }
-        ],
-        "mark": {
-          "type": "text",
-          "fontSize": 12,
-          "lineHeight": 15,
-          "color": "#243637",
-          "fontWeight": "bold",
-          "align": "right",
-          "baseline": "bottom",
-          "dy": -8
-        },
-        "encoding": {
-          "x": {
-            "field": "fy",
-            "type": "ordinal",
-            "scale": {
-              "type": "point",
-              "domain": [
-                "2014-15",
-                "2015-16",
-                "2016-17",
-                "2017-18",
-                "2018-19",
-                "2019-20",
-                "2020-21",
-                "2021-22",
-                "2022-23",
-                "2023-24",
-                "2024-25",
-                "2025-26"
-              ],
-              "padding": 0.3
-            },
-            "axis": {
-              "title": null,
-              "labelAngle": 0,
-              "values": [
-                "2014-15",
-                "2025-26"
-              ],
-              "grid": false,
-              "labelFontSize": 11,
-              "labelAlign": {
-                "condition": [
-                  {
-                    "test": "datum.value==='2014-15'",
-                    "value": "left"
-                  },
-                  {
-                    "test": "datum.value==='2025-26'",
-                    "value": "right"
-                  }
-                ],
-                "value": "center"
-              },
-              "labelExpr": "slice(datum.value,2,4)+'\u2013'+slice(datum.value,5)"
-            }
-          },
-          "y": {
-            "field": "index",
-            "type": "quantitative",
-            "scale": {
-              "domain": [
-                88,
-                114
-              ],
-              "nice": false,
-              "zero": false
-            },
-            "axis": {
-              "title": "Index (2018\u201319 = 100)",
-              "values": [
-                90,
-                100,
-                110
-              ]
-            }
-          },
-          "text": {
-            "field": "index",
-            "type": "quantitative",
-            "format": ".1f"
-          },
-          "color": {
-            "field": "measure",
-            "type": "nominal",
-            "scale": {
-              "domain": [
-                "Resident population",
-                "Passenger trips",
-                "Seats flown"
-              ],
-              "range": [
-                "#7C8C8E",
-                "#177A88",
-                "#243637"
-              ]
-            },
-            "legend": null
-          }
-        }
-      }
-    ]
-  },
+  ],
   "usermeta": {
     "chart_id": 3,
     "source": "BITRE workbook and ABS National, state and territory population, March 2026"
