@@ -50,6 +50,22 @@
       "as": "change_label"
     },
     {
+      "calculate": "format(datum.occupancy_2026_pct,'.1f')+'%  ('+datum.change_label+' pts)'",
+      "as": "value_label"
+    },
+    {
+      "calculate": "format(datum.occupancy_2019_pct,'.1f')+'% of seats filled'",
+      "as": "tip_2019"
+    },
+    {
+      "calculate": "format(datum.occupancy_2026_pct,'.1f')+'% of seats filled'",
+      "as": "tip_2026"
+    },
+    {
+      "calculate": "datum.change_label+' percentage points'",
+      "as": "tip_change"
+    },
+    {
       "calculate": "max(datum.occupancy_2019_pct, datum.occupancy_2026_pct)",
       "as": "right_end"
     }
@@ -85,12 +101,21 @@
           "scale": {
             "domain": [
               65,
-              95
-            ]
+              106
+            ],
+            "nice": false
           },
           "axis": {
-            "title": "Seats filled (%)",
-            "tickCount": 6,
+            "title": "Share of seats filled over the year (%)",
+            "values": [
+              65,
+              70,
+              75,
+              80,
+              85,
+              90,
+              95
+            ],
             "grid": true
           }
         },
@@ -98,10 +123,16 @@
           "field": "occupancy_2026_pct"
         },
         "color": {
-          "condition": {
-            "test": "datum.change_points>=0",
-            "value": "#316EAC"
-          },
+          "condition": [
+            {
+              "test": "abs(datum.change_points)<0.05",
+              "value": "#506365"
+            },
+            {
+              "test": "datum.change_points>0",
+              "value": "#316EAC"
+            }
+          ],
           "value": "#B55732"
         },
         "opacity": {
@@ -158,12 +189,21 @@
           "scale": {
             "domain": [
               65,
-              95
-            ]
+              106
+            ],
+            "nice": false
           },
           "axis": {
-            "title": "Seats filled (%)",
-            "tickCount": 6,
+            "title": "Share of seats filled over the year (%)",
+            "values": [
+              65,
+              70,
+              75,
+              80,
+              85,
+              90,
+              95
+            ],
             "grid": true
           }
         },
@@ -174,27 +214,24 @@
             "title": "Route"
           },
           {
-            "field": "occupancy_2019_pct",
-            "type": "quantitative",
-            "title": "FY2018-19 seats filled (%)",
-            "format": ".1f"
+            "field": "tip_2019",
+            "type": "nominal",
+            "title": "2018\u201319"
           },
           {
-            "field": "occupancy_2026_pct",
-            "type": "quantitative",
-            "title": "FY2025-26 seats filled (%)",
-            "format": ".1f"
+            "field": "tip_2026",
+            "type": "nominal",
+            "title": "2025\u201326"
           },
           {
-            "field": "change_points",
-            "type": "quantitative",
-            "title": "Change (percentage points)",
-            "format": "+.1f"
+            "field": "tip_change",
+            "type": "nominal",
+            "title": "Change"
           },
           {
             "field": "latest_trips",
             "type": "quantitative",
-            "title": "FY2025-26 passenger trips",
+            "title": "Passenger trips, 2025\u201326",
             "format": ",.0f"
           }
         ],
@@ -254,14 +291,20 @@
           "type": "quantitative"
         },
         "text": {
-          "field": "change_label",
+          "field": "value_label",
           "type": "nominal"
         },
         "color": {
-          "condition": {
-            "test": "datum.change_points>=0",
-            "value": "#316EAC"
-          },
+          "condition": [
+            {
+              "test": "abs(datum.change_points)<0.05",
+              "value": "#506365"
+            },
+            {
+              "test": "datum.change_points>0",
+              "value": "#316EAC"
+            }
+          ],
           "value": "#B55732"
         }
       }
