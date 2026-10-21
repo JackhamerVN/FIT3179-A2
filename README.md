@@ -15,7 +15,7 @@ All charts are made with Vega-Lite or Vega. Specifications are in [`specs/web/`]
 |---|---|---|---|
 | 1 | Line chart | 8 | Bar chart |
 | 2 | Heatmap | 9 | Scatterplot |
-| 3 | Indexed line chart | 10 | Choropleth map |
+| 3 | Indexed line charts (small multiples) | 10 | Choropleth map |
 | 4 | Flow map | 11 | Dorling cartogram |
 | 5 | Proportional symbol map | 12 | Bump chart |
 | 6 | Treemap | 13 | Histogram |
