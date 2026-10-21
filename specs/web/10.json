@@ -43,6 +43,10 @@
     {
       "name": "targetX",
       "update": "width-122"
+    },
+    {
+      "name": "headerHeight",
+      "value": 32
     }
   ],
   "scales": [
@@ -56,7 +60,7 @@
       "range": [
         0,
         {
-          "signal": "height-2*gap"
+          "signal": "height-headerHeight-2*gap"
         }
       ],
       "zero": true
@@ -69,8 +73,8 @@
         "Within a state"
       ],
       "range": [
-        "#86949B",
-        "#177A88"
+        "#177A88",
+        "#86949B"
       ]
     }
   ],
@@ -118,22 +122,22 @@
         {
           "type": "formula",
           "as": "sy0",
-          "expr": "scale('flow',datum.s0)+datum.left_order*gap+gap/2"
+          "expr": "scale('flow',datum.s0)+datum.left_order*gap+gap/2+headerHeight"
         },
         {
           "type": "formula",
           "as": "sy1",
-          "expr": "scale('flow',datum.s1)+datum.left_order*gap+gap/2"
+          "expr": "scale('flow',datum.s1)+datum.left_order*gap+gap/2+headerHeight"
         },
         {
           "type": "formula",
           "as": "ty0",
-          "expr": "scale('flow',datum.t0)+datum.right_order*gap"
+          "expr": "scale('flow',datum.t0)+datum.right_order*gap+headerHeight"
         },
         {
           "type": "formula",
           "as": "ty1",
-          "expr": "scale('flow',datum.t1)+datum.right_order*gap"
+          "expr": "scale('flow',datum.t1)+datum.right_order*gap+headerHeight"
         },
         {
           "type": "formula",
@@ -264,16 +268,16 @@
             "signal": "(datum.y0+datum.y1)/2"
           },
           "dy": {
-            "signal": "width<500 && 'leftNodes'==='leftNodes' ? -9 : -3"
+            "value": -11
           },
           "text": {
-            "signal": "width<500 ? (datum.relation==='Between states' ? ['Between','states'] : ['Within','a state']) : datum.relation"
+            "signal": "datum.relation==='Between states' ? ['Between states','or territories'] : ['Within one state','or territory']"
           },
           "lineHeight": {
             "value": 14
           },
           "fontSize": {
-            "value": 12
+            "signal": "width<500 ? 11 : 12"
           },
           "align": {
             "value": "right"
@@ -298,7 +302,7 @@
             "signal": "(datum.y0+datum.y1)/2"
           },
           "dy": {
-            "signal": "width<500 && 'leftNodes'==='leftNodes' ? 24 : 13"
+            "value": 23
           },
           "text": {
             "signal": "format(datum.passenger_trips/1e6,'.2f')+'m trips'"
@@ -407,7 +411,77 @@
           }
         }
       }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "sourceX"
+          },
+          "dx": {
+            "value": -9
+          },
+          "y": {
+            "value": 0
+          },
+          "text": {
+            "value": "State / territory"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "align": {
+            "value": "right"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#506365"
+          }
+        }
+      }
+    },
+    {
+      "type": "text",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "signal": "targetX"
+          },
+          "dx": {
+            "value": 16
+          },
+          "y": {
+            "value": 0
+          },
+          "text": {
+            "value": "Route distance"
+          },
+          "baseline": {
+            "value": "top"
+          },
+          "align": {
+            "value": "left"
+          },
+          "fontSize": {
+            "value": 11
+          },
+          "fontWeight": {
+            "value": "bold"
+          },
+          "fill": {
+            "value": "#506365"
+          }
+        }
+      }
     }
   ],
-  "description": "Alluvial diagram: passenger trips flowing from state relation (left) to distance band (right)."
+  "description": "The same passenger trips classified by state or territory link and route distance; city pairs combine both directions."
 }

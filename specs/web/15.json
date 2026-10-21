@@ -41,6 +41,10 @@
     {
       "name": "compactLabels",
       "value": false
+    },
+    {
+      "name": "selectedRankAirport",
+      "value": ""
     }
   ],
   "transform": [
@@ -175,7 +179,8 @@
       "mark": {
         "type": "line",
         "strokeWidth": 2.4,
-        "interpolate": "monotone"
+        "interpolate": "monotone",
+        "cursor": "pointer"
       },
       "encoding": {
         "x": {
@@ -256,14 +261,13 @@
             ]
           },
           "legend": {
-            "title": "Rank in 2025\u201326 against 2014\u201315",
-            "labelExpr": "datum.label==='up' ? 'Higher' : datum.label==='down' ? 'Lower' : 'Unchanged'"
+            "title": "Change since 2014\u201315",
+            "labelExpr": "datum.label==='up' ? 'Up' : datum.label==='down' ? 'Down' : 'Same'"
           }
         },
         "opacity": {
           "condition": {
-            "param": "hoverAirport",
-            "empty": true,
+            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
             "value": 1
           },
           "value": 0.14
@@ -271,25 +275,13 @@
       }
     },
     {
-      "params": [
-        {
-          "name": "hoverAirport",
-          "select": {
-            "type": "point",
-            "fields": [
-              "airport_id"
-            ],
-            "on": "pointerover",
-            "clear": "pointerout"
-          }
-        }
-      ],
       "mark": {
         "type": "circle",
         "size": 62,
         "stroke": "white",
         "strokeWidth": 1.2,
-        "opacity": 1
+        "opacity": 1,
+        "cursor": "pointer"
       },
       "encoding": {
         "x": {
@@ -366,14 +358,13 @@
             ]
           },
           "legend": {
-            "title": "Rank in 2025\u201326 against 2014\u201315",
-            "labelExpr": "datum.label==='up' ? 'Higher' : datum.label==='down' ? 'Lower' : 'Unchanged'"
+            "title": "Change since 2014\u201315",
+            "labelExpr": "datum.label==='up' ? 'Up' : datum.label==='down' ? 'Down' : 'Same'"
           }
         },
         "opacity": {
           "condition": {
-            "param": "hoverAirport",
-            "empty": true,
+            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
             "value": 1
           },
           "value": 0.14
@@ -416,7 +407,8 @@
         "baseline": "middle",
         "dx": 10,
         "fontSize": 11.5,
-        "color": "#243637"
+        "color": "#243637",
+        "cursor": "pointer"
       },
       "encoding": {
         "x": {
@@ -483,8 +475,7 @@
         },
         "opacity": {
           "condition": {
-            "param": "hoverAirport",
-            "empty": true,
+            "test": "selectedRankAirport==='' || datum.airport_id===selectedRankAirport",
             "value": 1
           },
           "value": 0.14

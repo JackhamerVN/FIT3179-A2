@@ -65,6 +65,10 @@
       "as": "display"
     },
     {
+      "calculate": "datum.label==='KTA-PER' ? 'Karratha \u2013 Perth' : datum.label==='MCY-MEL' ? 'Sunshine Coast \u2013 Melbourne' : datum.label==='MEL-SYD' ? 'Melbourne \u2013 Sydney' : datum.label==='BNE-SYD' ? 'Brisbane \u2013 Sydney' : 'All other national changes'",
+      "as": "route_name"
+    },
+    {
       "calculate": "(datum.delta_trips>=0 ? '+' : '\u2212')+format(abs(datum.delta_trips)/1000,',.0f')+'k'",
       "as": "value_label"
     }
@@ -117,7 +121,7 @@
         },
         "tooltip": [
           {
-            "field": "label",
+            "field": "route_name",
             "type": "nominal",
             "title": "Route / group"
           },

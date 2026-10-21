@@ -4,7 +4,7 @@
   const $ = (selector) => document.querySelector(selector);
   const number = new Intl.NumberFormat('en-AU');
   const monthFormat = new Intl.DateTimeFormat('en-AU', {month: 'long', year: 'numeric', timeZone: 'UTC'});
-  const state = {month: '2026-06-01', airport: '', region: '', mode: 'percent', group: '', bin: -1, route: ''};
+  const state = {month: '2026-06-01', airport: '', region: '', mode: 'percent', group: '', bin: -1, route: '', rankAirport: ''};
   const files = ['national-monthly', 'routes-fy2026', 'routes-comparison', 'airports-activity', 'states-summary', 'route-groups', 'states-geometry', 'waterfall', 'route-share-tree', 'source-metadata', 'route-occupancy', 'trips-per-resident', 'airport-ranks'];
   const chartCount = 15;
   const dataset = {};
@@ -49,12 +49,14 @@
     $('#bin-select').append(new Option('All occupancy bands', '-1'));
     for (let n = 0; n < 100; n += 10) $('#bin-select').append(new Option(`${n}% to ${n === 90 ? '100%' : `under ${n + 10}%`}`, String(n)));
     options('#route-select', [...dataset['routes-comparison']].sort((a, b) => a.route_name.localeCompare(b.route_name)), (r) => r.route_id, (r) => r.route_name, 'All comparable routes');
-    const controls = {'#month-select': 'month', '#airport-select': 'airport', '#state-select': 'region', '#group-select': 'group', '#bin-select': 'bin', '#route-select': 'route'};
+    options('#rank-airport-select', dataset['airport-ranks'].filter((r) => r.year_ending === 2026).sort((a, b) => a.airport.localeCompare(b.airport)), (r) => r.airport_id, (r) => `${r.airport} (${r.airport_id})`, 'All 15 airports');
+    const controls = {'#month-select': 'month', '#airport-select': 'airport', '#state-select': 'region', '#group-select': 'group', '#bin-select': 'bin', '#route-select': 'route', '#rank-airport-select': 'rankAirport'};
     for (const [id, key] of Object.entries(controls)) {
       $(id).value = state[key];
       $(id).addEventListener('change', (event) => selectValue(key, key === 'bin' ? Number(event.target.value) : event.target.value));
     }
     document.querySelectorAll('[name="change-mode"]').forEach((input) => input.addEventListener('change', () => selectValue('mode', input.value)));
+    $('#clear-rank-airport').addEventListener('click', () => selectValue('rankAirport', ''));
     $('#reset-all').addEventListener('click', () => enqueue(async () => {
       Object.assign(state, defaultState);
       for (const [id, key] of Object.entries(controls)) $(id).value = state[key];
@@ -73,6 +75,7 @@
     group: {signal: 'selectedGroup', charts: [10], control: '#group-select'},
     bin: {signal: 'selectedBin', charts: [11], control: '#bin-select'},
     route: {signal: 'selectedRoute', charts: [12, 13], control: '#route-select'},
+    rankAirport: {signal: 'selectedRankAirport', charts: [15], control: '#rank-airport-select'},
   };
 
   function selectValue(key, value) {
@@ -103,6 +106,7 @@
     if (id === 10 && datum.group_id) selectValue('group', state.group === datum.group_id ? '' : datum.group_id);
     if (id === 11 && Number.isFinite(datum.bin_start)) selectValue('bin', state.bin === datum.bin_start ? -1 : datum.bin_start);
     if ((id === 12 || id === 13) && datum.route_id) selectValue('route', state.route === datum.route_id ? '' : datum.route_id);
+    if (id === 15 && datum.airport_id) selectValue('rankAirport', state.rankAirport === datum.airport_id ? '' : datum.airport_id);
   }
 
   function chartHeight(id, width) {
@@ -137,9 +141,14 @@
         spec.encoding.x.axis.tickCount = 5;
       }
     }
-    if (id === 3 && width < 420) spec.layer.forEach((layer) => {
+    if (id === 3 && width < 550) spec.layer.forEach((layer) => {
       if (layer.mark.type === 'bar') layer.mark.size = 28;
-      if (layer.encoding.x?.axis) Object.assign(layer.encoding.x.axis, {labelFontSize: 9, labelExpr: "[['Karratha','Perth'],['Sunshine','Coast','Melb.'],['Melb.','Sydney'],['Brisbane','Sydney'],['All other','changes'],['Net','change']][datum.value]"});
+      if (layer.encoding.x?.axis) Object.assign(layer.encoding.x.axis, {
+        labelFontSize: 10, labelLineHeight: 12, labelPadding: 10,
+        labelExpr: width < 420
+          ? "[['KTA','PER'],['MCY','MEL'],['MEL','SYD'],['BNE','SYD'],['All other','changes'],['Net','change']][datum.value]"
+          : "[['Karratha','Perth'],['Sunshine','Coast','Melbourne'],['Melbourne','Sydney'],['Brisbane','Sydney'],['All other','changes'],['Net','change']][datum.value]",
+      });
     });
     const compact = (spec.params || []).find((p) => p.name === 'compactLabels');
     if (compact) compact.value = width < 550;
@@ -177,6 +186,12 @@
     $('#state-detail').textContent = region ? `${region.name}: ${pct(region.change_pct, true)} on comparable routes. Latest disclosed activity: ${million(region.endpoint_movements)} endpoint movements. These two measures use different route groups.` : 'Different denominators: the change map uses 57 comparable routes; the circle map uses 62 latest disclosed routes. Every trip contributes at both endpoints.';
     const group = dataset['route-groups'].find((r) => r.group_id === state.group);
     $('#group-detail').innerHTML = group ? `${group.route_ids.length} routes<strong>${fmt(group.passenger_trips)} trips</strong>` : `All disclosed routes<strong>53,982,647 trips</strong>`;
+    const airportYears = dataset['airport-ranks'].filter((r) => r.airport_id === state.rankAirport).sort((a, b) => a.year_ending - b.year_ending);
+    const firstRank = airportYears[0], latestRank = airportYears.at(-1);
+    $('#rank-detail').textContent = latestRank
+      ? `${latestRank.airport}: rank ${firstRank.rank} in ${firstRank.fy}, rank ${latestRank.rank} in ${latestRank.fy}${latestRank.places_gained ? ` (${Math.abs(latestRank.places_gained)} place${Math.abs(latestRank.places_gained) === 1 ? '' : 's'} ${latestRank.places_gained > 0 ? 'up' : 'down'})` : ' (unchanged)'}. Other airports stay visible for comparison.`
+      : 'All 15 airports shown. Sunshine Coast rose five places, from 15th to 10th.';
+    $('#clear-rank-airport').disabled = !state.rankAirport;
     const occupied = occupancyRows();
     $('#bin-detail').textContent = state.bin < 0 ? 'National seat occupancy: 80.7%. BITRE distance-weighted load factor: 82.2%.' : `${occupied.length} route${occupied.length === 1 ? '' : 's'} in this occupancy band. ${occupied.length ? 'Their annual figures are listed in the data table.' : 'No disclosed routes fall in this band.'}`;
     const route = dataset['routes-comparison'].find((r) => r.route_id === state.route);
@@ -221,7 +236,7 @@
     if (id === 11) return {columns: ['Route', 'Trips', 'Seats', 'Occupancy (%)'], rows: occupancyRows().map((r) => [r.route_name, r.passenger_trips, r.seats, Number(r.occupancy_pct.toFixed(2))]), note: 'Lower band bound is inclusive; upper bound is exclusive, except 100% belongs to the final band. Unavailable annual totals are excluded, not set to zero.'};
     if (id === 13) return {columns: ['Route', 'FY2018-19 seats filled (%)', 'FY2025-26 seats filled (%)', 'Change (points)'], rows: dataset['route-occupancy'].filter((r) => !state.route || r.route_id === state.route).map((r) => [r.route_name, r.occupancy_2019_pct, r.occupancy_2026_pct, r.change_points]), note: 'Same 57 city pairs in both years, busiest first. Seats filled is passenger trips divided by seats flown. Label positions on the chart are spread apart; these are the plotted values.'};
     if (id === 14) return {columns: ['Financial year', 'Passenger trips', 'Residents at 31 December', 'Trips per resident'], rows: dataset['trips-per-resident'].map((r) => [r.fy, r.passenger_trips, r.population, Number(r.trips_per_resident.toFixed(2))]), note: 'Passenger trips: BITRE. Estimated resident population at the midpoint of each financial year: ABS. Trips include those taken by visitors.'};
-    if (id === 15) return {columns: ['Airport', 'Financial year', 'Rank', 'Passenger movements'], rows: dataset['airport-ranks'].map((r) => [r.airport, r.fy, r.rank, r.passenger_movements]), note: 'Arrivals plus departures on scheduled domestic and regional flights. Ranks to FY2024-25 use every airport BITRE reports; FY2025-26 uses the monthly file for the 20 busiest airports.'};
+    if (id === 15) return {columns: ['Airport', 'Financial year', 'Rank', 'Passenger movements'], rows: dataset['airport-ranks'].filter((r) => !state.rankAirport || r.airport_id === state.rankAirport).map((r) => [r.airport, r.fy, r.rank, r.passenger_movements]), note: 'Data follows the highlighted airport; the chart retains all 15 for context. Arrivals plus departures on scheduled domestic and regional flights. Ranks to FY2024-25 use every airport BITRE reports; FY2025-26 uses the monthly file for the 20 busiest airports. Domestic legs of international services are generally excluded from this airport series; international flight numbers operating wholly between domestic airports have been included since July 2011.'};
     return {columns: ['Route', 'Distance (km)', 'Change (%)'], rows: compare.filter((r) => !state.route || r.route_id === state.route).map((r) => [r.route_name, r.distance_km, Number(r.change_pct.toFixed(2))]), note: 'Same 57 city pairs in both years. A route selection highlights a point without rescaling either axis.'};
   }
 

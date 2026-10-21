@@ -1,13 +1,13 @@
 # Domestic air travel in Australia
 
-An interactive data story about how Australians fly within the country, from July 2014 to June 2026.
+An interactive data story about domestic air travel in Australia, from July 2014 to June 2026.
 Built for FIT3179 Data Visualisation (Monash University), Data Visualisation 2, Volume 11, Topic 5: Domestic Air Travel.
 
 **Live page:** https://jackhamervn.github.io/FIT3179-A2/
 
 **Design sketch:** [sketch/sketch.pdf](sketch/sketch.pdf) (hand-drawn, A4)
 
-**Author:** Quy Duong Vu. **Prepared:** 4 October 2026. **Updated:** 14 October 2026.
+**Author:** Quy Duong Vu. **Prepared:** 4 October 2026. **Updated:** 15 October 2026.
 
 ## The charts
 
@@ -24,12 +24,12 @@ Every chart and map is drawn with Vega-Lite or Vega. Each has its own readable J
 | 7 | Up in the west, down in the south-east | Choropleth map | [07.json](specs/web/07.json) |
 | 8 | Three eastern states carry three-quarters of the activity | Dorling cartogram | [08.json](specs/web/08.json) |
 | 9 | Karratha–Perth gained most; Sydney and Melbourne routes lost most | Bar chart | [09.json](specs/web/09.json) |
-| 10 | Most disclosed trips cross a state border | Alluvial diagram | [10.json](specs/web/10.json) |
+| 10 | 83% of disclosed trips cross a state or territory border | Alluvial diagram | [10.json](specs/web/10.json) |
 | 11 | Half of all routes fill 80 to 90% of their seats | Histogram | [11.json](specs/web/11.json) |
 | 12 | The steepest falls were on short routes | Scatterplot | [12.json](specs/web/12.json) |
 | 13 | Fuller planes on most routes | Slope chart | [13.json](specs/web/13.json) |
-| 14 | The population grew faster than flying | Line chart | [14.json](specs/web/14.json) |
-| 15 | The same top seven, movement below | Bump chart | [15.json](specs/web/15.json) |
+| 14 | Trips per resident remain 10% below 2018–19 | Line chart | [14.json](specs/web/14.json) |
+| 15 | The top seven returned to their earlier order | Bump chart | [15.json](specs/web/15.json) |
 
 ## Data sources
 

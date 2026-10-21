@@ -17,3 +17,12 @@ p.chart-caption{display:block}.data-region tbody th{position:static;background:t
 .eyebrow,.edition,.chart-kicker,.chapter-number,.metric-context,.wordmark,.control,.route-ranking li:before{font-family:'B612 Mono','B612',Arial,sans-serif}
 @media(max-width:400px){nav{gap:6px}nav a{font-size:9.5px}}
 .chart .mark-text{pointer-events:none}
+.chart-intro{font-size:12px;line-height:1.65;color:var(--muted);margin:-3px 0 18px;max-width:720px}
+.scope-callout{border-left:2px solid var(--teal);padding-left:12px}
+.chart-selection{display:flex;align-items:flex-end;gap:10px;flex-shrink:0;max-width:100%}
+.chart-selection .control{width:220px;min-width:0;flex:1}
+.text-button{background:var(--white);border:1px solid #a5b8b4;border-radius:4px;min-height:38px;padding:8px 13px;font-size:12px}
+.text-button:hover:enabled{background:#e7efeb;border-color:#94aaa6}
+.text-button:disabled{cursor:default;opacity:.45}
+#chart-15 .mark-text text{pointer-events:auto}
+@media(max-width:760px){[data-chart="10"] figcaption,[data-chart="15"] figcaption{display:block}[data-chart="10"] figcaption .control{margin-top:15px;width:100%;max-width:320px}.chart-selection{margin-top:15px;max-width:320px}.chart-selection .control{margin-top:0!important;width:auto!important}.chart-intro{font-size:11px}}
