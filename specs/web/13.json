@@ -231,7 +231,7 @@
       "data": {
         "values": [
           {
-            "occupancy": 80.72
+            "occupancy": 82.34
           }
         ]
       },
@@ -258,7 +258,7 @@
       "data": {
         "values": [
           {
-            "occupancy": 80.72
+            "occupancy": 82.34
           }
         ]
       },
@@ -272,8 +272,8 @@
         "dx": -7,
         "y": 2,
         "text": [
-          "All routes together:",
-          "80.7% of seats filled"
+          "These 62 routes together:",
+          "82.3% of seats filled"
         ]
       },
       "encoding": {
