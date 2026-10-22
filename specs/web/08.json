@@ -65,6 +65,10 @@
       "as": "magnitude"
     },
     {
+      "calculate": "datum.change>=0 ? 'More trips' : 'Fewer trips'",
+      "as": "direction"
+    },
+    {
       "window": [
         {
           "op": "row_number",
@@ -134,7 +138,7 @@
       },
       "axis": {
         "title": {
-          "expr": "changeMode==='percent' ? 'Change (%)' : 'Change in passenger trips'"
+          "expr": "changeMode==='percent' ? 'Change, 2018\u201319 to 2025\u201326 (%)' : 'Change in passenger trips, 2018\u201319 to 2025\u201326'"
         },
         "format": "~s",
         "tickCount": 5
@@ -150,11 +154,23 @@
       },
       "encoding": {
         "color": {
-          "condition": {
-            "test": "datum.change>=0",
-            "value": "#316EAC"
+          "field": "direction",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "More trips",
+              "Fewer trips"
+            ],
+            "range": [
+              "#316EAC",
+              "#B55732"
+            ]
           },
-          "value": "#B55732"
+          "legend": {
+            "title": "Since 2018\u201319",
+            "orient": "bottom-right",
+            "symbolType": "square"
+          }
         },
         "tooltip": [
           {

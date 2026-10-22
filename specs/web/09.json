@@ -41,6 +41,10 @@
     {
       "calculate": "replace(datum.route_name,' - ','\u2013')",
       "as": "label"
+    },
+    {
+      "calculate": "datum.change_pct>=0 ? 'More trips' : 'Fewer trips'",
+      "as": "direction"
     }
   ],
   "layer": [
@@ -312,16 +316,28 @@
             ]
           },
           "axis": {
-            "title": "Change (%)",
+            "title": "Change in trips, 2018\u201319 to 2025\u201326 (%)",
             "tickCount": 5
           }
         },
         "color": {
-          "condition": {
-            "test": "datum.change_pct>=0",
-            "value": "#316EAC"
+          "field": "direction",
+          "type": "nominal",
+          "scale": {
+            "domain": [
+              "More trips",
+              "Fewer trips"
+            ],
+            "range": [
+              "#316EAC",
+              "#B55732"
+            ]
           },
-          "value": "#B55732"
+          "legend": {
+            "title": "Since 2018\u201319",
+            "orient": "top-right",
+            "symbolType": "circle"
+          }
         },
         "size": {
           "condition": {
@@ -420,7 +436,7 @@
             ]
           },
           "axis": {
-            "title": "Change (%)",
+            "title": "Change in trips, 2018\u201319 to 2025\u201326 (%)",
             "tickCount": 5
           }
         },
@@ -484,7 +500,7 @@
             ]
           },
           "axis": {
-            "title": "Change (%)",
+            "title": "Change in trips, 2018\u201319 to 2025\u201326 (%)",
             "tickCount": 5
           }
         },
